@@ -12,7 +12,7 @@ def test_ordinal_encoder_create_fit_queries():
             CREATE OR REPLACE TABLE "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY" AS
             SELECT
                 rownum - 1 as "ID",
-                "SOURCE_COLUMN1" as "VALUE",
+                "SOURCE_COLUMN1" as "VALUE"
             FROM (
                 SELECT distinct "SOURCE_COLUMN1"
                 FROM "SOURCE_SCHEMA"."SOURCE_TABLE"
@@ -33,8 +33,10 @@ def test_ordinal_encoder_create_from_clause_part():
                                                        input_schema, input_table,
                                                        target_schema)
     expected = textwrap.dedent("""
-            JOIN "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY" ON 
-                "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."VALUE" = 
+            JOIN "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
+            AS "TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
+            ON
+                "TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."VALUE" = 
                 "INPUT_SCHEMA"."INPUT_TABLE"."SOURCE_COLUMN1"
             """)
     assert from_clause_part == [expected]
@@ -51,7 +53,7 @@ def test_ordinal_encoder_create_select_clause_part():
     select_clause_part = encoder.create_select_clause_part(source_schema, source_table, source_column,
                                                            input_schema, input_table,
                                                            target_schema)
-    expected = textwrap.dedent('"TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."ID" AS "SOURCE_COLUMN1_ID"')
+    expected = textwrap.dedent('"TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."ID" AS "SOURCE_COLUMN1_ID"')
     assert select_clause_part == [expected]
 
 

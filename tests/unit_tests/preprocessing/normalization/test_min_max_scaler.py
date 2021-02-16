@@ -1,6 +1,7 @@
 from exasol_data_science_utils_python.preprocessing.normalization.min_max_scaler import MinMaxScaler
 import textwrap
 
+
 def test_min_max_scaler_create_fit_queries():
     source_schema = "SOURCE_SCHEMA"
     source_table = "SOURCE_TABLE"
@@ -17,6 +18,7 @@ def test_min_max_scaler_create_fit_queries():
         """)
     assert queries == [expected]
 
+
 def test_min_max_scaler_create_from_clause_part():
     source_schema = "SOURCE_SCHEMA"
     source_table = "SOURCE_TABLE"
@@ -28,7 +30,10 @@ def test_min_max_scaler_create_from_clause_part():
     from_clause_part = scaler.create_from_clause_part(source_schema, source_table, source_column,
                                                       input_schema, input_table,
                                                       target_schema)
-    assert from_clause_part == []
+    assert from_clause_part == [textwrap.dedent(f'''
+        CROSS JOIN "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_MIN_MAX_SCALAR_PARAMETERS" 
+        AS "TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_MIN_MAX_SCALAR_PARAMETERS"
+        ''')]
 
 
 def test_min_max_scaler_create_select_clause_part():
@@ -45,9 +50,7 @@ def test_min_max_scaler_create_select_clause_part():
     expected = textwrap.dedent('''
         (
             ("INPUT_SCHEMA"."INPUT_TABLE"."SOURCE_COLUMN1" -
-                "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_MIN_MAX_SCALAR_PARAMETERS"."MIN") /
-            "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_MIN_MAX_SCALAR_PARAMETERS"."RANGE"
+                "TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_MIN_MAX_SCALAR_PARAMETERS"."MIN") /
+            "TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_MIN_MAX_SCALAR_PARAMETERS"."RANGE"
         ) AS "SOURCE_COLUMN1_MIN_MAX_SCALED"''')
     assert select_clause_part == [expected]
-
-

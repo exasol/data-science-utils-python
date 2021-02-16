@@ -52,4 +52,5 @@ SELECT
 FROM "{input_schema}"."{input_table}"
 {from_clause_parts_str}
 """)
+#        query="\n".join([line.strip() for line in query.split("\n") if line.strip() != ""])
         return query
