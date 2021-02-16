@@ -26,12 +26,16 @@ def test_ordinal_encoder_create_from_clause_part():
     source_table = "SOURCE_TABLE"
     target_schema = "TARGET_SCHEMA"
     source_column = "SOURCE_COLUMN1"
+    input_schema = "INPUT_SCHEMA"
+    input_table = "INPUT_TABLE"
     encoder = OrdinalEncoder()
-    from_clause_part = encoder.create_from_clause_part(source_schema, source_table, source_column, target_schema)
+    from_clause_part = encoder.create_from_clause_part(source_schema, source_table, source_column,
+                                                       input_schema, input_table,
+                                                       target_schema)
     expected = textwrap.dedent("""
             JOIN "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY" ON 
                 "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."VALUE" = 
-                "SOURCE_SCHEMA"."SOURCE_TABLE"."SOURCE_COLUMN1"
+                "INPUT_SCHEMA"."INPUT_TABLE"."SOURCE_COLUMN1"
             """)
     assert from_clause_part == [expected]
 
@@ -41,8 +45,12 @@ def test_ordinal_encoder_create_select_clause_part():
     source_table = "SOURCE_TABLE"
     target_schema = "TARGET_SCHEMA"
     source_column = "SOURCE_COLUMN1"
+    input_schema = "INPUT_SCHEMA"
+    input_table = "INPUT_TABLE"
     encoder = OrdinalEncoder()
-    select_clause_part = encoder.create_select_clause_part(source_schema, source_table, source_column, target_schema)
+    select_clause_part = encoder.create_select_clause_part(source_schema, source_table, source_column,
+                                                           input_schema, input_table,
+                                                           target_schema)
     expected = textwrap.dedent('"TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."ID" AS "SOURCE_COLUMN1_ID"')
     assert select_clause_part == [expected]
 

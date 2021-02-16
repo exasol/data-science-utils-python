@@ -12,13 +12,10 @@ class MinMaxScaler(ColumnPreprocessor):
             target_schema, source_schema, source_table, source_column,
             MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX)
 
-    def _get_source_table_qualified(self, source_schema:str, source_table:str):
-        return f'"{source_schema}"."{source_table}"'
-
 
     def create_fit_queries(self, source_schema:str, source_table:str, source_column:str, target_schema:str)->List[str]:
         parameter_table = self._get_parameter_table_name(target_schema, source_schema, source_table, source_column)
-        source_table_qualified= self._get_source_table_qualified(source_schema, source_table)
+        source_table_qualified= self._get_table_qualified(source_schema, source_table)
         query = textwrap.dedent(f"""
             CREATE OR REPLACE TABLE {parameter_table} AS
             SELECT
@@ -28,15 +25,19 @@ class MinMaxScaler(ColumnPreprocessor):
             """)
         return [query]
 
-    def create_from_clause_part(self, source_schema:str, source_table:str, source_column:str, target_schema:str)->List[str]:
+    def create_from_clause_part(self, source_schema:str, source_table:str, source_column:str,
+                                input_schema: str, input_table: str,
+                                target_schema:str)->List[str]:
         return []
 
-    def create_select_clause_part(self, source_schema:str, source_table:str, source_column:str, target_schema:str)->List[str]:
+    def create_select_clause_part(self, source_schema:str, source_table:str, source_column:str,
+                                  input_schema: str, input_table: str,
+                                  target_schema:str)->List[str]:
         parameter_table = self._get_parameter_table_name(target_schema, source_schema, source_table, source_column)
-        source_table_qualified= self._get_source_table_qualified(source_schema, source_table)
+        input_table_qualified= self._get_table_qualified(input_schema, input_table)
         create_select_clause_part = textwrap.dedent(f'''
                 (
-                    ({source_table_qualified}."{source_column}" -
+                    ({input_table_qualified}."{source_column}" -
                         {parameter_table}."MIN") /
                     {parameter_table}."RANGE"
                 ) AS "{source_column}_MIN_MAX_SCALED"''')

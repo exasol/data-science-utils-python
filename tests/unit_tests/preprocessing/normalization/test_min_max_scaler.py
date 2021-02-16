@@ -22,8 +22,12 @@ def test_min_max_scaler_create_from_clause_part():
     source_table = "SOURCE_TABLE"
     target_schema = "TARGET_SCHEMA"
     source_column = "SOURCE_COLUMN1"
+    input_schema = "INPUT_SCHEMA"
+    input_table = "INPUT_TABLE"
     scaler = MinMaxScaler()
-    from_clause_part = scaler.create_from_clause_part(source_schema, source_table, source_column, target_schema)
+    from_clause_part = scaler.create_from_clause_part(source_schema, source_table, source_column,
+                                                      input_schema, input_table,
+                                                      target_schema)
     assert from_clause_part == []
 
 
@@ -32,11 +36,15 @@ def test_min_max_scaler_create_select_clause_part():
     source_table = "SOURCE_TABLE"
     target_schema = "TARGET_SCHEMA"
     source_column = "SOURCE_COLUMN1"
+    input_schema = "INPUT_SCHEMA"
+    input_table = "INPUT_TABLE"
     scaler = MinMaxScaler()
-    select_clause_part = scaler.create_select_clause_part(source_schema, source_table, source_column, target_schema)
+    select_clause_part = scaler.create_select_clause_part(source_schema, source_table, source_column,
+                                                          input_schema, input_table,
+                                                          target_schema)
     expected = textwrap.dedent('''
         (
-            ("SOURCE_SCHEMA"."SOURCE_TABLE"."SOURCE_COLUMN1" -
+            ("INPUT_SCHEMA"."INPUT_TABLE"."SOURCE_COLUMN1" -
                 "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_MIN_MAX_SCALAR_PARAMETERS"."MIN") /
             "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_MIN_MAX_SCALAR_PARAMETERS"."RANGE"
         ) AS "SOURCE_COLUMN1_MIN_MAX_SCALED"''')
