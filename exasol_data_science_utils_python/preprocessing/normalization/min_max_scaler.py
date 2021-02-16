@@ -1,13 +1,14 @@
-from typing import List
 import textwrap
+from typing import List
 
 from exasol_data_science_utils_python.preprocessing.column_preprocessor import ColumnPreprocessor
 
 MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX = "MIN_MAX_SCALAR_PARAMETERS"
 
+
 class MinMaxScaler(ColumnPreprocessor):
 
-    def _get_parameter_table_name(self, target_schema:str, source_schema:str, source_table:str, source_column:str):
+    def _get_parameter_table_name(self, target_schema: str, source_schema: str, source_table: str, source_column: str):
         return self._get_target_table_name(
             target_schema, source_schema, source_table, source_column,
             MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX)
@@ -17,9 +18,10 @@ class MinMaxScaler(ColumnPreprocessor):
             target_schema, source_schema, source_table, source_column,
             MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX)
 
-    def create_fit_queries(self, source_schema:str, source_table:str, source_column:str, target_schema:str)->List[str]:
+    def create_fit_queries(self, source_schema: str, source_table: str, source_column: str, target_schema: str) -> List[
+        str]:
         parameter_table = self._get_parameter_table_name(target_schema, source_schema, source_table, source_column)
-        source_table_qualified= self._get_table_qualified(source_schema, source_table)
+        source_table_qualified = self._get_table_qualified(source_schema, source_table)
         query = textwrap.dedent(f"""
             CREATE OR REPLACE TABLE {parameter_table} AS
             SELECT
@@ -29,9 +31,9 @@ class MinMaxScaler(ColumnPreprocessor):
             """)
         return [query]
 
-    def create_from_clause_part(self, source_schema:str, source_table:str, source_column:str,
+    def create_from_clause_part(self, source_schema: str, source_table: str, source_column: str,
                                 input_schema: str, input_table: str,
-                                target_schema:str)->List[str]:
+                                target_schema: str) -> List[str]:
         parameter_table = self._get_parameter_table_name(target_schema, source_schema, source_table, source_column)
         alias = self._get_parameter_table_alias(target_schema, source_schema, source_table, source_column)
         return [textwrap.dedent(f'''
@@ -39,10 +41,10 @@ class MinMaxScaler(ColumnPreprocessor):
         AS {alias}
         ''')]
 
-    def create_select_clause_part(self, source_schema:str, source_table:str, source_column:str,
+    def create_select_clause_part(self, source_schema: str, source_table: str, source_column: str,
                                   input_schema: str, input_table: str,
-                                  target_schema:str)->List[str]:
-        input_table_qualified= self._get_table_qualified(input_schema, input_table)
+                                  target_schema: str) -> List[str]:
+        input_table_qualified = self._get_table_qualified(input_schema, input_table)
         alias = self._get_parameter_table_alias(target_schema, source_schema, source_table, source_column)
         create_select_clause_part = textwrap.dedent(f'''
                 (

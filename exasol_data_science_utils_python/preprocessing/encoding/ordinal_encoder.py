@@ -1,5 +1,5 @@
-from typing import List
 import textwrap
+from typing import List
 
 from exasol_data_science_utils_python.preprocessing.column_preprocessor import ColumnPreprocessor
 
@@ -8,11 +8,11 @@ ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX = "ORDINAL_ENCODER_DICTIONARY"
 
 class OrdinalEncoder(ColumnPreprocessor):
 
-    def _get_dictionary_table_alias(self, target_schema: str, source_schema: str, source_table: str, source_column: str):
+    def _get_dictionary_table_alias(self, target_schema: str, source_schema: str, source_table: str,
+                                    source_column: str):
         return self._get_table_alias(
             target_schema, source_schema, source_table, source_column,
             ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX)
-
 
     def _get_dictionary_table_name(self, target_schema: str, source_schema: str, source_table: str, source_column: str):
         return self._get_target_table_name(

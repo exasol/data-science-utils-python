@@ -1,5 +1,6 @@
-from exasol_data_science_utils_python.preprocessing.normalization.min_max_scaler import MinMaxScaler
 import textwrap
+
+from exasol_data_science_utils_python.preprocessing.normalization.min_max_scaler import MinMaxScaler
 
 
 def test_min_max_scaler_create_fit_queries():

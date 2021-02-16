@@ -1,5 +1,7 @@
-from exasol_data_science_utils_python.preprocessing.encoding.ordinal_encoder import OrdinalEncoder 
 import textwrap
+
+from exasol_data_science_utils_python.preprocessing.encoding.ordinal_encoder import OrdinalEncoder
+
 
 def test_ordinal_encoder_create_fit_queries():
     source_schema = "SOURCE_SCHEMA"
@@ -20,6 +22,7 @@ def test_ordinal_encoder_create_fit_queries():
             );
             """)
     assert queries == [expected]
+
 
 def test_ordinal_encoder_create_from_clause_part():
     source_schema = "SOURCE_SCHEMA"
@@ -53,7 +56,6 @@ def test_ordinal_encoder_create_select_clause_part():
     select_clause_part = encoder.create_select_clause_part(source_schema, source_table, source_column,
                                                            input_schema, input_table,
                                                            target_schema)
-    expected = textwrap.dedent('"TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."ID" AS "SOURCE_COLUMN1_ID"')
+    expected = textwrap.dedent(
+        '"TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."ID" AS "SOURCE_COLUMN1_ID"')
     assert select_clause_part == [expected]
-
-

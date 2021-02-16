@@ -16,7 +16,7 @@ class MyColumnPreprocessor(ColumnPreprocessor):
             ''')]
 
     def create_from_clause_part(self, source_schema: str, source_table: str, source_column: str,
-                                input_schema:str, input_table:str,
+                                input_schema: str, input_table: str,
                                 target_schema: str) -> \
             List[str]:
         target_table = self._get_target_table_name(target_schema, source_schema, source_table, source_column, "PREFIX")

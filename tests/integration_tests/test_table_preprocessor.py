@@ -1,5 +1,3 @@
-import textwrap
-from typing import List
 import pyexasol
 
 from exasol_data_science_utils_python.preprocessing.encoding.ordinal_encoder import OrdinalEncoder
@@ -53,11 +51,10 @@ def test_table_preprocessor_create_fit_queries():
     result = c.execute(query).fetchall()
     assert result == [(1.0, 1.0)]
 
-    query=table_preprocessor.create_transform_query(source_schema,source_table)
+    query = table_preprocessor.create_transform_query(source_schema, source_table)
     print(query)
     c.execute(query)
 
-    query='''SELECT * FROM "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_TRANSFORMED"'''
+    query = '''SELECT * FROM "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_TRANSFORMED"'''
     result = c.execute(query).fetchall()
-    assert result == [('0', 0.0),('1', 1.0)]
-
+    assert result == [('0', 0.0), ('1', 1.0)]
