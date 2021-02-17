@@ -10,10 +10,11 @@ def test_ordinal_encoder_create_fit_queries():
     source_column = "SOURCE_COLUMN1"
     encoder = OrdinalEncoder()
     queries = encoder.create_fit_queries(source_schema, source_table, source_column, target_schema)
+    # rownum starts at 1, we use 0 for unknown in select clause
     expected = textwrap.dedent(f"""
             CREATE OR REPLACE TABLE "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY" AS
             SELECT
-                rownum - 1 as "ID",
+                rownum as "ID",
                 "SOURCE_COLUMN1" as "VALUE"
             FROM (
                 SELECT distinct "SOURCE_COLUMN1"
@@ -35,6 +36,7 @@ def test_ordinal_encoder_create_from_clause_part():
     from_clause_part = encoder.create_from_clause_part(source_schema, source_table, source_column,
                                                        input_schema, input_table,
                                                        target_schema)
+    # FIXME use right outer join and replace NULL with 0
     expected = textwrap.dedent("""
             JOIN "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
             AS "TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"

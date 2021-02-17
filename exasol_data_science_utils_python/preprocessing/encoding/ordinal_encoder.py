@@ -26,7 +26,7 @@ class OrdinalEncoder(ColumnPreprocessor):
         query = textwrap.dedent(f"""
                 CREATE OR REPLACE TABLE {dictionary_table} AS
                 SELECT
-                    rownum - 1 as "ID",
+                    rownum as "ID",
                     "{source_column}" as "VALUE"
                 FROM (
                     SELECT distinct "{source_column}"
