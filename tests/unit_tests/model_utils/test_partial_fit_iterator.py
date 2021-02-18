@@ -5,8 +5,6 @@ from exasol_udf_mock_python.mock_meta_data import MockMetaData
 from exasol_udf_mock_python.udf_mock_executor import UDFMockExecutor
 
 
-
-
 def udf_wrapper():
     from sklearn.linear_model import SGDClassifier
     from exasol_data_science_utils_python.model_utils.partial_fit_iterator import PartialFitIterator
