@@ -22,9 +22,11 @@ class PredictionIterator:
     def _create_one_hot_encoder(self):
         categories = [np.arange(i) for i in self.iterator_config.input_column_category_counts]
         # TODO in older versions of scikit learn it was n_values
-        categories = self.iterator_config.input_column_category_counts
+        #categories = np.array(self.iterator_config.input_column_category_counts).reshape(
+        #    (len(categories), 1))
         one_hot_encoder = OneHotEncoder(categories=categories, sparse=False)
-        data = np.ones(shape=(len(self.iterator_config.input_column_category_counts), 1))
+        data = np.ones(shape=(2,len(self.iterator_config.input_column_category_counts)))
+        print(data)
         one_hot_encoder.fit(data)
         return one_hot_encoder
 
