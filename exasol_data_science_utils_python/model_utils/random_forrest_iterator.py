@@ -1,2 +1,0 @@
-from exasol_data_science_utils_python.udf_utils.iterator_utils import iterate_trough_dataset
-

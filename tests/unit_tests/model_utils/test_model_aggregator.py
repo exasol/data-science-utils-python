@@ -1,5 +1,5 @@
 from sklearn.datasets import make_blobs
-from sklearn.ensemble import RandomForestClassifier, VotingClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 from exasol_data_science_utils_python.model_utils.model_aggregator import combine_random_forrest_classifier, \
     combine_to_voting_classifier
@@ -21,7 +21,7 @@ def test_combine_random_forrest_classifier():
     clf2.fit(X2, y2)
     clf1.fit(X1, y1)
 
-    clf_combine = combine_random_forrest_classifier(clf1, clf2)
+    clf_combine = combine_random_forrest_classifier([clf1, clf2])
 
     clf1_x1_y1 = clf1.score(X1, y1)
     print("clf1.score(X1, y1)", clf1_x1_y1)
@@ -41,6 +41,7 @@ def test_combine_random_forrest_classifier():
            clf2_x1_y1 <= clf_combine_x1_y1 and \
            clf2_x2_y2 <= clf_combine_x2_y2
 
+
 def test_combine_to_voting_classifier():
     factor = 100
 
@@ -57,7 +58,7 @@ def test_combine_to_voting_classifier():
     clf2.fit(X2, y2)
     clf1.fit(X1, y1)
 
-    clf_combine = combine_to_voting_classifier([clf1, clf2],100)
+    clf_combine = combine_to_voting_classifier([clf1, clf2], 100, voting="soft")
 
     clf1_x1_y1 = clf1.score(X1, y1)
     print("clf1.score(X1, y1)", clf1_x1_y1)
