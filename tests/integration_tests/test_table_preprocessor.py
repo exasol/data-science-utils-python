@@ -2,6 +2,9 @@ import pyexasol
 
 from exasol_data_science_utils_python.preprocessing.encoding.ordinal_encoder import OrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.normalization.min_max_scaler import MinMaxScaler
+from exasol_data_science_utils_python.preprocessing.schema.column import Column
+from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
+from exasol_data_science_utils_python.preprocessing.schema.table import Table
 from exasol_data_science_utils_python.preprocessing.table_preprocessor import TablePreprocessor, \
     ColumnPreprocesserDefinition
 
@@ -22,17 +25,17 @@ def test_table_preprocessor_create_fit_queries():
     )
     """)
     c.execute("""INSERT INTO "SOURCE_SCHEMA"."SOURCE_TABLE" VALUES ('A',1),('B',2);""")
-    source_schema = "SOURCE_SCHEMA"
-    source_table = "SOURCE_TABLE"
-    target_schema = "TARGET_SCHEMA"
-    source_column1 = "CATEGORY"
-    source_column2 = "NUMERICAL"
+    source_schema = Schema("SOURCE_SCHEMA")
+    source_table = Table("SOURCE_TABLE", source_schema)
+    target_schema = Schema("TARGET_SCHEMA")
+    source_column1 = Column("CATEGORY", source_table)
+    source_column2 = Column("NUMERICAL", source_table)
     column_preprocessor_defintions = [
-        ColumnPreprocesserDefinition(source_column1, OrdinalEncoder()),
-        ColumnPreprocesserDefinition(source_column2, MinMaxScaler()),
+        ColumnPreprocesserDefinition(source_column1.name, OrdinalEncoder()),
+        ColumnPreprocesserDefinition(source_column2.name, MinMaxScaler()),
     ]
 
-    table_preprocessor = TablePreprocessor(target_schema, source_schema, source_table, column_preprocessor_defintions)
+    table_preprocessor = TablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
     queries = table_preprocessor.create_fit_queries()
     for query in queries:
         c.execute(query)
@@ -51,7 +54,7 @@ def test_table_preprocessor_create_fit_queries():
     result = c.execute(query).fetchall()
     assert result == [(1.0, 1.0)]
 
-    query = table_preprocessor.create_transform_query(source_schema, source_table)
+    query = table_preprocessor.create_transform_query(source_table)
     print(query)
     c.execute(query)
 

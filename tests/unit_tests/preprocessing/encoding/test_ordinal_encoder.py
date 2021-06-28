@@ -1,61 +1,62 @@
 import textwrap
 
 from exasol_data_science_utils_python.preprocessing.encoding.ordinal_encoder import OrdinalEncoder
+from exasol_data_science_utils_python.preprocessing.schema.column import Column
+from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
+from exasol_data_science_utils_python.preprocessing.schema.table import Table
 
 
 def test_ordinal_encoder_create_fit_queries():
-    source_schema = "SOURCE_SCHEMA"
-    source_table = "SOURCE_TABLE"
-    target_schema = "TARGET_SCHEMA"
-    source_column = "SOURCE_COLUMN1"
+    source_schema = Schema("SRC_SCHEMA")
+    source_table = Table("SRC_TABLE", source_schema)
+    target_schema = Schema("TGT_SCHEMA")
+    source_column = Column("SRC_COLUMN1", source_table)
     encoder = OrdinalEncoder()
-    queries = encoder.create_fit_queries(source_schema, source_table, source_column, target_schema)
+    queries = encoder.create_fit_queries(source_column, target_schema)
     expected = textwrap.dedent(f"""
-            CREATE OR REPLACE TABLE "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY" AS
+            CREATE OR REPLACE TABLE "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY" AS
             SELECT
                 rownum - 1 as "ID",
-                "SOURCE_COLUMN1" as "VALUE"
+                "VALUE"
             FROM (
-                SELECT distinct "SOURCE_COLUMN1"
-                FROM "SOURCE_SCHEMA"."SOURCE_TABLE"
-                ORDER BY "SOURCE_COLUMN1"
+                SELECT distinct "SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1" as "VALUE"
+                FROM "SRC_SCHEMA"."SRC_TABLE"
+                ORDER BY "SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1"
             );
             """)
     assert queries == [expected]
 
 
 def test_ordinal_encoder_create_from_clause_part():
-    source_schema = "SOURCE_SCHEMA"
-    source_table = "SOURCE_TABLE"
-    target_schema = "TARGET_SCHEMA"
-    source_column = "SOURCE_COLUMN1"
-    input_schema = "INPUT_SCHEMA"
-    input_table = "INPUT_TABLE"
+    source_schema = Schema("SRC_SCHEMA")
+    source_table = Table("SRC_TABLE", source_schema)
+    target_schema = Schema("TGT_SCHEMA")
+    source_column = Column("SRC_COLUMN1", source_table)
+    input_schema = Schema("IN_SCHEMA")
+    input_table = Table("IN_TABLE", input_schema)
     encoder = OrdinalEncoder()
-    from_clause_part = encoder.create_from_clause_part(source_schema, source_table, source_column,
-                                                       input_schema, input_table,
-                                                       target_schema)
+    from_clause_part = encoder.create_transform_from_clause_part(
+        source_column, input_table, target_schema)
     expected = textwrap.dedent("""
-            JOIN "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
-            AS "TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
+            JOIN "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
+            AS "TGT_SCHEMA_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
             ON
-                "TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."VALUE" = 
-                "INPUT_SCHEMA"."INPUT_TABLE"."SOURCE_COLUMN1"
+                "TGT_SCHEMA_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."VALUE" = 
+                "IN_SCHEMA"."IN_TABLE"."SRC_COLUMN1"
             """)
     assert from_clause_part == [expected]
 
 
 def test_ordinal_encoder_create_select_clause_part():
-    source_schema = "SOURCE_SCHEMA"
-    source_table = "SOURCE_TABLE"
-    target_schema = "TARGET_SCHEMA"
-    source_column = "SOURCE_COLUMN1"
-    input_schema = "INPUT_SCHEMA"
-    input_table = "INPUT_TABLE"
+    source_schema = Schema("SRC_SCHEMA")
+    source_table = Table("SRC_TABLE", source_schema)
+    target_schema = Schema("TGT_SCHEMA")
+    source_column = Column("SRC_COLUMN1", source_table)
+    input_schema = Schema("IN_SCHEMA")
+    input_table = Table("IN_TABLE", input_schema)
     encoder = OrdinalEncoder()
-    select_clause_part = encoder.create_select_clause_part(source_schema, source_table, source_column,
-                                                           input_schema, input_table,
-                                                           target_schema)
+    select_clause_part = encoder.create_transform_select_clause_part(
+        source_column, input_table, target_schema)
     expected = textwrap.dedent(
-        '"TARGET_SCHEMA_SOURCE_SCHEMA_SOURCE_TABLE_SOURCE_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."ID" AS "SOURCE_COLUMN1_ID"')
+        '"TGT_SCHEMA_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."ID" AS "SRC_COLUMN1_ID"')
     assert select_clause_part == [expected]
