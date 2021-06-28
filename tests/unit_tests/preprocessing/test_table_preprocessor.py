@@ -74,13 +74,12 @@ def test_table_preprocessor_create_transform_query():
 
     table_preprocessor = TablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
     query = table_preprocessor.create_transform_query(input_table)
-    expected = textwrap.dedent('''
-CREATE OR REPLACE TABLE "TGT_SCHEMA"."IN_SCHEMA_IN_TABLE_TRANSFORMED" AS
+    expected = textwrap.dedent(
+'''CREATE OR REPLACE TABLE "TGT_SCHEMA"."IN_SCHEMA_IN_TABLE_TRANSFORMED" AS
 SELECT
 1 AS "SRC_COLUMN1_VALUE",
 1 AS "SRC_COLUMN2_VALUE"
 FROM "IN_SCHEMA"."IN_TABLE"
 CROSS JOIN "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_PREFIX"
-CROSS JOIN "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN2_PREFIX"
-''')
+CROSS JOIN "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN2_PREFIX"''')
     assert expected == query

@@ -21,6 +21,16 @@ class TablePreprocessor():
         self.column_preprocessor_defintions = column_preprocessor_defintions
 
     def create_fit_queries(self) -> List[str]:
+        """
+        This method calls the create_fit_queries for all column preprocessor definitions
+        and returns the collected queries.
+        Fit-queries are used to collect global statistics about the Source Table
+        which the transformation query later uses for the transformation.
+        This method is inspired by the
+        `interface of scikit-learn <https://scikit-learn.org/stable/developers/develop.html>`_
+
+        :return: List of fit-queries as strings
+        """
         result = []
         for column_preprocessor_defintion in self.column_preprocessor_defintions:
             source_column = Column(column_preprocessor_defintion.column_name, self.source_table)
@@ -31,21 +41,29 @@ class TablePreprocessor():
         return result
 
     def create_transform_query(self, input_table: Table) -> str:
-        select_clause_parts_str = self.create_transform_select_clause_parts(input_table)
-        from_clause_parts_str = self.create_transform_from_clause_parts(input_table)
+        """
+        This method creates the transform_query by calling create_transform_from_clause_part and
+        create_transform_select_clause_part for all column preprocessor definitions.
+        Transform queries apply the transformation and might use the collected global state from the fit-queries.
+        This method is inspired by the
+        `interface of scikit-learn <https://scikit-learn.org/stable/developers/develop.html>`_
+
+        :return: List of fit-queries as strings
+        """
+        select_clause_parts_str = self._create_transform_select_clause_parts(input_table)
+        from_clause_parts_str = self._create_transform_from_clause_parts(input_table)
         transformation_table = Table(
             f"{input_table.schema.name}_{input_table.name}_TRANSFORMED",
             self.target_schema)
-        query = textwrap.dedent(f"""
-CREATE OR REPLACE TABLE {transformation_table.identifier()} AS
+        query = textwrap.dedent(
+f"""CREATE OR REPLACE TABLE {transformation_table.identifier()} AS
 SELECT
 {select_clause_parts_str}
 FROM {input_table.identifier()}
-{from_clause_parts_str}
-""")
+{from_clause_parts_str}""")
         return query
 
-    def create_transform_from_clause_parts(self, input_table: Table):
+    def _create_transform_from_clause_parts(self, input_table: Table):
         from_clause_parts = []
         for column_preprocessor_defintion in self.column_preprocessor_defintions:
             source_column = Column(column_preprocessor_defintion.column_name, self.source_table)
@@ -56,7 +74,7 @@ FROM {input_table.identifier()}
         from_clause_parts_str = "\n".join(from_clause_parts)
         return from_clause_parts_str
 
-    def create_transform_select_clause_parts(self, input_table: Table):
+    def _create_transform_select_clause_parts(self, input_table: Table):
         select_clause_parts = []
         for column_preprocessor_defintion in self.column_preprocessor_defintions:
             source_column = Column(column_preprocessor_defintion.column_name, self.source_table)

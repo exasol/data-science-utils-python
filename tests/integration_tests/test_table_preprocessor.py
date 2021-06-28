@@ -61,3 +61,50 @@ def test_table_preprocessor_create_fit_queries():
     query = '''SELECT * FROM "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_TRANSFORMED"'''
     result = c.execute(query).fetchall()
     assert result == [('0', 0.0), ('1', 1.0)]
+
+
+def test_table_preprocessor_transform_queries():
+    c = pyexasol.connect(dsn="localhost:8888", user="sys", password="exasol")
+
+    c.execute("""
+    CREATE SCHEMA IF NOT EXISTS "SOURCE_SCHEMA"
+    """)
+    c.execute("""
+    CREATE SCHEMA IF NOT EXISTS "TARGET_SCHEMA"
+    """)
+    c.execute("""
+    CREATE OR REPLACE TABLE "SOURCE_SCHEMA"."SOURCE_TABLE" (
+        "CATEGORY" VARCHAR(1000),
+        "NUMERICAL" FLOAT
+    )
+    """)
+    c.execute("""INSERT INTO "SOURCE_SCHEMA"."SOURCE_TABLE" VALUES ('A',1),('B',3);""")
+    c.execute("""
+    CREATE OR REPLACE TABLE "SOURCE_SCHEMA"."INPUT_TABLE" (
+        "CATEGORY" VARCHAR(1000),
+        "NUMERICAL" FLOAT
+    )
+    """)
+    c.execute("""INSERT INTO "SOURCE_SCHEMA"."INPUT_TABLE" VALUES ('A',1),('B',3),('A',2),('C',4);""")
+
+    source_schema = Schema("SOURCE_SCHEMA")
+    source_table = Table("SOURCE_TABLE", source_schema)
+    input_table = Table("INPUT_TABLE", source_schema)
+    target_schema = Schema("TARGET_SCHEMA")
+    source_column1 = Column("CATEGORY", source_table)
+    source_column2 = Column("NUMERICAL", source_table)
+    column_preprocessor_defintions = [
+        ColumnPreprocesserDefinition(source_column1.name, OrdinalEncoder()),
+        ColumnPreprocesserDefinition(source_column2.name, MinMaxScaler()),
+    ]
+
+    table_preprocessor = TablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
+    fit_queries = table_preprocessor.create_fit_queries()
+    for query in fit_queries:
+        c.execute(query)
+
+    transform_query = table_preprocessor.create_transform_query(input_table)
+    c.execute(transform_query)
+    rs=c.execute("""select * from "TARGET_SCHEMA"."SOURCE_SCHEMA_INPUT_TABLE_TRANSFORMED" ORDER BY "NUMERICAL_MIN_MAX_SCALED" """)
+    rows = rs.fetchall()
+    assert rows == [(0,0.0),(0,0.5),(1,1.0),(None,1.5)]

@@ -16,7 +16,7 @@ def test_ordinal_encoder_create_fit_queries():
     expected = textwrap.dedent(f"""
             CREATE OR REPLACE TABLE "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY" AS
             SELECT
-                rownum - 1 as "ID",
+                CAST(rownum - 1 AS INTEGER) as "ID",
                 "VALUE"
             FROM (
                 SELECT distinct "SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1" as "VALUE"
@@ -38,7 +38,7 @@ def test_ordinal_encoder_create_from_clause_part():
     from_clause_part = encoder.create_transform_from_clause_part(
         source_column, input_table, target_schema)
     expected = textwrap.dedent("""
-            JOIN "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
+            LEFT OUTER JOIN "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
             AS "TGT_SCHEMA_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"
             ON
                 "TGT_SCHEMA_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."VALUE" = 
