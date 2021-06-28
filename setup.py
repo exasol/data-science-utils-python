@@ -5,7 +5,8 @@ packages = \
 ['exasol_data_science_utils_python',
  'exasol_data_science_utils_python.preprocessing',
  'exasol_data_science_utils_python.preprocessing.encoding',
- 'exasol_data_science_utils_python.preprocessing.normalization']
+ 'exasol_data_science_utils_python.preprocessing.normalization',
+ 'exasol_data_science_utils_python.preprocessing.schema']
 
 package_data = \
 {'': ['*']}
