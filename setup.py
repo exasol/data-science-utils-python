@@ -14,7 +14,7 @@ package_data = \
 
 install_requires = \
 ['exasol-bucketfs-utils-python @ '
- 'git+https://github.com/exasol/bucketfs-utils-python.git@develop',
+ 'git+https://github.com/exasol/bucketfs-utils-python.git@main',
  'joblib>=1.0.1,<2.0.0',
  'jsonpickle>=2.0.0,<3.0.0',
  'mlxtend>=0.18.0,<0.19.0',
@@ -36,7 +36,7 @@ setup_kwargs = {
     'packages': packages,
     'package_data': package_data,
     'install_requires': install_requires,
-    'python_requires': '>=3.6.1',
+    'python_requires': '>=3.6.1,<4.0',
 }
 
 
