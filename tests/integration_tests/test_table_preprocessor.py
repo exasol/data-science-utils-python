@@ -45,7 +45,7 @@ def test_table_preprocessor_create_fit_queries():
     FROM "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_CATEGORY_ORDINAL_ENCODER_DICTIONARY";
      '''
     result = c.execute(query).fetchall()
-    assert result == [("0", "A"), ("1", "B")]
+    assert result == [(0, "A"), (1, "B")]
 
     query = '''
     SELECT "MIN", "RANGE"
@@ -60,7 +60,7 @@ def test_table_preprocessor_create_fit_queries():
 
     query = '''SELECT * FROM "TARGET_SCHEMA"."SOURCE_SCHEMA_SOURCE_TABLE_TRANSFORMED"'''
     result = c.execute(query).fetchall()
-    assert result == [('0', 0.0), ('1', 1.0)]
+    assert result == [(0, 0.0), (1, 1.0)]
 
 
 def test_table_preprocessor_transform_queries():
