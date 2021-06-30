@@ -56,10 +56,10 @@ class TablePreprocessor():
             f"{input_table.schema.name}_{input_table.name}_TRANSFORMED",
             self.target_schema)
         query = textwrap.dedent(
-f"""CREATE OR REPLACE TABLE {transformation_table.identifier()} AS
+f"""CREATE OR REPLACE TABLE {transformation_table.fully_qualified()} AS
 SELECT
 {select_clause_parts_str}
-FROM {input_table.identifier()}
+FROM {input_table.fully_qualified()}
 {from_clause_parts_str}""")
         return query
 

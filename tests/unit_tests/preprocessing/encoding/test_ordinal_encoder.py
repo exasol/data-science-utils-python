@@ -19,7 +19,7 @@ def test_ordinal_encoder_create_fit_queries():
                 CAST(rownum - 1 AS INTEGER) as "ID",
                 "VALUE"
             FROM (
-                SELECT distinct "SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1" as "VALUE"
+                SELECT DISTINCT "SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1" as "VALUE"
                 FROM "SRC_SCHEMA"."SRC_TABLE"
                 ORDER BY "SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1"
             );

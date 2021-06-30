@@ -1,6 +1,9 @@
-class Schema:
-    def __init__(self, schema_name: str):
-        self.name = schema_name
+from exasol_data_science_utils_python.preprocessing.schema.schema_element import SchemaElement
 
-    def identifier(self) -> str:
+
+class Schema(SchemaElement):
+    def __init__(self, schema_name: str):
+        super().__init__(schema_name)
+
+    def fully_qualified(self) -> str:
         return f'"{self.name}"'

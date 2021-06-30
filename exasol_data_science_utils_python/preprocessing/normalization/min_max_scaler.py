@@ -45,11 +45,11 @@ class MinMaxScaler(ColumnPreprocessor):
         min_column = self._get_min_column()
         range_column = self._get_range_column()
         query = textwrap.dedent(f"""
-            CREATE OR REPLACE TABLE {parameter_table.identifier()} AS
+            CREATE OR REPLACE TABLE {parameter_table.fully_qualified()} AS
             SELECT
-                MIN({source_column.identifier()}) as {min_column.identifier()},
-                MAX({source_column.identifier()})-MIN({source_column.identifier()}) as {range_column.identifier()}
-            FROM {source_column.table.identifier()}
+                MIN({source_column.fully_qualified()}) as {min_column.fully_qualified()},
+                MAX({source_column.fully_qualified()})-MIN({source_column.fully_qualified()}) as {range_column.fully_qualified()}
+            FROM {source_column.table.fully_qualified()}
             """)
 
         return [query]
@@ -68,7 +68,7 @@ class MinMaxScaler(ColumnPreprocessor):
         parameter_table = self._get_parameter_table_name(target_schema, source_column)
         alias = self._get_parameter_table_alias(target_schema, source_column)
         from_caluse_part = textwrap.dedent(
-            f'''CROSS JOIN {parameter_table.identifier()} AS {alias.identifier()}''')
+            f'''CROSS JOIN {parameter_table.fully_qualified()} AS {alias.fully_qualified()}''')
         return [from_caluse_part]
 
     def create_transform_select_clause_part(self, source_column: Column,
@@ -87,5 +87,5 @@ class MinMaxScaler(ColumnPreprocessor):
         min_column = self._get_min_column(alias)
         range_column = self._get_range_column(alias)
         select_clause_part = textwrap.dedent(
-            f'''({input_column.identifier()}-{min_column.identifier()})/{range_column.identifier()} AS "{source_column.name}_MIN_MAX_SCALED"''')
+            f'''({input_column.fully_qualified()}-{min_column.fully_qualified()})/{range_column.fully_qualified()} AS "{source_column.name}_MIN_MAX_SCALED"''')
         return [select_clause_part]

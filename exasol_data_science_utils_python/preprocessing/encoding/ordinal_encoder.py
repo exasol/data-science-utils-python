@@ -50,14 +50,14 @@ class OrdinalEncoder(ColumnPreprocessor):
         value_column = self._get_value_column()
         value_column_alias = Column("VALUE")
         query = textwrap.dedent(f"""
-                CREATE OR REPLACE TABLE {dictionary_table.identifier()} AS
+                CREATE OR REPLACE TABLE {dictionary_table.fully_qualified()} AS
                 SELECT
-                    CAST(rownum - 1 AS INTEGER) as {id_column.identifier()},
-                    {value_column_alias.identifier()}
+                    CAST(rownum - 1 AS INTEGER) as {id_column.fully_qualified()},
+                    {value_column_alias.fully_qualified()}
                 FROM (
-                    SELECT DISTINCT {source_column.identifier()} as {value_column_alias.identifier()}
-                    FROM {source_column.table.identifier()}
-                    ORDER BY {source_column.identifier()}
+                    SELECT DISTINCT {source_column.fully_qualified()} as {value_column_alias.fully_qualified()}
+                    FROM {source_column.table.fully_qualified()}
+                    ORDER BY {source_column.fully_qualified()}
                 );
                 """)
         return [query]
@@ -80,11 +80,11 @@ class OrdinalEncoder(ColumnPreprocessor):
         input_column = Column(source_column.name, input_table)
         value_column = self._get_value_column(alias)
         from_clause_part = textwrap.dedent(f"""
-            LEFT OUTER JOIN {dictionary_table.identifier()}
-            AS {alias.identifier()}
+            LEFT OUTER JOIN {dictionary_table.fully_qualified()}
+            AS {alias.fully_qualified()}
             ON
-                {value_column.identifier()} = 
-                {input_column.identifier()}
+                {value_column.fully_qualified()} = 
+                {input_column.fully_qualified()}
             """)
         return [from_clause_part]
 
@@ -102,5 +102,5 @@ class OrdinalEncoder(ColumnPreprocessor):
         """
         alias = self._get_dictionary_table_alias(target_schema, source_column)
         id_column = self._get_id_column(alias)
-        select_clause_part = textwrap.dedent(f'{id_column.identifier()} AS "{source_column.name}_ID"')
+        select_clause_part = textwrap.dedent(f'{id_column.fully_qualified()} AS "{source_column.name}_ID"')
         return [select_clause_part]

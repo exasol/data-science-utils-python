@@ -14,7 +14,7 @@ class MyColumnPreprocessor(ColumnPreprocessor):
         str]:
         target_table = self._get_target_table(target_schema, source_column, "PREFIX")
         return [textwrap.dedent(f'''
-            CREATE OR REPLACE TABLE {target_table.identifier()} AS 
+            CREATE OR REPLACE TABLE {target_table.fully_qualified()} AS 
             SELECT 1 AS "VALUE"
             ''')]
 
@@ -23,7 +23,7 @@ class MyColumnPreprocessor(ColumnPreprocessor):
                                           input_table: Table,
                                           target_schema: Schema) -> List[str]:
         target_table = self._get_target_table(target_schema, source_column, "PREFIX")
-        return [f"CROSS JOIN {target_table.identifier()}"]
+        return [f"CROSS JOIN {target_table.fully_qualified()}"]
 
     def create_transform_select_clause_part(self,
                                             source_column: Column,
