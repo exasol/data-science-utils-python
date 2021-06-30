@@ -39,7 +39,7 @@ class OrdinalEncoder(ColumnPreprocessor):
         str]:
         """
         This method creates a dictionary table from the source column where every distinct value of the source column
-        is mapped to an id between 0 and #distinct_values-1
+        is mapped to an id between 0 and number of distinct values - 1
 
         :param source_column: Column in the source table which was used to fit this ColumnPreprocessor
         :param target_schema: Schema where the result tables of the fit-queries should be stored
@@ -55,7 +55,7 @@ class OrdinalEncoder(ColumnPreprocessor):
                     CAST(rownum - 1 AS INTEGER) as {id_column.identifier()},
                     {value_column_alias.identifier()}
                 FROM (
-                    SELECT distinct {source_column.identifier()} as {value_column_alias.identifier()}
+                    SELECT DISTINCT {source_column.identifier()} as {value_column_alias.identifier()}
                     FROM {source_column.table.identifier()}
                     ORDER BY {source_column.identifier()}
                 );
