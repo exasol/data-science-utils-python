@@ -5,13 +5,15 @@ from exasol_udf_mock_python.mock_meta_data import MockMetaData
 from exasol_udf_mock_python.udf_mock_executor import UDFMockExecutor
 
 
+
 def udf_wrapper():
     from sklearn.linear_model import SGDClassifier
     from exasol_data_science_utils_python.model_utils.partial_fit_iterator import PartialFitIterator
     from exasol_data_science_utils_python.model_utils.iteratorconfig import IteratorConfig
+    from numpy.random import RandomState
 
     def run(ctx):
-        classifier = SGDClassifier()
+        classifier = SGDClassifier(random_state=RandomState(0))
         iterator_config = IteratorConfig(
             categorical_input_column_names=["t1"],
             numerical_input_column_names=["t2"],
