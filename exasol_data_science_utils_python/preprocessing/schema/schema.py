@@ -6,4 +6,4 @@ class Schema(SchemaElement):
         super().__init__(schema_name)
 
     def fully_qualified(self) -> str:
-        return f'"{self.name}"'
+        return self.quoted_name()

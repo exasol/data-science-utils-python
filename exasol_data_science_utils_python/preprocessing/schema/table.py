@@ -9,6 +9,6 @@ class Table(SchemaElement):
 
     def fully_qualified(self) -> str:
         if self.schema is not None:
-            return f'{self.schema.fully_qualified()}."{self.name}"'
+            return f'{self.schema.fully_qualified()}.{self.quoted_name()}'
         else:
-            return f'"{self.name}"'
+            return self.quoted_name()
