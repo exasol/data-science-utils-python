@@ -21,13 +21,19 @@ class ReservoirShuffle:
             df[c] = pd.Series(np.zeros(shape=size, dtype=d))
         return df
 
+    def _copy_dataframe_selection_to_dataframe_selection(self, from_df, from_selection, to_df, to_selection):
+        for c in from_df.columns:
+            batch_rows_to_move_to_buffer = from_df[c].values[from_selection]
+            to_df[c].values[to_selection] = batch_rows_to_move_to_buffer
+
     def _fill_buffer_with_batch(self, batch_df: pd.DataFrame):
         free = len(self._buffer_df) - self._fill_level
         elements_to_fill_count = min(free, len(batch_df))
         if free > 0:
-            elements_to_fill_in_buffer = np.arange(len(self._buffer_df), dtype=int)[self._free_bitset][0:elements_to_fill_count]
-            batch_rows_to_move_to_buffer = batch_df.values[0:elements_to_fill_count]
-            self._buffer_df.values[elements_to_fill_in_buffer] = batch_rows_to_move_to_buffer
+            elements_to_fill_in_buffer = np.arange(len(self._buffer_df), dtype=int)[self._free_bitset][
+                                         0:elements_to_fill_count]
+            self._copy_dataframe_selection_to_dataframe_selection(batch_df, slice(0, elements_to_fill_count),
+                                                                  self._buffer_df, elements_to_fill_in_buffer)
             self._free_bitset[elements_to_fill_in_buffer] = 0
             self._fill_level += elements_to_fill_count
             remaining_df = batch_df.iloc[elements_to_fill_count:]
@@ -37,7 +43,8 @@ class ReservoirShuffle:
 
     def _generate_batch(self, remaining_df: pd.DataFrame):
         result_count = max(1,
-                           len(remaining_df) // self._batch_size + 0 if len(remaining_df) % self._batch_size == 0 else 1)
+                           len(remaining_df) // self._batch_size + 0 if len(
+                               remaining_df) % self._batch_size == 0 else 1)
         result_size = min(result_count * self._batch_size, self._fill_level)
         choice_range, choice_range_for_remaining_start = self._compute_choice_ranges(remaining_df)
 
@@ -62,9 +69,10 @@ class ReservoirShuffle:
     def _move_remaining_rows_to_buffer(self, choice_in_buffer: np.array, choice_in_remaining: np.array,
                                        remaining_df: pd.DataFrame):
         elements_to_replace_in_buffer = choice_in_buffer[:len(remaining_df) - len(choice_in_remaining)]
-        remaining_range = np.arange(len(remaining_df),dtype=int)
+        remaining_range = np.arange(len(remaining_df), dtype=int)
         elements_to_move_to_buffer = remaining_range[np.logical_not(np.isin(remaining_range, choice_in_remaining))]
-        self._buffer_df.values[elements_to_replace_in_buffer] = remaining_df.values[elements_to_move_to_buffer]
+        self._copy_dataframe_selection_to_dataframe_selection(remaining_df, elements_to_move_to_buffer,
+                                                              self._buffer_df, elements_to_replace_in_buffer)
         return elements_to_replace_in_buffer
 
     def _create_result_batch_from_choices(self, choice_in_buffer: np.array, choice_in_remaining: np.array,
@@ -83,13 +91,13 @@ class ReservoirShuffle:
 
     def _compute_choice_ranges(self, remaining_df: pd.DataFrame):
         choice_range_for_buffer = np.arange(len(self._buffer_df), dtype=int)[np.logical_not(self._free_bitset)]
-        if len(choice_range_for_buffer)>0:
+        if len(choice_range_for_buffer) > 0:
             choice_range_for_remaining_start = np.max(choice_range_for_buffer) + 1
         else:
             choice_range_for_remaining_start = 0
         choice_range_for_remaining = np.arange(
             choice_range_for_remaining_start,
-            choice_range_for_remaining_start + len(remaining_df),dtype=int)
+            choice_range_for_remaining_start + len(remaining_df), dtype=int)
         choice_range = np.concatenate([choice_range_for_buffer, choice_range_for_remaining])
         return choice_range, choice_range_for_remaining_start
 
