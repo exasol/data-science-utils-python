@@ -1,47 +1,47 @@
-from typing import List, Any
+from typing import Union
 
-import numpy as np
 import pandas as pd
+from sklearn.base import ClassifierMixin, RegressorMixin
+from sklearn.compose import ColumnTransformer
 
-from exasol_data_science_utils_python.model_utils.iteratorconfig import IteratorConfig
-from exasol_data_science_utils_python.model_utils.model_aggregator import combine_to_voting_classifier
-from exasol_data_science_utils_python.model_utils.prediction_iterator import PredictionIterator
-from exasol_data_science_utils_python.udf_utils.iterator_utils import iterate_trough_dataset
+from exasol_data_science_utils_python.model_utils.reservoir_shuffle import ReservoirShuffle
+from exasol_data_science_utils_python.model_utils.score_iterator import ScoreIterator
+from exasol_data_science_utils_python.udf_utils.iterator_utils import ctx_iterator
+
 
 # See more at https://scikit-learn.org/stable/computing/scaling_strategies.html?highlight=online#incremental-learning
 
-class PartialFitIterator(PredictionIterator):
-
+class PartialFitIterator(ScoreIterator):
     def __init__(self,
-                 iterator_config: IteratorConfig,
-                 classifier: Any):
-        super().__init__(iterator_config, classifier)
-        getattr(classifier, "partial_fit")
+                 input_preprocessor: ColumnTransformer,
+                 output_preprocessor: ColumnTransformer,
+                 model: Union[ClassifierMixin, RegressorMixin]):
+        super().__init__(input_preprocessor, output_preprocessor, model)
+        self.output_preprocessor = output_preprocessor
+        self.model = model
+        getattr(model, "partial_fit")
 
     def _train_batch(self, df: pd.DataFrame):
-        input_columns, target_column = self._preprocess_batch(df)
-        target_classes = np.arange(self.iterator_config.target_classes)
-        self.classifier.partial_fit(input_columns.values, target_column.values, classes=target_classes)
+        input_columns = self.input_preprocessor.transform(df)
+        output_columns = self.output_preprocessor.transform(df)
+        self.model.partial_fit(input_columns, output_columns)
 
-    def train(self, ctx, batch_size: int):
-        iterate_trough_dataset(
-            ctx, batch_size,
-            lambda df: self._train_batch(df),
-            lambda: None,
-            lambda state, result: None,
-            lambda: ctx.reset()
-        )
-
-    @classmethod
-    def combine_to_voting_classifier(clazz, partial_fit_estimators: List["PartialFitIterator"], **kwargs):
-        for estimator in partial_fit_estimators:
-            if not estimator.is_compatible(partial_fit_estimators[0]):
-                raise Exception("Estimators are not compatible")
-        estimators_ = [estimator.classifier for estimator in partial_fit_estimators]
-        voting_classifiier = combine_to_voting_classifier(estimators_,
-                                                          partial_fit_estimators[0].iterator_config.target_classes,
-                                                          **kwargs)
-        return PredictionIterator(
-            iterator_config=partial_fit_estimators[0].iterator_config,
-            classifier=voting_classifiier
-        )
+    def train(self, ctx, batch_size: int, shuffle_buffer_size: int):
+        input_iter = ctx_iterator(ctx, batch_size, lambda: ctx.reset())
+        shuffle_iter = ReservoirShuffle(input_iter, shuffle_buffer_size, batch_size).shuffle()
+        for df in shuffle_iter:
+            self._train_batch(df)
+    #
+    # @classmethod
+    # def combine_to_voting_classifier(clazz, partial_fit_estimators: List["PartialFitIterator"], **kwargs):
+    #     for estimator in partial_fit_estimators:
+    #         if not estimator.is_compatible(partial_fit_estimators[0]):
+    #             raise Exception("Estimators are not compatible")
+    #     estimators_ = [estimator.model for estimator in partial_fit_estimators]
+    #     voting_classifiier = combine_to_voting_classifier(estimators_,
+    #                                                       partial_fit_estimators[0].iterator_config.target_classes,
+    #                                                       **kwargs)
+    #     return PredictionIterator(
+    #         iterator_config=partial_fit_estimators[0].iterator_config,
+    #         classifier=voting_classifiier
+    #     )

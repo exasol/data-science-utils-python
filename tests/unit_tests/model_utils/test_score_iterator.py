@@ -11,7 +11,8 @@ def udf_wrapper():
     from sklearn.compose import ColumnTransformer
     from numpy.random import RandomState
     from sklearn.preprocessing import FunctionTransformer
-    from exasol_data_science_utils_python.model_utils.partial_fit_iterator import PartialFitIterator
+
+    from exasol_data_science_utils_python.model_utils.score_iterator import ScoreIterator
 
     def run(ctx: UDFContext):
         input_preprocessor = ColumnTransformer(transformers=[
@@ -20,23 +21,24 @@ def udf_wrapper():
         output_preprocessor = ColumnTransformer(transformers=[
             ("t2", FunctionTransformer(), ["t2"])
         ])
-        model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False)
+        model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False, max_iter=100000,
+                             tol=1e-10)
         df = ctx.get_dataframe(101)
         input_preprocessor.fit(df)
         output_preprocessor.fit(df)
-        iterator = PartialFitIterator(
+        X = input_preprocessor.transform(df)
+        y = output_preprocessor.transform(df)
+        model.fit(X, y)
+        iterator = ScoreIterator(
             input_preprocessor=input_preprocessor,
             output_preprocessor=output_preprocessor,
             model=model
         )
-        epochs = 900
-        for i in range(epochs):
-            iterator.train(ctx, batch_size=50, shuffle_buffer_size=100)
-        score_sum, score_count = iterator.compute_score(ctx, batch_size=10)
+        score_sum, score_count = iterator.compute_score(ctx, 10)
         ctx.emit(score_sum, score_count)
 
 
-def test_partial_fit_iterator():
+def test_score_iterator():
     executor = UDFMockExecutor()
     meta = MockMetaData(
         script_code_wrapper_function=udf_wrapper,
@@ -52,5 +54,5 @@ def test_partial_fit_iterator():
     result = executor.run([Group(input_data)], exa)
     result_row = result[0].rows[0]
     assert result_row[1] == 100
-    assert result_row[0] >= 99.0
+    assert result_row[0] >= 99.9
     print(result_row[0] / result_row[1])
