@@ -1,7 +1,6 @@
-from typing import List, Any
+from typing import List, Any, Union
 
-import numpy as np
-from sklearn.ensemble import VotingClassifier, RandomForestClassifier
+from sklearn.ensemble import VotingClassifier, RandomForestClassifier, VotingRegressor
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -13,11 +12,19 @@ def combine_random_forrest_classifier(estimators: List[RandomForestClassifier]):
         rf.n_estimators = len(estimators[i].estimators_)
     return rf
 
+# TODO test combine_to_voting_classifier with different class lists
+# def combine_to_voting_classifier(estimators: List[Any], classes: Union[List[int], List[str]],
+#                                  **kwargs) -> VotingClassifier:
+#     estimator_tuples = [(str(i), estimator) for i, estimator in enumerate(estimators)]
+#     classifier = VotingClassifier(estimator_tuples, **kwargs)
+#     classifier.le_ = LabelEncoder().fit(classes)
+#     classifier.classes_ = classes
+#     classifier.estimators_ = estimators
+#     return classifier
 
-def combine_to_voting_classifier(estimators: List[Any], classes: int, **kwargs) -> VotingClassifier:
+
+def combine_to_voting_regressor(estimators: List[Any], **kwargs) -> VotingRegressor:
     estimator_tuples = [(str(i), estimator) for i, estimator in enumerate(estimators)]
-    classifier = VotingClassifier(estimator_tuples, **kwargs)
-    classifier.le_ = LabelEncoder().fit(np.arange(classes))
-    classifier.classes_ = classes
-    classifier.estimators_ = estimators
-    return classifier
+    regressor = VotingRegressor(estimator_tuples, **kwargs)
+    regressor.estimators_ = estimators
+    return regressor
