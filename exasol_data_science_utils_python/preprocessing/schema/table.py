@@ -12,3 +12,8 @@ class Table(SchemaElement):
             return f'{self.schema.fully_qualified()}.{self.quoted_name()}'
         else:
             return self.quoted_name()
+
+    def __eq__(self, other):
+        return isinstance(other, Table) and \
+               self.name == other.name and \
+               self.schema == other.schema

@@ -5,6 +5,7 @@ from exasol_data_science_utils_python.preprocessing.column_preprocessor import C
 from exasol_data_science_utils_python.preprocessing.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
 from exasol_data_science_utils_python.preprocessing.schema.table import Table
+from exasol_data_science_utils_python.preprocessing.sql_executor import SQLExecutor
 
 MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX = "MIN_MAX_SCALAR_PARAMETERS"
 
@@ -32,14 +33,14 @@ class MinMaxScaler(ColumnPreprocessor):
         range_column = Column("RANGE", table)
         return range_column
 
-    def create_fit_queries(self, source_column: Column, target_schema: Schema) -> List[str]:
+    def fit(self, sqlexecutor: SQLExecutor, source_column: Column, target_schema: Schema) -> List[Table]:
         """
         This method creates a query which computes the parameter minimum and the range of the source column
         and stores them in a parameter table.
 
         :param source_column: Column in the source table which was used to fit this ColumnPreprocessor
         :param target_schema: Schema where the result tables of the fit-queries should be stored
-        :return: List of fit-queries as strings
+        :return: List of created tables or views
         """
         parameter_table = self._get_parameter_table_name(target_schema, source_column)
         min_column = self._get_min_column()
@@ -51,11 +52,15 @@ class MinMaxScaler(ColumnPreprocessor):
                 MAX({source_column.fully_qualified()})-MIN({source_column.fully_qualified()}) as {range_column.fully_qualified()}
             FROM {source_column.table.fully_qualified()}
             """)
+        sqlexecutor.execute(query)
+        return [parameter_table]
 
-        return [query]
-
-    def create_transform_from_clause_part(self, source_column: Column, input_table: Table, target_schema: Schema) -> \
-    List[str]:
+    def create_transform_from_clause_part(self,
+                                          sql_executor: SQLExecutor,
+                                          source_column: Column,
+                                          input_table: Table,
+                                          target_schema: Schema) -> \
+            List[str]:
         """
         This method generates a CROSS JOIN with the parameter table which contain MIN and RANGE of the source_table.
         The CROSS JOIN is cheap, because the parameter table only contains one row.
@@ -71,7 +76,9 @@ class MinMaxScaler(ColumnPreprocessor):
             f'''CROSS JOIN {parameter_table.fully_qualified()} AS {alias.fully_qualified()}''')
         return [from_caluse_part]
 
-    def create_transform_select_clause_part(self, source_column: Column,
+    def create_transform_select_clause_part(self,
+                                            sql_executor: SQLExecutor,
+                                            source_column: Column,
                                             input_table: Table,
                                             target_schema: Schema) -> List[str]:
         """
