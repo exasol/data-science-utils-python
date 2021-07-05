@@ -11,7 +11,7 @@ def udf_wrapper():
     from sklearn.compose import ColumnTransformer
     from numpy.random import RandomState
     from sklearn.preprocessing import FunctionTransformer
-    from exasol_data_science_utils_python.model_utils.partial_fit_iterator import PartialFitIterator
+    from exasol_data_science_utils_python.model_utils.partial_fit_iterator import RegressorPartialFitIterator
 
     def run(ctx: UDFContext):
         input_preprocessor = ColumnTransformer(transformers=[
@@ -24,7 +24,7 @@ def udf_wrapper():
         df = ctx.get_dataframe(101)
         input_preprocessor.fit(df)
         output_preprocessor.fit(df)
-        iterator = PartialFitIterator(
+        iterator = RegressorPartialFitIterator(
             input_preprocessor=input_preprocessor,
             output_preprocessor=output_preprocessor,
             model=model
@@ -32,7 +32,8 @@ def udf_wrapper():
         epochs = 900
         for i in range(epochs):
             iterator.train(ctx, batch_size=50, shuffle_buffer_size=100)
-        score_sum, score_count = iterator.compute_score(ctx, batch_size=10)
+        combined_iterator = RegressorPartialFitIterator.combine_to_voting_regressor([iterator, iterator])
+        score_sum, score_count = combined_iterator.compute_score(ctx, batch_size=10)
         ctx.emit(score_sum, score_count)
 
 
