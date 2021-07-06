@@ -33,13 +33,13 @@ def ctx_iterator(ctx, batch_size: int, reset_function: Callable[[], Any]):
     while True:
         if number_of_tuples_left < batch_size:
             if number_of_tuples_left > 0:
-                df = ctx.get_dataframe(number_of_tuples_left)
+                df = ctx.get_dataframe(num_rows=number_of_tuples_left)
                 yield df
                 number_of_tuples_left = 0
             else:
                 reset_function()
                 break
         else:
-            df = ctx.get_dataframe(batch_size)
+            df = ctx.get_dataframe(num_rows=batch_size)
             yield df
-            number_of_tuples_left = number_of_tuples_left - batch_size
+            number_of_tuples_left = min(0, number_of_tuples_left - batch_size)
