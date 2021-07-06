@@ -1,4 +1,4 @@
-from exasol_data_science_utils_python.preprocessing.sql_executor import SQLExecutor, ResultSet
+from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor, ResultSet
 from tests.unit_tests.preprocessing.mock_result_set import MockResultSet
 
 

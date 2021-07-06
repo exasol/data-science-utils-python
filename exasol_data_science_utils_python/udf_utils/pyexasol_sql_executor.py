@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Tuple
 import pyexasol
 from pyexasol import ExaStatement
 
-from exasol_data_science_utils_python.preprocessing.sql_executor import SQLExecutor, ResultSet
+from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor, ResultSet
 
 DEFAULT_FETCHMANY_SIZE = 10000
 
