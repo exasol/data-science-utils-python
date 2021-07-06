@@ -44,8 +44,6 @@ def test_partial_fit_regressor_udf():
         output_type="EMIT",
         output_columns=[
             Column("output_model_path", str, "VARCHAR(2000000)"),
-            Column("SCORE_SUM", float, "FLOAT"),
-            Column("SCORE_COUNT", int, "INT"),
         ]
     )
     with TemporaryDirectory() as path:
@@ -86,7 +84,7 @@ def test_partial_fit_regressor_udf():
             result_row = group.rows
             assert len(result_row) == 1
             print(result_row[0][0])
-            print(result_row[0][1] / result_row[0][2])
+            # print(result_row[0][1] / result_row[0][2])
 
 
 def create_regressor_partial_fit_iterator():
