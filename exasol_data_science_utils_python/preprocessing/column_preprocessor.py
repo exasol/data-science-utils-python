@@ -4,6 +4,7 @@ from typing import List
 from exasol_data_science_utils_python.preprocessing.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
 from exasol_data_science_utils_python.preprocessing.schema.table import Table
+from exasol_data_science_utils_python.preprocessing.sql_executor import SQLExecutor
 
 
 class ColumnPreprocessor(ABC):
@@ -25,9 +26,10 @@ class ColumnPreprocessor(ABC):
         return target_table
 
     @abstractmethod
-    def create_fit_queries(self,
-                           source_column: Column,
-                           target_schema: Schema) -> List[str]:
+    def fit(self,
+            sql_processor: SQLExecutor,
+            source_column: Column,
+            target_schema: Schema) -> List[Table]:
         """
         Subclasses need to implement this method to generate the fit-queries.
         Fit-queries are used to collect global statistics about the Source Table
@@ -37,12 +39,13 @@ class ColumnPreprocessor(ABC):
 
         :param source_column: Column in the source table which was used to fit this ColumnPreprocessor
         :param target_schema: Schema where the result tables of the fit-queries should be stored
-        :return: List of fit-queries as strings
+        :return: List of created tables or views
         """
         pass
 
     @abstractmethod
     def create_transform_from_clause_part(self,
+                                          sql_executor: SQLExecutor,
                                           source_column: Column,
                                           input_table: Table,
                                           target_schema: Schema) -> List[str]:
@@ -61,6 +64,7 @@ class ColumnPreprocessor(ABC):
 
     @abstractmethod
     def create_transform_select_clause_part(self,
+                                            sql_executor: SQLExecutor,
                                             source_column: Column,
                                             input_table: Table,
                                             target_schema: Schema) -> List[str]:

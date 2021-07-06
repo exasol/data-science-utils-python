@@ -7,3 +7,7 @@ class Schema(SchemaElement):
 
     def fully_qualified(self) -> str:
         return self.quoted_name()
+
+    def __eq__(self, other):
+        return isinstance(other, Schema) and \
+               self.name == other.name

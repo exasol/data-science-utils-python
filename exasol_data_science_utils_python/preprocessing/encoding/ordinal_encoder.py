@@ -5,6 +5,7 @@ from exasol_data_science_utils_python.preprocessing.column_preprocessor import C
 from exasol_data_science_utils_python.preprocessing.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
 from exasol_data_science_utils_python.preprocessing.schema.table import Table
+from exasol_data_science_utils_python.preprocessing.sql_executor import SQLExecutor
 
 ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX = "ORDINAL_ENCODER_DICTIONARY"
 
@@ -35,8 +36,7 @@ class OrdinalEncoder(ColumnPreprocessor):
         range_column = Column("VALUE", table)
         return range_column
 
-    def create_fit_queries(self, source_column: Column, target_schema: Schema) -> List[
-        str]:
+    def fit(self, sqlexecutor: SQLExecutor, source_column: Column, target_schema: Schema) -> List[Table]:
         """
         This method creates a dictionary table from the source column where every distinct value of the source column
         is mapped to an id between 0 and number of distinct values - 1
@@ -60,9 +60,11 @@ class OrdinalEncoder(ColumnPreprocessor):
                     ORDER BY {source_column.fully_qualified()}
                 );
                 """)
-        return [query]
+        sqlexecutor.execute(query)
+        return [dictionary_table]
 
     def create_transform_from_clause_part(self,
+                                          sql_executor: SQLExecutor,
                                           source_column: Column,
                                           input_table: Table,
                                           target_schema: Schema) -> List[str]:
@@ -89,6 +91,7 @@ class OrdinalEncoder(ColumnPreprocessor):
         return [from_clause_part]
 
     def create_transform_select_clause_part(self,
+                                            sql_executor: SQLExecutor,
                                             source_column: Column,
                                             input_table: Table,
                                             target_schema: Schema) -> List[str]:
