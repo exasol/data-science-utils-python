@@ -15,12 +15,15 @@ class ScoreIterator(PredictionIterator):
                  model: Union[ClassifierMixin, RegressorMixin]):
         super().__init__(input_preprocessor, model)
         self.output_preprocessor = output_preprocessor
+        self.output_preprocessor_columns = self._get_columns_from_column_transformer(self.output_preprocessor)
         getattr(model, "score")
         self.model = model
 
     def _compute_score_batch(self, df: pd.DataFrame):
-        input_columns = self.input_preprocessor.transform(df)
-        output_columns = self.output_preprocessor.transform(df)
+        input_df = df[self.input_preprocessor_columns]
+        output_df = df[self.output_preprocessor_columns]
+        input_columns = self.input_preprocessor.transform(input_df)
+        output_columns = self.output_preprocessor.transform(output_df)
         score = self.model.score(input_columns, output_columns)
         return len(df), len(df) * score
 

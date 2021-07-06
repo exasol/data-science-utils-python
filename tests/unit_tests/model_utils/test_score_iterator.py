@@ -24,10 +24,10 @@ def udf_wrapper():
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False, max_iter=100000,
                              tol=1e-10)
         df = ctx.get_dataframe(101)
-        input_preprocessor.fit(df)
-        output_preprocessor.fit(df)
-        X = input_preprocessor.transform(df)
-        y = output_preprocessor.transform(df)
+        input_preprocessor.fit(df[["t2"]])
+        output_preprocessor.fit(df[["t2"]])
+        X = input_preprocessor.transform(df[["t2"]])
+        y = output_preprocessor.transform(df[["t2"]])
         model.fit(X, y)
         iterator = ScoreIterator(
             input_preprocessor=input_preprocessor,

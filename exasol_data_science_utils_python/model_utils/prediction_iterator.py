@@ -1,4 +1,5 @@
-from typing import Callable, Union
+import itertools
+from typing import Callable, Union, List
 
 import pandas as pd
 from sklearn.base import ClassifierMixin, RegressorMixin
@@ -13,11 +14,18 @@ class PredictionIterator:
                  model: Union[ClassifierMixin, RegressorMixin]
                  ):
         self.input_preprocessor = input_preprocessor
+        self.input_preprocessor_columns = self._get_columns_from_column_transformer(self.input_preprocessor)
         getattr(model, "predict")
         self.model = model
 
+    def _get_columns_from_column_transformer(self, column_tansformer: ColumnTransformer) -> List[str]:
+        column_lists = [columns for name, transformer, columns in column_tansformer.transformers]
+        columns = list(itertools.chain.from_iterable(column_lists))
+        return columns
+
     def _predict_batch(self, df: pd.DataFrame):
-        input_columns = self.input_preprocessor.transform(df)
+        input_df = df[self.input_preprocessor_columns]
+        input_columns = self.input_preprocessor.transform(input_df)
         result = self.model.predict(input_columns)
         df["predicted_result"] = result
         return df
