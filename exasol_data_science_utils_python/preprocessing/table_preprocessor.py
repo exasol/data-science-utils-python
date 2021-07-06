@@ -5,7 +5,7 @@ from exasol_data_science_utils_python.preprocessing.column_preprocessor import C
 from exasol_data_science_utils_python.preprocessing.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
 from exasol_data_science_utils_python.preprocessing.schema.table import Table
-from exasol_data_science_utils_python.preprocessing.sql_executor import SQLExecutor
+from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 
 class ColumnPreprocesserDefinition:

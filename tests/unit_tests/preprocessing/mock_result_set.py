@@ -1,6 +1,6 @@
 from typing import Tuple, Any, List, Dict
 
-from exasol_data_science_utils_python.preprocessing.sql_executor import ResultSet
+from exasol_data_science_utils_python.udf_utils.sql_executor import ResultSet
 
 
 class MockResultSet(ResultSet):
