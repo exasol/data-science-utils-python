@@ -46,4 +46,4 @@ class PartialFitRegressorUDF:
             udf_conext_wrapper,
             batch_size=batch_size
         )
-        ctx.emit(str(output_model_path), score_sum, score_count)
+        ctx.emit(str(output_model_path), score_sum.item(), score_count)
