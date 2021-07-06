@@ -1,5 +1,4 @@
 from pathlib import PurePosixPath
-from tempfile import TemporaryDirectory
 
 from exasol_bucketfs_utils_python.bucket_config import BucketConfig
 from exasol_bucketfs_utils_python.bucketfs_config import BucketFSConfig
