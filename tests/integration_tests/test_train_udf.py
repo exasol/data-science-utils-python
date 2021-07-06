@@ -59,7 +59,10 @@ def test_train_udf():
         C FLOAT
     )
     """)
-    c.execute("INSERT INTO TEST.ABC VALUES (1,'A',1.0),(2,'B',2.0),(3,'C',3.0)")
+    for i in range(30):
+        c.execute("INSERT INTO TEST.ABC VALUES (1,'A',1.0),(2,'B',2.0),(3,'C',3.0)")
+
+    print(c.execute("SELECT count(*) FROM TEST.ABC").fetchall())
     exa = MockExaEnvironment(meta,
                              connections={
                                  "MODEL_CONNECTION": model_connection,

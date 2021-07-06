@@ -47,29 +47,46 @@ class TrainUDF:
             )
         c = pyexasol.connect(dsn=db_connection.address, user=db_connection.user, password=db_connection.password)
         sql_executor = PyexasolSQLExecutor(c)
+        sql_executor.execute(
+            "ALTER SESSION SET SCRIPT_LANGUAGES='PYTHON3=localzmq+protobuf:///bfsdefault/default/test/python-3.6-minimal-EXASOL-6.2.0-release-ml?lang=python#buckets/bfsdefault/default/test/python-3.6-minimal-EXASOL-6.2.0-release-ml/exaudf/exaudfclient_py3';")
+        sql_executor.execute(f"DROP CONNECTION {model_connection_name}")
+        sql_executor.execute(
+            f"CREATE CONNECTION {model_connection_name} TO 'http://localhost:6583/default/model;bfsdefault' USER '{model_connection.user}' IDENTIFIED BY '{model_connection.password}';")
+
         column_types = self.get_column_types(columns, source_schema, source_table, sql_executor)
         fit_tables = self.fit_table_preprocessor(column_types, columns, source_table, sql_executor, target_schema)
         input_columns_transformer = self.create_column_transformer(column_types, fit_tables, input_columns,
                                                                    source_table, sql_executor)
-        target_column_transformer = self.create_column_transformer(column_types, fit_tables, input_columns,
+        target_column_transformer = self.create_column_transformer(column_types, fit_tables, [target_column],
                                                                    source_table, sql_executor)
         self.upload_model_prototype(input_columns_transformer, model_bucketfs_location, target_column_transformer)
         self.create_partial_fit_regressor_udf(sql_executor, target_schema)
         self.create_combine_to_voting_regressor_udf(sql_executor, target_schema)
         column_name_list = ",".join(self.get_column_name_list(columns))
-        epochs = 10
-        batch_size = 10
-        shuffle_buffer_size = 100
+        epochs = 1000
+        batch_size = 100
+        shuffle_buffer_size = 10000
         query = f"""
-            CREATE OR REPLACE TABLE {target_schema.fully_qualified()}."TABLE FITTED_BASE_ESTIMATORS" AS 
+            CREATE OR REPLACE TABLE {target_schema.fully_qualified()}."FITTED_BASE_ESTIMATORS" AS 
             SELECT {target_schema.fully_qualified()}."PARTIAL_FIT_REGRESSOR_UDF"(
                 '{model_connection_name}',
                 '{column_name_list}',
+                {epochs},
+                {batch_size},
+                {shuffle_buffer_size},
                 {self.get_select_list_for_columns(columns)}) 
             FROM {source_table.fully_qualified()}
             GROUP BY IPROC(), floor(rand(1,4)) -- parallelize and distribute
             """
-        print(query)
+        sql_executor.execute(query)
+
+        query = f"""
+            CREATE OR REPLACE TABLE {target_schema.fully_qualified()}."FITTED_ENSEMBLE" AS 
+            SELECT {target_schema.fully_qualified()}."COMBINE_TO_VOTING_REGRESSOR_UDF"(
+                '{model_connection_name}',
+                output_model_path) 
+            FROM {target_schema.fully_qualified()}."FITTED_BASE_ESTIMATORS"
+            """
         sql_executor.execute(query)
 
     def upload_model_prototype(self, input_columns_transformer, model_bucketfs_location, target_column_transformer):
@@ -84,8 +101,11 @@ class TrainUDF:
 
     def create_combine_to_voting_regressor_udf(self, sql_executor, target_schema):
         udf = textwrap.dedent(f"""
-        CREATE OR REPLACE PYTHON3 SET SCRIPT {target_schema.fully_qualified()}."COMBINE_TO_VOTING_REGRESSOR_UDF"(...) 
-        EMITS (output_model_path varchar(10000), SCORE_SUM INTEGER, SCORE_COUNT FLOAT) AS
+        CREATE OR REPLACE PYTHON3 SET SCRIPT {target_schema.fully_qualified()}."COMBINE_TO_VOTING_REGRESSOR_UDF"(
+        model_connection varchar(10000),
+        input_model_path varchar(10000)
+        ) 
+        EMITS (output_model_path varchar(10000)) AS
         from exasol_data_science_utils_python.model_utils.udfs.combine_to_voting_regressor_udf import \
             CombineToVotingRegressorUDF
     
@@ -99,14 +119,13 @@ class TrainUDF:
     def create_partial_fit_regressor_udf(self, sql_executor, target_schema):
         udf = textwrap.dedent(f"""
         CREATE OR REPLACE PYTHON3 SET SCRIPT {target_schema.fully_qualified()}."PARTIAL_FIT_REGRESSOR_UDF"(...) 
-        EMITS (output_model_path varchar(10000), SCORE_SUM INTEGER, SCORE_COUNT FLOAT) AS
+        EMITS (output_model_path varchar(10000)) AS
         from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regressor_udf import PartialFitRegressorUDF
     
         udf = PartialFitRegressorUDF(exa)
     
         def run(ctx):
             udf.run(ctx)
-
         """)
         sql_executor.execute(udf)
 
