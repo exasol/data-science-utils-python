@@ -42,4 +42,9 @@ class PartialFitRegressorUDF:
         output_model_path = PurePosixPath(self.BASE_ESTIMATOR_DIRECTORY, output_model_file_name)
         model_bucketfs_location.upload_object_to_bucketfs_via_joblib(regressor_partial_fit_iterator,
                                                                      str(output_model_path))
-        ctx.emit(str(output_model_path))
+        score_sum, score_count = regressor_partial_fit_iterator.compute_score(
+            udf_conext_wrapper,
+            batch_size=batch_size
+        )
+        score_sum = float(score_sum)
+        ctx.emit(str(output_model_path), score_sum, score_count)

@@ -63,7 +63,7 @@ class TrainUDF:
         self.create_partial_fit_regressor_udf(sql_executor, target_schema)
         self.create_combine_to_voting_regressor_udf(sql_executor, target_schema)
         column_name_list = ",".join(self.get_column_name_list(columns))
-        epochs = 1000
+        epochs = 10
         batch_size = 100
         shuffle_buffer_size = 10000
         query = f"""
@@ -119,7 +119,7 @@ class TrainUDF:
     def create_partial_fit_regressor_udf(self, sql_executor, target_schema):
         udf = textwrap.dedent(f"""
         CREATE OR REPLACE PYTHON3 SET SCRIPT {target_schema.fully_qualified()}."PARTIAL_FIT_REGRESSOR_UDF"(...) 
-        EMITS (output_model_path varchar(10000)) AS
+        EMITS (output_model_path varchar(10000), SCORE_SUM DOUBLE, SCORE_COUNT INTEGER) AS
         from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regressor_udf import PartialFitRegressorUDF
     
         udf = PartialFitRegressorUDF(exa)

@@ -44,6 +44,8 @@ def test_partial_fit_regressor_udf():
         output_type="EMIT",
         output_columns=[
             Column("output_model_path", str, "VARCHAR(2000000)"),
+            Column("SCORE_SUM", float, "FLOAT"),
+            Column("SCORE_COUNT", int, "INTEGER"),
         ]
     )
     with TemporaryDirectory() as path:
