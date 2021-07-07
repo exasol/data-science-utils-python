@@ -59,7 +59,7 @@ def test_train_udf():
         C FLOAT
     )
     """)
-    for i in range(30):
+    for i in range(100):
         c.execute("INSERT INTO TEST.ABC VALUES (1,'A',1.0),(2,'B',2.0),(3,'C',3.0)")
 
     print(c.execute("SELECT count(*) FROM TEST.ABC").fetchall())

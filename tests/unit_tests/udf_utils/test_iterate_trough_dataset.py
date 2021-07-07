@@ -1,3 +1,4 @@
+import pytest
 from exasol_udf_mock_python.column import Column
 from exasol_udf_mock_python.group import Group
 from exasol_udf_mock_python.mock_exa_environment import MockExaEnvironment
@@ -17,8 +18,8 @@ def udf_wrapper():
                                lambda state, x: ctx.emit(x),
                                lambda: ctx.reset())
 
-
-def test_partial_fit_iterator():
+@pytest.mark.parametrize("input_size", [i for i in range(1,150)])
+def test_iterate_through_dataset(input_size):
     executor = UDFMockExecutor()
     meta = MockMetaData(
         script_code_wrapper_function=udf_wrapper,
@@ -30,6 +31,6 @@ def test_partial_fit_iterator():
                         Column("t2", float, "FLOAT")]
     )
     exa = MockExaEnvironment(meta)
-    input_data = [(i, (1.0 * i) / 105) for i in range(105)]
+    input_data = [(i, 1.0 * i) for i in range(input_size)]
     result = executor.run([Group(input_data)], exa)
-    assert len(result[0]) == 105
+    assert len(result[0]) == input_size

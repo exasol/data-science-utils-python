@@ -16,9 +16,9 @@ class PartialFitRegressorUDF:
         df = ctx.get_dataframe(1)
         model_connection_name = df["0"][0]
         column_name_list = df["1"][0].split(",")
-        epochs = df["2"][0]
-        batch_size = df["3"][0]
-        shuffle_buffer_size = df["4"][0]
+        epochs = df["2"][0].item()
+        batch_size = df["3"][0].item()
+        shuffle_buffer_size = df["4"][0].item()
         model_connection = self.exa.get_connection(model_connection_name)
         bucket_fs_factory = BucketFSFactory()
         model_bucketfs_location = \
