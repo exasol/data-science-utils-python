@@ -8,13 +8,6 @@ class AnalyzeRelease(DockerFlavorAnalyzeImageTask):
     def get_build_step(self) -> str:
         return "release"
 
-    def get_additional_build_directories_mapping(self) -> Dict[str, str]:
-        project_dir = Path(__file__).absolute().parent.parent.parent.parent
-        dist_dir = Path(project_dir, "dist")
-        return {
-            "dist": str(dist_dir),
-        }
-
     def requires_tasks(self):
         return {}
 

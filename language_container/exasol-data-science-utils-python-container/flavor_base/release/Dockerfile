@@ -1,6 +1,6 @@
 FROM exasol/script-language-container:python-3.6-minimal-EXASOL-6.2.0-release_SNZAIAUSLUKJOUDSHCUTK7ARK4QQGZYMP2BHE7JLHQMBQRQRRN4A
 
-COPY dist /project
+COPY release/dist /project
 RUN pip install /project/*.whl
 
 
