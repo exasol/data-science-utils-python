@@ -14,3 +14,6 @@ trap 'rm -rf "$RELEASE_BUILD_STEP_DIST_DIRECTORY"' EXIT
 
 echo "Build container"
 ./language_container/exaslct export --flavor-path language_container/exasol-data-science-utils-python-container/
+
+echo "Generate language activation"
+./language_container/exaslct generate-language-activation --flavor-path language_container/exasol-data-science-utils-python-container/ --bucketfs-name bfsdefault --bucket-name default --path-in-bucket container --container-name ml

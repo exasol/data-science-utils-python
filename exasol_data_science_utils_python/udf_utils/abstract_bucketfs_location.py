@@ -1,3 +1,4 @@
+import typing
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -20,4 +21,10 @@ class AbstractBucketFSLocation(ABC):
     def upload_object_to_bucketfs_via_joblib(self, object: Any,
                                              bucket_file_path: str,
                                              **kwargs):
+        pass
+
+    @abstractmethod
+    def upload_fileobj_to_bucketfs(self,
+                                   fileobj: typing.IO,
+                                   bucket_file_path: str):
         pass
