@@ -54,7 +54,7 @@ def test_train_udf(language_container):
     bucket_fs_factory = BucketFSFactory()
 
     conn = pyexasol.connect(dsn=db_connection.address, user=db_connection.user, password=db_connection.password)
-    # create_input_table(conn)
+    create_input_table(conn)
     upload_language_container(conn, language_container)
     model_connection, model_connection_name = create_model_connection(conn)
 

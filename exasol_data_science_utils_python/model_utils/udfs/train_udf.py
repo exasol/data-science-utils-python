@@ -1,4 +1,5 @@
-from exasol_data_science_utils_python.model_utils.udfs.column_preprocessor_creator import ColumnPreprocessorCreator
+from exasol_data_science_utils_python.model_utils.udfs.abstract_column_preprocessor_creator import \
+    AbstractColumnPreprocessorCreator
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
 from exasol_data_science_utils_python.model_utils.udfs.training_runner import TrainingRunner
@@ -9,7 +10,7 @@ from exasol_data_science_utils_python.preprocessing.schema.table import Table
 
 class TrainUDF:
 
-    def run(self, exa, ctx, model, column_preprocessor_creator:ColumnPreprocessorCreator):
+    def run(self, exa, ctx, model, column_preprocessor_creator: AbstractColumnPreprocessorCreator):
         model_connection_name = ctx.model_connection
         db_connection_name = ctx.db_connection
         source_schema = Schema(ctx.source_schema_name)
@@ -33,12 +34,12 @@ class TrainUDF:
                                                 user=db_connection.user,
                                                 password=db_connection.password)
         training_runner = TrainingRunner(model_connection_object,
-                             db_connection_object,
-                             training_parameter,
-                             input_columns,
-                             target_column,
-                             source_table,
-                             target_schema,
-                             model,
-                             column_preprocessor_creator)
+                                         db_connection_object,
+                                         training_parameter,
+                                         input_columns,
+                                         target_column,
+                                         source_table,
+                                         target_schema,
+                                         model,
+                                         column_preprocessor_creator)
         training_runner.run()
