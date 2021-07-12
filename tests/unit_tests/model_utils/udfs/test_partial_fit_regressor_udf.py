@@ -33,19 +33,24 @@ def test_partial_fit_regressor_udf():
         script_code_wrapper_function=udf_wrapper,
         input_type="SET",
         input_columns=[
+            # Config
             Column("0", str, "VARCHAR(2000000)"),
             Column("1", str, "VARCHAR(2000000)"),
-            Column("2", int, "INTEGER"),
+            Column("2", str, "VARCHAR(2000000)"),
             Column("3", int, "INTEGER"),
             Column("4", int, "INTEGER"),
-            Column("5", float, "FLOAT"),
+            Column("5", int, "INTEGER"),
+            # Data
             Column("6", float, "FLOAT"),
+            Column("7", float, "FLOAT"),
         ],
         output_type="EMIT",
         output_columns=[
+            Column("model_connection_name", str, "VARCHAR(2000000)"),
+            Column("path_under_model_connection", str, "VARCHAR(2000000)"),
             Column("output_model_path", str, "VARCHAR(2000000)"),
-            Column("SCORE_SUM", float, "FLOAT"),
-            Column("SCORE_COUNT", int, "INTEGER"),
+            Column("training_score_sum", float, "FLOAT"),
+            Column("training_score_count", int, "INTEGER"),
         ]
     )
     with TemporaryDirectory() as path:
@@ -55,12 +60,13 @@ def test_partial_fit_regressor_udf():
                                      "MODEL_CONNECTION": model_connection
                                  })
         bucket_fs_factory = BucketFSFactory()
+        path_under_model_connection = "my_path_under_model_connection"
         model_bucketfs_location = \
             bucket_fs_factory.create_bucketfs_location(
                 url=model_connection.address,
                 user=model_connection.user,
                 pwd=model_connection.password,
-                base_path=None)
+                base_path=path_under_model_connection)
 
         regressor_partial_fit_iterator = create_regressor_partial_fit_iterator()
         model_bucketfs_location.upload_object_to_bucketfs_via_joblib(
@@ -71,6 +77,7 @@ def test_partial_fit_regressor_udf():
         input_data = [
             (
                 "MODEL_CONNECTION",
+                path_under_model_connection,
                 "a,b",
                 epochs,
                 batch_size,
@@ -82,11 +89,24 @@ def test_partial_fit_regressor_udf():
         ]
         result = list(executor.run([Group(input_data), Group(input_data)], exa))
         assert len(result) == 2
-        for group in result:
+        for i, group in enumerate(result):
             result_row = group.rows
             assert len(result_row) == 1
-            print(result_row[0][0])
-            # print(result_row[0][1] / result_row[0][2])
+            model_connection_name = result_row[0][0]
+            assert model_connection_name == "MODEL_CONNECTION"
+            path_under_model_connection = result_row[0][1]
+            assert path_under_model_connection == "my_path_under_model_connection"
+            path_to_model = result_row[0][2]
+            assert path_to_model == f"base_models/123456789_123456789_0_123_{i}.pkl"
+            output_model_bucketfs_location = \
+                bucket_fs_factory.create_bucketfs_location(
+                    url=model_connection.address,
+                    user=model_connection.user,
+                    pwd=model_connection.password,
+                    base_path=path_under_model_connection)
+            model = output_model_bucketfs_location.download_object_from_bucketfs_via_joblib(path_to_model)
+            assert isinstance(model, RegressorPartialFitIterator)
+            print(result_row[0][3] / result_row[0][4])
 
 
 def create_regressor_partial_fit_iterator():

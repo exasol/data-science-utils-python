@@ -12,6 +12,7 @@ class TrainUDF:
 
     def run(self, exa, ctx, model, column_preprocessor_creator: AbstractColumnPreprocessorCreator):
         model_connection_name = ctx.model_connection
+        path_under_model_connection = ctx.path_under_model_connection
         db_connection_name = ctx.db_connection
         source_schema = Schema(ctx.source_schema_name)
         target_schema = Schema(ctx.target_schema_name)
@@ -34,6 +35,7 @@ class TrainUDF:
                                                 user=db_connection.user,
                                                 password=db_connection.password)
         training_runner = TrainingRunner(model_connection_object,
+                                         path_under_model_connection,
                                          db_connection_object,
                                          training_parameter,
                                          input_columns,

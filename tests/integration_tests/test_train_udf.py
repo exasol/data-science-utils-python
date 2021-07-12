@@ -46,13 +46,6 @@ def upload_language_container(pyexasol_connection, language_container):
 
 @pytest.fixture(scope="session")
 def create_input_table(pyexasol_connection):
-    try:
-        pyexasol_connection.execute("""
-    DROP SCHEMA TARGET_SCHEMA CASCADE;
-    """)
-    except:
-        pass
-    pyexasol_connection.execute("""CREATE SCHEMA TARGET_SCHEMA;""")
     pyexasol_connection.execute("""
         CREATE OR REPLACE TABLE TEST.ABC(
             A FLOAT,
@@ -60,12 +53,22 @@ def create_input_table(pyexasol_connection):
             C FLOAT
         )
         """)
-    for i in range(1, 1000):
+    for i in range(1, 100):
         if i % 100 == 0:
             print(f"Insert {i}")
         values = ",".join([f"({j * 1.0 * i}, {j * 2.0 * i}, {j * 3.0 * i})" for j in range(1, 100)])
         pyexasol_connection.execute(f"INSERT INTO TEST.ABC VALUES {values}")
     print("COUNT", pyexasol_connection.execute("SELECT count(*) FROM TEST.ABC").fetchall())
+
+
+def drop_and_create_target_schema(pyexasol_connection):
+    try:
+        pyexasol_connection.execute("""
+    DROP SCHEMA TARGET_SCHEMA CASCADE;
+    """)
+    except:
+        pass
+    pyexasol_connection.execute("""CREATE SCHEMA TARGET_SCHEMA;""")
 
 
 def udf_wrapper():
@@ -93,6 +96,7 @@ def test_train_udf_with_mock(
         input_type="SET",
         input_columns=[
             Column("model_connection", str, "VARCHAR(2000000)"),
+            Column("path_under_model_connection", str, "VARCHAR(2000000)"),
             Column("db_connection", str, "VARCHAR(2000000)"),
             Column("source_schema_name", str, "VARCHAR(2000000)"),
             Column("source_table_name", str, "VARCHAR(2000000)"),
@@ -112,7 +116,7 @@ def test_train_udf_with_mock(
 
     model_connection, model_connection_name = \
         create_model_connection(pyexasol_connection)
-
+    drop_and_create_target_schema(pyexasol_connection)
     exa = MockExaEnvironment(meta,
                              connections={
                                  "MODEL_CONNECTION": model_connection,
@@ -129,6 +133,7 @@ def test_train_udf_with_mock(
     input_data.append(
         (
             model_connection_name,
+            "my_path_under_model_connection",
             "DB_CONNECTION",
             "TEST",
             "ABC",
@@ -141,6 +146,16 @@ def test_train_udf_with_mock(
         )
     )
     result = list(executor.run([Group(input_data)], exa))
+    fitted_base_models = pyexasol_connection.execute("""
+        SELECT * FROM TARGET_SCHEMA.FITTED_BASE_MODELS
+    """).fetchall()
+    print(fitted_base_models)
+    assert len(fitted_base_models) == 3
+    fitted_combined_models = pyexasol_connection.execute("""
+        SELECT * FROM TARGET_SCHEMA.FITTED_COMBINED_MODEL
+    """).fetchall()
+    print(fitted_combined_models)
+    assert len(fitted_combined_models) == 1
 
 
 def test_train_udf(
@@ -150,10 +165,14 @@ def test_train_udf(
         db_connection):
     model_connection, model_connection_name = \
         create_model_connection(pyexasol_connection)
+    db_connection, db_connection_name = \
+        create_db_connection(pyexasol_connection, db_connection)
     target_schema = Schema("TARGET_SCHEMA")
+    drop_and_create_target_schema(pyexasol_connection)
     udf_sql = textwrap.dedent(f"""
     CREATE OR REPLACE PYTHON3 SET SCRIPT {target_schema.fully_qualified()}."TRAIN_UDF"(
         model_connection VARCHAR(2000000),
+        path_under_model_connection VARCHAR(2000000),
         db_connection VARCHAR(2000000),
         source_schema_name VARCHAR(2000000),
         source_table_name VARCHAR(2000000),
@@ -165,13 +184,12 @@ def test_train_udf(
         shuffle_buffer_size INTEGER
     ) 
     EMITS (o varchar(10000)) AS
-    from exasol_udf_mock_python.udf_context import UDFContext
     from sklearn.linear_model import SGDRegressor
     from numpy.random import RandomState
     from exasol_data_science_utils_python.model_utils.udfs.column_preprocessor_creator import ColumnPreprocessorCreator
     from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
 
-    def run(ctx: UDFContext):
+    def run(ctx):
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
                              fit_intercept=True, eta0=0.9, power_t=0.1, learning_rate='invscaling')
         column_preprocessor_creator = ColumnPreprocessorCreator()
@@ -179,9 +197,10 @@ def test_train_udf(
     """)
     pyexasol_connection.execute(udf_sql)
     query_udf = f"""
-    select (
+    select {target_schema.fully_qualified()}."TRAIN_UDF"(
         '{model_connection_name}',
-        'DB_CONNECTION',
+        'my_path_under_model_connection',
+        '{db_connection_name}',
         'TEST',
         'ABC',
         'A,B',
@@ -193,16 +212,34 @@ def test_train_udf(
     )
     """
     pyexasol_connection.execute(query_udf)
+    fitted_base_models = pyexasol_connection.execute("""
+        SELECT * FROM TARGET_SCHEMA.FITTED_BASE_MODELS
+    """).fetchall()
+    print(fitted_base_models)
+    assert len(fitted_base_models) == 3
+    fitted_combined_models = pyexasol_connection.execute("""
+        SELECT * FROM TARGET_SCHEMA.FITTED_COMBINED_MODEL
+    """).fetchall()
+    print(fitted_combined_models)
+    assert len(fitted_combined_models) == 1
 
 
 def create_model_connection(conn):
     model_connection = Connection(address=f"http://localhost:6583/default/model;bfsdefault",
                                   user="w", password="write")
     model_connection_name = "MODEL_CONNECTION"
+    return drop_and_create_connection(conn, model_connection, model_connection_name)
+
+def create_db_connection(conn, db_connection):
+    db_connection_name = "DB_CONNECTION"
+    return drop_and_create_connection(conn, db_connection, db_connection_name)
+
+
+def drop_and_create_connection(conn, model_connection, model_connection_name):
     try:
         conn.execute(f"DROP CONNECTION {model_connection_name}")
     except:
         pass
     conn.execute(
-        f"CREATE CONNECTION {model_connection_name} TO 'http://localhost:6583/default/model;bfsdefault' USER '{model_connection.user}' IDENTIFIED BY '{model_connection.password}';")
+        f"CREATE CONNECTION {model_connection_name} TO '{model_connection.address}' USER '{model_connection.user}' IDENTIFIED BY '{model_connection.password}';")
     return model_connection, model_connection_name

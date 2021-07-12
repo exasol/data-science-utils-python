@@ -4,6 +4,14 @@ from exasol_data_science_utils_python.model_utils.prediction_iterator import Pre
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
 from exasol_data_science_utils_python.udf_utils.udf_context_wrapper import UDFContextWrapper
 
+MODEL_CONNECTION_NAME_PARAMETER = "0"
+PATH_UNDER_MODEL_CONNECTION_PARAMETER = "1"
+COLUMN_NAME_LIST_PARAMETER = "2"
+EPOCHS_PARAMETER = "3"
+BATCH_SIZE_PARAMETER = "4"
+SHUFFLE_BUFFER_SIZE_PARAMETER = "5"
+FIRST_VARARG_PARAMETER = 6
+
 
 class PredictRegressorUDF:
 
