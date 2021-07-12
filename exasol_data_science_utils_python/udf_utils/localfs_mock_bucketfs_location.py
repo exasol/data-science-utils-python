@@ -1,4 +1,5 @@
-from pathlib import PurePosixPath
+import typing
+from pathlib import PurePosixPath, Path
 from typing import Any
 
 import joblib
@@ -24,10 +25,23 @@ class LocalFSMockBucketFSLocation(AbstractBucketFSLocation):
         return result
 
     def upload_string_to_bucketfs(self, bucket_file_path: str, string: str):
-        with open(self.get_complete_file_path_in_bucket(bucket_file_path), "wt") as f:
+        path = self.get_complete_file_path_in_bucket(bucket_file_path)
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "wt") as f:
             f.write(string)
 
     def upload_object_to_bucketfs_via_joblib(self, object: Any,
                                              bucket_file_path: str,
                                              **kwargs):
-        joblib.dump(object, self.get_complete_file_path_in_bucket(bucket_file_path), **kwargs)
+        path = self.get_complete_file_path_in_bucket(bucket_file_path)
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        joblib.dump(object, path, **kwargs)
+
+    def upload_fileobj_to_bucketfs(self,
+                                   fileobj: typing.IO,
+                                   bucket_file_path: str):
+        path = self.get_complete_file_path_in_bucket(bucket_file_path)
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "wb") as f:
+            for chunk in iter(lambda: fileobj.read(10000), ''):
+                f.write(chunk)

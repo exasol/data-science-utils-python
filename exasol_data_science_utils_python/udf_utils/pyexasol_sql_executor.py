@@ -58,4 +58,4 @@ class PyexasolSQLExecutor(SQLExecutor):
         self.connection = connection
 
     def execute(self, sql: str) -> ResultSet:
-        self.connection.execute(sql)
+        return self.connection.execute(sql)

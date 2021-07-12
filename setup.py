@@ -4,6 +4,7 @@ from setuptools import setup
 packages = \
 ['exasol_data_science_utils_python',
  'exasol_data_science_utils_python.model_utils',
+ 'exasol_data_science_utils_python.model_utils.udfs',
  'exasol_data_science_utils_python.preprocessing',
  'exasol_data_science_utils_python.preprocessing.encoding',
  'exasol_data_science_utils_python.preprocessing.normalization',

@@ -14,7 +14,7 @@ def test_create_localfs_mock_bucketfs_location():
 
 def test_create_real_bucketfs_location():
     host = "localhost"
-    port = 6666
+    port = 6583
     path_in_bucket = "path_in_bucket"
     bucketfs_name = "bucketfsname"
     user = "w"

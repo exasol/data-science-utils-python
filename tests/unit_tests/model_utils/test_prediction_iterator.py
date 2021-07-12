@@ -18,10 +18,11 @@ def udf_wrapper():
         input_preprocessor = ColumnTransformer(transformers=[
             ("t2", FunctionTransformer(), ["t2"])
         ])
-        model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False, max_iter=100000, tol=1e-10)
+        model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False, max_iter=100000,
+                             tol=1e-10)
         pipeline = Pipeline([("p", input_preprocessor), ("m", model)])
         df = ctx.get_dataframe(101)
-        pipeline.fit(df, df["t2"])
+        pipeline.fit(df[["t2"]], df["t2"])
         iterator = PredictionIterator(
             input_preprocessor=input_preprocessor,
             model=model

@@ -22,8 +22,8 @@ def udf_wrapper():
         ])
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False)
         df = ctx.get_dataframe(101)
-        input_preprocessor.fit(df)
-        output_preprocessor.fit(df)
+        input_preprocessor.fit(df[["t2"]])
+        output_preprocessor.fit(df[["t2"]])
         iterator = RegressorPartialFitIterator(
             input_preprocessor=input_preprocessor,
             output_preprocessor=output_preprocessor,

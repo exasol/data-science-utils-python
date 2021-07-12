@@ -43,7 +43,6 @@ def test_reservoir_shuffle(input_size, batch_size, columns_count, buffer_size, c
     columns = {i: np.arange(input_size) for i in range(columns_count)}
     columns = {i: column_generator(i, x) for i, x in columns.items()}
     input_df = pd.DataFrame(data=columns, index=np.arange(input_size))
-    print(input_df)
     def batch_iterator(input_df, batch_size):
         for i in range(0, len(input_df), batch_size):
             yield input_df.iloc[i:i + batch_size]

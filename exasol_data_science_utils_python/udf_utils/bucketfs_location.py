@@ -1,3 +1,4 @@
+import typing
 from pathlib import PurePosixPath
 from typing import Any
 
@@ -43,4 +44,13 @@ class BucketFSLocation(AbstractBucketFSLocation):
             self.bucket_config,
             self.get_complete_file_path_in_bucket(bucket_file_path),
             **kwargs)
+        return result
+
+    def upload_fileobj_to_bucketfs(self,
+                                   fileobj: typing.IO,
+                                   bucket_file_path: str):
+        result = upload.upload_fileobj_to_bucketfs(
+            self.bucket_config,
+            self.get_complete_file_path_in_bucket(bucket_file_path),
+            fileobj)
         return result

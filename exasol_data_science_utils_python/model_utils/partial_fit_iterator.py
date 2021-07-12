@@ -19,13 +19,14 @@ class PartialFitIterator(ScoreIterator, ABC):
                  output_preprocessor: ColumnTransformer,
                  model: Union[ClassifierMixin, RegressorMixin]):
         super().__init__(input_preprocessor, output_preprocessor, model)
-        self.output_preprocessor = output_preprocessor
         self.model = model
         getattr(model, "partial_fit")
 
     def _train_batch(self, df: pd.DataFrame):
-        input_columns = self.input_preprocessor.transform(df)
-        output_columns = self.output_preprocessor.transform(df)
+        input_df = df[self.input_preprocessor_columns]
+        output_df = df[self.output_preprocessor_columns]
+        input_columns = self.input_preprocessor.transform(input_df)
+        output_columns = self.output_preprocessor.transform(output_df)
         self.run_partial_fit(input_columns, output_columns)
 
     @abstractmethod

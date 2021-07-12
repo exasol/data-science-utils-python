@@ -47,7 +47,6 @@ class RandomForestIterator(ScoreIterator):
         #         f"to many classes are missing the current batch expected {self.target_classes} "
         #         f"got {len(missing_classes)}, either increase the batch_size or reshuffle the data")
         missing_classes_array = np.array([list(missing_classes)]).reshape((-1, 1))
-        print("missing_classes_array", missing_classes_array)
         target_columns = np.vstack([target_columns, missing_classes_array])
         missing_input_rows = np.zeros(shape=(len(missing_classes), input_columns.shape[1]), dtype=np.float64)
         input_columns = np.vstack([input_columns, missing_input_rows])
