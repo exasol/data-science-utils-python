@@ -1,3 +1,4 @@
+from pathlib import PurePosixPath
 from typing import List
 
 import pyexasol
@@ -21,6 +22,7 @@ from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 class TrainingRunner:
     def __init__(self,
                  model_connection_object: ConnectionObject,
+                 path_under_model_connection: PurePosixPath,
                  db_connection_object: ConnectionObject,
                  training_parameter: TrainingParameter,
                  input_columns: List[Column],
@@ -29,6 +31,7 @@ class TrainingRunner:
                  target_schema: Schema,
                  model,
                  column_preprocessor_creator: AbstractColumnPreprocessorCreator):
+        self.path_under_model_connection = path_under_model_connection
         self.source_table = source_table
         self.target_schema = target_schema
         self.target_columns = target_columns
@@ -50,7 +53,7 @@ class TrainingRunner:
                 url=self.model_connection_object.address,
                 user=self.model_connection_object.user,
                 pwd=self.model_connection_object.password,
-                base_path=None
+                base_path=self.path_under_model_connection
             )
         c = pyexasol.connect(dsn=self.db_connection_object.address, user=self.db_connection_object.user,
                              password=self.db_connection_object.password)
@@ -78,29 +81,83 @@ class TrainingRunner:
         self.run_combine_to_voting_regressor_udf(sql_executor)
 
     def run_combine_to_voting_regressor_udf(self, sql_executor):
+        create_table = f"""
+        CREATE TABLE IF NOT EXISTS {self.target_schema.fully_qualified()}."FITTED_COMBINED_MODEL" (
+            session_id VARCHAR(2000000),
+            model_connection_name VARCHAR(2000000),
+            path_under_model_connection VARCHAR(2000000),
+            model_path VARCHAR(2000000)
+        )
+        """
+        sql_executor.execute(create_table)
         query = f"""
-            CREATE OR REPLACE TABLE {self.target_schema.fully_qualified()}."FITTED_ENSEMBLE" AS 
-            SELECT {self.target_schema.fully_qualified()}."COMBINE_TO_VOTING_REGRESSOR_UDF"(
-                '{self.model_connection_object.name}',
-                output_model_path) 
-            FROM {self.target_schema.fully_qualified()}."FITTED_BASE_ESTIMATORS"
+            INSERT INTO {self.target_schema.fully_qualified()}."FITTED_COMBINED_MODEL"
+            SELECT  
+                CURRENT_SESSION, 
+                model_connection_name, 
+                path_under_model_connection, 
+                combined_model_path
+            FROM (
+                SELECT {self.target_schema.fully_qualified()}."COMBINE_TO_VOTING_REGRESSOR_UDF"(
+                    model_connection_name,
+                    path_under_model_connection,
+                    model_path) 
+                FROM {self.target_schema.fully_qualified()}."FITTED_BASE_MODELS"
+                WHERE session_id = CURRENT_SESSION
+                AND model_connection_name = '{self.model_connection_object.name}'
+                AND (
+                    path_under_model_connection = {self._get_path_under_model_connection_as_sql_value()}
+                    OR (
+                        {self._get_path_under_model_connection_as_sql_value()} is null AND
+                        path_under_model_connection is null
+                    )
+                )
+            )
             """
+        print(query)
         sql_executor.execute(query)
+
+    def _get_path_under_model_connection_as_sql_value(self):
+        if self.path_under_model_connection is None:
+            return "null"
+        else:
+            return f"'{self.path_under_model_connection}'"
 
     def run_base_estimator_training(self, sql_executor):
         column_name_list = ",".join(self.get_column_name_list(self.columns))
         select_list_for_columns = self.get_select_list_for_columns(self.columns)
+        create_table = f"""
+        CREATE TABLE IF NOT EXISTS {self.target_schema.fully_qualified()}."FITTED_BASE_MODELS" (
+            session_id VARCHAR(2000000),
+            model_connection_name VARCHAR(2000000),
+            path_under_model_connection VARCHAR(2000000),
+            model_path VARCHAR(2000000),
+            training_score_sum DOUBLE, 
+            training_score_count INTEGER
+        )
+        """
+        sql_executor.execute(create_table)
         query = f"""
-            CREATE OR REPLACE TABLE {self.target_schema.fully_qualified()}."FITTED_BASE_ESTIMATORS" AS 
-            SELECT {self.target_schema.fully_qualified()}."PARTIAL_FIT_REGRESSOR_UDF"(
-                '{self.model_connection_object.name}',
-                '{column_name_list}',
-                {self.training_parameter.epochs},
-                {self.training_parameter.batch_size},
-                {self.training_parameter.shuffle_buffer_size},
-                {select_list_for_columns}) 
-            FROM {self.source_table.fully_qualified()}
-            GROUP BY IPROC(), floor(rand(1,4)) -- parallelize and distribute
+            INSERT INTO {self.target_schema.fully_qualified()}."FITTED_BASE_MODELS" 
+            SELECT 
+                CURRENT_SESSION, 
+                model_connection_name, 
+                path_under_model_connection, 
+                output_model_path,
+                training_score_sum,
+                training_score_count
+            FROM (
+                SELECT {self.target_schema.fully_qualified()}."PARTIAL_FIT_REGRESSOR_UDF"(
+                    '{self.model_connection_object.name}',
+                    {self._get_path_under_model_connection_as_sql_value()},
+                    '{column_name_list}',
+                    {self.training_parameter.epochs},
+                    {self.training_parameter.batch_size},
+                    {self.training_parameter.shuffle_buffer_size},
+                    {select_list_for_columns}) 
+                FROM {self.source_table.fully_qualified()}
+                GROUP BY IPROC(), floor(rand(1,4)) -- parallelize and distribute
+            )
             """
         sql_executor.execute(query)
 

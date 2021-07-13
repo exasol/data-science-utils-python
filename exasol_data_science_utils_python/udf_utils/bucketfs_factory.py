@@ -1,5 +1,6 @@
 import urllib.parse
 from pathlib import PurePosixPath
+from typing import Union
 
 from exasol_bucketfs_utils_python.bucket_config import BucketConfig
 from exasol_bucketfs_utils_python.bucketfs_config import BucketFSConfig
@@ -11,7 +12,7 @@ from exasol_data_science_utils_python.udf_utils.localfs_mock_bucketfs_location i
 
 class BucketFSFactory:
 
-    def create_bucketfs_location(self, url: str, user: str, pwd: str, base_path: str):
+    def create_bucketfs_location(self, url: str, user: str, pwd: str, base_path: Union[PurePosixPath, None] = None):
         """
         Create BucketFSLocation from the the url given. If the url has the schema http:// or https://,
         this function creates a real BucketFSLocation for a url scheme file:/// we create a LocalFSMockBucketFSLocation.

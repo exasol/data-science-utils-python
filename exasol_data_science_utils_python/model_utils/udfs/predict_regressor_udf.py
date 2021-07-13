@@ -1,8 +1,17 @@
 from collections import OrderedDict
+from pathlib import PurePosixPath
 
 from exasol_data_science_utils_python.model_utils.prediction_iterator import PredictionIterator
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
 from exasol_data_science_utils_python.udf_utils.udf_context_wrapper import UDFContextWrapper
+
+MODEL_CONNECTION_NAME_PARAMETER = "0"
+PATH_UNDER_MODEL_CONNECTION_PARAMETER = "1"
+COLUMN_NAME_LIST_PARAMETER = "2"
+EPOCHS_PARAMETER = "3"
+BATCH_SIZE_PARAMETER = "4"
+SHUFFLE_BUFFER_SIZE_PARAMETER = "5"
+FIRST_VARARG_PARAMETER = 6
 
 
 class PredictRegressorUDF:
@@ -13,7 +22,7 @@ class PredictRegressorUDF:
     def run(self, ctx):
         df = ctx.get_dataframe(1)
         model_connection_name = df["0"][0]
-        model_path = df["1"][0]
+        model_path = PurePosixPath(df["1"][0])
         column_name_list = df["2"][0].split(",")
         batch_size = df["3"][0].item()
         model_connection = self.exa.get_connection(model_connection_name)
