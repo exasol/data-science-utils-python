@@ -19,13 +19,19 @@ class TrainUDF:
         source_schema = Schema(ctx.source_schema_name)
         target_schema = Schema(ctx.target_schema_name)
         source_table = Table(ctx.source_table_name, schema=source_schema)
-        input_columns = [Column(column_name, table=source_table) for column_name in
-                         ctx.input_columns.split(",")]
+        input_columns = [Column(column_name, table=source_table)
+                         for column_name in ctx.input_columns.split(",")]
         target_column = [Column(ctx.target_column, table=source_table)]
-
+        split_by_columns = []
+        if ctx.split_by_columns is not None and ctx.split_by_columns != "":
+            split_by_columns = [Column(column_name, source_table)
+                                for column_name in ctx.split_by_columns.split(",")]
         training_parameter = TrainingParameter(batch_size=ctx.batch_size,
                                                epochs=ctx.epochs,
-                                               shuffle_buffer_size=ctx.shuffle_buffer_size)
+                                               shuffle_buffer_size=ctx.shuffle_buffer_size,
+                                               split_per_node=ctx.split_per_node,
+                                               number_of_random_partitions=ctx.number_of_random_partitions,
+                                               split_by_columns=split_by_columns)
         model_connection = exa.get_connection(model_connection_name)
         db_connection = exa.get_connection(db_connection_name)
         model_connection_object = ConnectionObject(name=model_connection_name,
