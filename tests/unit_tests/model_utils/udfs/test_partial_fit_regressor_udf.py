@@ -1,3 +1,4 @@
+from pathlib import PurePosixPath
 from tempfile import TemporaryDirectory
 
 import pandas as pd
@@ -60,7 +61,7 @@ def test_partial_fit_regressor_udf():
                                      "MODEL_CONNECTION": model_connection
                                  })
         bucket_fs_factory = BucketFSFactory()
-        path_under_model_connection = "my_path_under_model_connection"
+        path_under_model_connection = PurePosixPath("my_path_under_model_connection")
         model_bucketfs_location = \
             bucket_fs_factory.create_bucketfs_location(
                 url=model_connection.address,
@@ -77,7 +78,7 @@ def test_partial_fit_regressor_udf():
         input_data = [
             (
                 "MODEL_CONNECTION",
-                path_under_model_connection,
+                str(path_under_model_connection),
                 "a,b",
                 epochs,
                 batch_size,
@@ -103,7 +104,7 @@ def test_partial_fit_regressor_udf():
                     url=model_connection.address,
                     user=model_connection.user,
                     pwd=model_connection.password,
-                    base_path=path_under_model_connection)
+                    base_path=PurePosixPath(path_under_model_connection))
             model = output_model_bucketfs_location.download_object_from_bucketfs_via_joblib(path_to_model)
             assert isinstance(model, RegressorPartialFitIterator)
             print(result_row[0][3] / result_row[0][4])

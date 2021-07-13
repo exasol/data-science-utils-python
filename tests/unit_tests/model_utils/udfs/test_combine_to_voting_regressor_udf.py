@@ -55,7 +55,7 @@ def test_combine_to_voting_regressor_udf():
                                      "MODEL_CONNECTION": model_connection
                                  })
         bucket_fs_factory = BucketFSFactory()
-        path_under_model_connection = "my_path_under_model_connection"
+        path_under_model_connection = PurePosixPath("my_path_under_model_connection")
         model_bucketfs_location = \
             bucket_fs_factory.create_bucketfs_location(
                 url=model_connection.address,
@@ -72,7 +72,7 @@ def test_combine_to_voting_regressor_udf():
             input_data.append(
                 (
                     "MODEL_CONNECTION",
-                    path_under_model_connection,
+                    str(path_under_model_connection),
                     str(model_path)
                 )
             )
@@ -91,7 +91,7 @@ def test_combine_to_voting_regressor_udf():
                     url=model_connection.address,
                     user=model_connection.user,
                     pwd=model_connection.password,
-                    base_path=path_under_model_connection)
+                    base_path=PurePosixPath(path_under_model_connection))
             combined_score_iterator = \
                 output_model_bucketfs_location.download_object_from_bucketfs_via_joblib(path_to_model)
             assert isinstance(combined_score_iterator, ScoreIterator)

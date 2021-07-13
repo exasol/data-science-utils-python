@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from pathlib import PurePosixPath
 
 from exasol_data_science_utils_python.model_utils.prediction_iterator import PredictionIterator
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
@@ -21,7 +22,7 @@ class PredictRegressorUDF:
     def run(self, ctx):
         df = ctx.get_dataframe(1)
         model_connection_name = df["0"][0]
-        model_path = df["1"][0]
+        model_path = PurePosixPath(df["1"][0])
         column_name_list = df["2"][0].split(",")
         batch_size = df["3"][0].item()
         model_connection = self.exa.get_connection(model_connection_name)

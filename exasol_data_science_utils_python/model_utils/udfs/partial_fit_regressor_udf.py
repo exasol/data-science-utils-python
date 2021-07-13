@@ -24,7 +24,7 @@ class PartialFitRegressorUDF:
     def run(self, ctx):
         df = ctx.get_dataframe(1)
         model_connection_name = df[MODEL_CONNECTION_NAME_PARAMETER][0]
-        path_under_model_connection = df[PATH_UNDER_MODEL_CONNECTION_PARAMETER][0]
+        path_under_model_connection = PurePosixPath(df[PATH_UNDER_MODEL_CONNECTION_PARAMETER][0])
         column_name_list = df[COLUMN_NAME_LIST_PARAMETER][0].split(",")
         epochs = df[EPOCHS_PARAMETER][0].item()
         batch_size = df[BATCH_SIZE_PARAMETER][0].item()
@@ -57,5 +57,6 @@ class PartialFitRegressorUDF:
             batch_size=batch_size
         )
         score_sum = float(score_sum)
-        ctx.emit(model_connection_name, path_under_model_connection, str(output_model_path), score_sum, score_count)
+        ctx.emit(model_connection_name, str(path_under_model_connection), str(output_model_path),
+                 score_sum, score_count)
         self.counter += 1

@@ -1,3 +1,4 @@
+from pathlib import PurePosixPath
 from typing import List
 
 import pyexasol
@@ -21,7 +22,7 @@ from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 class TrainingRunner:
     def __init__(self,
                  model_connection_object: ConnectionObject,
-                 path_under_model_connection: str,
+                 path_under_model_connection: PurePosixPath,
                  db_connection_object: ConnectionObject,
                  training_parameter: TrainingParameter,
                  input_columns: List[Column],
