@@ -40,6 +40,7 @@ def upload_language_container(pyexasol_connection, language_container):
     container_path = Path(language_container["container_path"])
     alter_session = Path(language_container["alter_session"])
     pyexasol_connection.execute(f"ALTER SYSTEM SET SCRIPT_LANGUAGES='{alter_session}'")
+    pyexasol_connection.execute(f"ALTER SESSION SET SCRIPT_LANGUAGES='{alter_session}'")
     with open(container_path, "rb") as container_file:
         container_bucketfs_location.upload_fileobj_to_bucketfs(container_file, "ml.tar")
 
@@ -170,7 +171,7 @@ def test_train_udf(
     target_schema = Schema("TARGET_SCHEMA")
     drop_and_create_target_schema(pyexasol_connection)
     udf_sql = textwrap.dedent(f"""
-    CREATE OR REPLACE PYTHON3 SET SCRIPT {target_schema.fully_qualified()}."TRAIN_UDF"(
+    CREATE OR REPLACE PYTHON3_DSUP SET SCRIPT {target_schema.fully_qualified()}."TRAIN_UDF"(
         model_connection VARCHAR(2000000),
         path_under_model_connection VARCHAR(2000000),
         db_connection VARCHAR(2000000),
