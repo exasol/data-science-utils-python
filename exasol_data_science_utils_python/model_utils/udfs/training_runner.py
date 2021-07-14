@@ -114,7 +114,6 @@ class TrainingRunner:
                 )
             )
             """
-        print(query)
         sql_executor.execute(query)
 
     def _get_path_under_model_connection_as_sql_value(self):
@@ -136,6 +135,7 @@ class TrainingRunner:
             training_score_count INTEGER
         )
         """
+        group_by_clause = self.generate_group_by_clause()
         sql_executor.execute(create_table)
         query = f"""
             INSERT INTO {self.target_schema.fully_qualified()}."FITTED_BASE_MODELS" 
@@ -156,10 +156,32 @@ class TrainingRunner:
                     {self.training_parameter.shuffle_buffer_size},
                     {select_list_for_columns}) 
                 FROM {self.source_table.fully_qualified()}
-                GROUP BY IPROC(), floor(rand(1,4)) -- parallelize and distribute
+                {group_by_clause}
             )
             """
         sql_executor.execute(query)
+
+    def generate_group_by_clause(self):
+        group_by_clause_parts = []
+        if self.training_parameter.split_per_node:
+            group_by_clause_parts.append("IPROC()")
+        partitions = self.training_parameter.number_of_random_partitions
+        if partitions is not None:
+            if self.training_parameter.split_per_node:
+                # We use the floot(partitions/NPROC()), because in case of training using too many partitions too small
+                # partitions can starve the estimators. With the floor function we use the lower bound of partitions
+                # which fit into the requested number of partitions
+                partitions_expression = f"floor({partitions} / NPROC())"
+            else:
+                partitions_expression = f"{partitions}"
+            group_by_clause_parts.append(f"least(floor(rand(0,{partitions_expression})),{partitions_expression}-1)")
+        if len(self.training_parameter.split_by_columns) != 0:
+            group_by_clause_parts += [column.quoted_name() for column in self.training_parameter.split_by_columns]
+        if len(group_by_clause_parts) > 0:
+            group_by_clause = "GROUP BY " + ",".join(group_by_clause_parts)
+        else:
+            group_by_clause = ""
+        return group_by_clause
 
     def upload_model_prototype(self,
                                model_bucketfs_location: BucketFSLocation,

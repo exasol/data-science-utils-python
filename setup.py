@@ -23,7 +23,8 @@ install_requires = \
  'pandas>=1.1.0,<2.0.0',
  'pyexasol>=0.17.0,<0.18.0',
  'scikit-learn>=0.24.1,<0.25.0',
- 'simplejson>=3.17.2,<4.0.0']
+ 'simplejson>=3.17.2,<4.0.0',
+ 'typeguard>=2.11.1,<3.0.0']
 
 setup_kwargs = {
     'name': 'exasol-data-science-utils-python',
