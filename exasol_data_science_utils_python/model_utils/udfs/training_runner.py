@@ -168,10 +168,13 @@ class TrainingRunner:
         partitions = self.training_parameter.number_of_random_partitions
         if partitions is not None:
             if self.training_parameter.split_per_node:
-                partitions_expression = f"({partitions } / NPROC())"
+                # We use the floot(partitions/NPROC()), because in case of training using too many partitions too small
+                # partitions can starve the estimators. With the floor function we use the lower bound of partitions
+                # which fit into the requested number of partitions
+                partitions_expression = f"floor({partitions} / NPROC())"
             else:
                 partitions_expression = f"{partitions}"
-            group_by_clause_parts.append(f"least(floor(rand(1,{partitions_expression}+1)),{partitions_expression})")
+            group_by_clause_parts.append(f"least(floor(rand(0,{partitions_expression})),{partitions_expression}-1)")
         if len(self.training_parameter.split_by_columns) != 0:
             group_by_clause_parts += [column.quoted_name() for column in self.training_parameter.split_by_columns]
         if len(group_by_clause_parts) > 0:

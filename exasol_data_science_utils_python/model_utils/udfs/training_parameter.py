@@ -20,3 +20,11 @@ class TrainingParameter:
         self.shuffle_buffer_size = shuffle_buffer_size
         self.batch_size = batch_size
         self.epochs = epochs
+        if not epochs>0:
+            raise ValueError("epochs needs to be >0")
+        if not batch_size>0:
+            raise ValueError("batch_size needs to be >0")
+        if not shuffle_buffer_size>0:
+            raise ValueError("shuffle_buffer_size needs to be >0")
+        if not number_of_random_partitions>0:
+            raise ValueError("number_of_random_partitions needs to be >0")
