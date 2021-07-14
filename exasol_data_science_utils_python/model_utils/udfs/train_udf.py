@@ -12,6 +12,9 @@ from exasol_data_science_utils_python.preprocessing.schema.table import Table
 
 class TrainUDF:
 
+    def __init__(self):
+        self.counter = 0
+
     def run(self, exa, ctx, model, column_preprocessor_creator: AbstractColumnPreprocessorCreator):
         model_connection_name = ctx.model_connection
         path_under_model_connection = PurePosixPath(ctx.path_under_model_connection)
@@ -42,14 +45,25 @@ class TrainUDF:
                                                 address=db_connection.address,
                                                 user=db_connection.user,
                                                 password=db_connection.password)
-        training_runner = TrainingRunner(model_connection_object,
-                                         path_under_model_connection,
-                                         db_connection_object,
-                                         training_parameter,
-                                         input_columns,
-                                         target_column,
-                                         source_table,
-                                         target_schema,
-                                         model,
-                                         column_preprocessor_creator)
-        training_runner.run()
+        job_id = str(exa.meta.statement_id)
+        model_id = f"{job_id}_{exa.meta.node_id}_{exa.meta.vm_id}_{self.counter}"
+        training_runner = TrainingRunner(
+            job_id,
+            model_id,
+            model_connection_object,
+            path_under_model_connection,
+            db_connection_object,
+            training_parameter,
+            input_columns,
+            target_column,
+            source_table,
+            target_schema,
+            model,
+            column_preprocessor_creator)
+        model_info = training_runner.run()
+        ctx.emit(model_info["job_id"],
+                 model_info["model_id"],
+                 model_info["model_connection_name"],
+                 model_info["path_under_model_connection"],
+                 model_info["model_path"])
+        self.counter += 1

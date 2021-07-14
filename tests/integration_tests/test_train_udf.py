@@ -81,11 +81,13 @@ def udf_wrapper():
     from exasol_data_science_utils_python.model_utils.udfs.column_preprocessor_creator import ColumnPreprocessorCreator
     from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
 
+    train_udf = TrainUDF()
+
     def run(ctx: UDFContext):
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
                              fit_intercept=True, eta0=0.9, power_t=0.1, learning_rate='invscaling')
         column_preprocessor_creator = ColumnPreprocessorCreator()
-        TrainUDF().run(exa, ctx, model, column_preprocessor_creator)
+        train_udf.run(exa, ctx, model, column_preprocessor_creator)
 
 
 def test_train_udf_with_mock_random_partitions(
@@ -93,14 +95,21 @@ def test_train_udf_with_mock_random_partitions(
         create_input_table,
         pyexasol_connection,
         db_connection):
-    run_mock_test_valid(
-        db_connection,
-        pyexasol_connection,
-        split_by_node=False,
-        number_of_random_partitions=3,
-        split_by_columns=None,
-        expected_number_of_base_models=3,
-    )
+    expected_number_of_base_models = 3
+    result, fitted_base_models, fitted_combined_models, unique_base_models = \
+        run_mock_test_valid(
+            db_connection,
+            pyexasol_connection,
+            split_by_node=False,
+            number_of_random_partitions=3,
+            split_by_columns=None,
+        )
+    assert len(fitted_base_models) == expected_number_of_base_models
+    assert len(unique_base_models) == expected_number_of_base_models
+    assert len(fitted_combined_models) == 1
+    assert len(result) == 1
+    for group in result:
+        assert len(group.rows) == 1
 
 
 def test_train_udf_with_mock_split_by_node(
@@ -108,14 +117,21 @@ def test_train_udf_with_mock_split_by_node(
         create_input_table,
         pyexasol_connection,
         db_connection):
-    run_mock_test_valid(
-        db_connection,
-        pyexasol_connection,
-        split_by_node=True,
-        number_of_random_partitions=None,
-        split_by_columns=None,
-        expected_number_of_base_models=1,
-    )
+    expected_number_of_base_models = 1
+    result, fitted_base_models, fitted_combined_models, unique_base_models = \
+        run_mock_test_valid(
+            db_connection,
+            pyexasol_connection,
+            split_by_node=True,
+            number_of_random_partitions=None,
+            split_by_columns=None,
+        )
+    assert len(fitted_base_models) == expected_number_of_base_models
+    assert len(unique_base_models) == expected_number_of_base_models
+    assert len(fitted_combined_models) == 1
+    assert len(result) == 1
+    for group in result:
+        assert len(group.rows) == 1
 
 
 def test_train_udf_with_mock_split_by_columns(
@@ -123,14 +139,21 @@ def test_train_udf_with_mock_split_by_columns(
         create_input_table,
         pyexasol_connection,
         db_connection):
-    run_mock_test_valid(
-        db_connection,
-        pyexasol_connection,
-        split_by_node=False,
-        number_of_random_partitions=None,
-        split_by_columns="P1,P2",
-        expected_number_of_base_models=4,
-    )
+    expected_number_of_base_models = 4
+    result, fitted_base_models, fitted_combined_models, unique_base_models = \
+        run_mock_test_valid(
+            db_connection,
+            pyexasol_connection,
+            split_by_node=False,
+            number_of_random_partitions=None,
+            split_by_columns="P1,P2",
+        )
+    assert len(fitted_base_models) == expected_number_of_base_models
+    assert len(unique_base_models) == expected_number_of_base_models
+    assert len(fitted_combined_models) == 1
+    assert len(result) == 1
+    for group in result:
+        assert len(group.rows) == 1
 
 
 def test_train_udf_with_mock_random_partitions_and_split_by_columns(
@@ -138,14 +161,21 @@ def test_train_udf_with_mock_random_partitions_and_split_by_columns(
         create_input_table,
         pyexasol_connection,
         db_connection):
-    run_mock_test_valid(
-        db_connection,
-        pyexasol_connection,
-        split_by_node=False,
-        number_of_random_partitions=3,
-        split_by_columns="P1",
-        expected_number_of_base_models=6,
-    )
+    expected_number_of_base_models = 6
+    result, fitted_base_models, fitted_combined_models, unique_base_models = \
+        run_mock_test_valid(
+            db_connection,
+            pyexasol_connection,
+            split_by_node=False,
+            number_of_random_partitions=3,
+            split_by_columns="P1",
+        )
+    assert len(fitted_base_models) == expected_number_of_base_models
+    assert len(unique_base_models) == expected_number_of_base_models
+    assert len(fitted_combined_models) == 1
+    assert len(result) == 1
+    for group in result:
+        assert len(group.rows) == 1
 
 
 def test_train_udf_with_mock_split_by_node_and_random_partitions(
@@ -153,14 +183,21 @@ def test_train_udf_with_mock_split_by_node_and_random_partitions(
         create_input_table,
         pyexasol_connection,
         db_connection):
-    run_mock_test_valid(
-        db_connection,
-        pyexasol_connection,
-        split_by_node=True,
-        number_of_random_partitions=2,
-        split_by_columns=None,
-        expected_number_of_base_models=2,
-    )
+    expected_number_of_base_models = 2
+    result, fitted_base_models, fitted_combined_models, unique_base_models = \
+        run_mock_test_valid(
+            db_connection,
+            pyexasol_connection,
+            split_by_node=True,
+            number_of_random_partitions=2,
+            split_by_columns=None
+        )
+    assert len(fitted_base_models) == expected_number_of_base_models
+    assert len(unique_base_models) == expected_number_of_base_models
+    assert len(fitted_combined_models) == 1
+    assert len(result) == 1
+    for group in result:
+        assert len(group.rows) == 1
 
 
 def test_train_udf_with_mock_split_by_columns_empty_string(
@@ -168,14 +205,47 @@ def test_train_udf_with_mock_split_by_columns_empty_string(
         create_input_table,
         pyexasol_connection,
         db_connection):
-    run_mock_test_valid(
-        db_connection,
+    expected_number_of_base_models = 2
+    result, fitted_base_models, fitted_combined_models, unique_base_models = \
+        run_mock_test_valid(
+            db_connection,
+            pyexasol_connection,
+            split_by_node=False,
+            number_of_random_partitions=2,
+            split_by_columns="",
+        )
+    assert len(fitted_base_models) == expected_number_of_base_models
+    assert len(unique_base_models) == expected_number_of_base_models
+    assert len(fitted_combined_models) == 1
+    assert len(result) == 1
+    for group in result:
+        assert len(group.rows) == 1
+
+
+def test_train_udf_with_mock_multiple_groups(
+        upload_language_container,
+        create_input_table,
         pyexasol_connection,
-        split_by_node=False,
-        number_of_random_partitions=2,
-        split_by_columns="",
-        expected_number_of_base_models=2,
-    )
+        db_connection):
+    number_of_groups = 2
+    expected_number_of_base_models = 2
+    result, fitted_base_models, fitted_combined_models, unique_base_models = \
+        run_mock_test_valid(
+            db_connection,
+            pyexasol_connection,
+            split_by_node=False,
+            number_of_random_partitions=2,
+            split_by_columns="",
+            number_of_groups=number_of_groups
+        )
+    unique_model_id_in_base_models = {row[1] for row in fitted_base_models}
+    assert len(fitted_base_models) == expected_number_of_base_models * number_of_groups
+    assert len(unique_model_id_in_base_models) == number_of_groups
+    assert len(unique_base_models) == expected_number_of_base_models * number_of_groups
+    assert len(fitted_combined_models) == 1 * number_of_groups
+    assert len(result) == number_of_groups
+    for group in result:
+        assert len(group.rows) == 1
 
 
 def run_mock_test_valid(db_connection,
@@ -183,28 +253,35 @@ def run_mock_test_valid(db_connection,
                         split_by_node: bool,
                         number_of_random_partitions: int,
                         split_by_columns: str,
-                        expected_number_of_base_models: int):
-    run_mock_test(db_connection,
-                  pyexasol_connection,
-                  split_by_node,
-                  number_of_random_partitions,
-                  split_by_columns)
+                        number_of_groups: int = 1):
+    result = run_mock_test(db_connection,
+                           pyexasol_connection,
+                           split_by_node,
+                           number_of_random_partitions,
+                           split_by_columns,
+                           number_of_groups)
+    fitted_base_models, fitted_combined_models, unique_base_models = get_results(pyexasol_connection, result)
+    return result, fitted_base_models, fitted_combined_models, unique_base_models
+
+
+def get_results(pyexasol_connection, result):
     fitted_base_models = pyexasol_connection.execute("""
         SELECT * FROM TARGET_SCHEMA.FITTED_BASE_MODELS""").fetchall()
-    print(fitted_base_models)
-    assert len(fitted_base_models) == expected_number_of_base_models
-    assert len({row[3] for row in fitted_base_models}) == expected_number_of_base_models
+    print("fitted_base_models", fitted_base_models)
     fitted_combined_models = pyexasol_connection.execute("""
         SELECT * FROM TARGET_SCHEMA.FITTED_COMBINED_MODEL""").fetchall()
-    print(fitted_combined_models)
-    assert len(fitted_combined_models) == 1
+    print("fitted_combined_models", fitted_combined_models)
+    unique_base_models = {row[4] for row in fitted_base_models}
+    print("result", result)
+    return fitted_base_models, fitted_combined_models, unique_base_models
 
 
 def run_mock_test(db_connection,
                   pyexasol_connection,
                   split_by_node: bool,
                   number_of_random_partitions: int,
-                  split_by_columns: str):
+                  split_by_columns: str,
+                  number_of_groups: int = 1):
     executor = UDFMockExecutor()
     meta = MockMetaData(
         script_code_wrapper_function=udf_wrapper,
@@ -227,7 +304,11 @@ def run_mock_test(db_connection,
         ],
         output_type="EMIT",
         output_columns=[
-            Column("output_model_path", str, "VARCHAR(2000000)"),
+            Column("job_id", str, "VARCHAR(2000000)"),
+            Column("model_id", str, "VARCHAR(2000000)"),
+            Column("model_connection_name", str, "VARCHAR(2000000)"),
+            Column("path_under_model_connection", str, "VARCHAR(2000000)"),
+            Column("model_path", str, "VARCHAR(2000000)"),
         ]
     )
     model_connection, model_connection_name = \
@@ -238,26 +319,25 @@ def run_mock_test(db_connection,
                                  "MODEL_CONNECTION": model_connection,
                                  "DB_CONNECTION": db_connection
                              })
-    input_data = []
-    input_data.append(
-        (
-            model_connection_name,
-            "my_path_under_model_connection",
-            "DB_CONNECTION",
-            "TEST",
-            "ABC",
-            "A,B",
-            "C",
-            "TARGET_SCHEMA",
-            10,
-            100,
-            10000,
-            split_by_node,
-            number_of_random_partitions,
-            split_by_columns
-        )
-    )
-    result = list(executor.run([Group(input_data)], exa))
+
+    groups = [Group([(
+        model_connection_name,
+        "my_path_under_model_connection_" + str(i),
+        "DB_CONNECTION",
+        "TEST",
+        "ABC",
+        "A,B",
+        "C",
+        "TARGET_SCHEMA",
+        10,
+        100,
+        10000,
+        split_by_node,
+        number_of_random_partitions,
+        split_by_columns
+    )]) for i in range(number_of_groups)]
+    result = list(executor.run(groups, exa))
+    return result
 
 
 def test_train_udf(
@@ -288,17 +368,25 @@ def test_train_udf(
         number_of_random_partitions INTEGER,
         split_by_columns VARCHAR(2000000)
     ) 
-    EMITS (o varchar(10000)) AS
+    EMITS (
+        job_id VARCHAR(2000000),
+        model_id VARCHAR(2000000),
+        model_connection_name VARCHAR(2000000),
+        path_under_model_connection VARCHAR(2000000),
+        model_path VARCHAR(2000000)
+    ) AS
     from sklearn.linear_model import SGDRegressor
     from numpy.random import RandomState
     from exasol_data_science_utils_python.model_utils.udfs.column_preprocessor_creator import ColumnPreprocessorCreator
     from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
 
+    train_udf = TrainUDF()
+
     def run(ctx):
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
                              fit_intercept=True, eta0=0.9, power_t=0.1, learning_rate='invscaling')
         column_preprocessor_creator = ColumnPreprocessorCreator()
-        TrainUDF().run(exa, ctx, model, column_preprocessor_creator)
+        train_udf.run(exa, ctx, model, column_preprocessor_creator)
     """)
     pyexasol_connection.execute(udf_sql)
     query_udf = f"""
