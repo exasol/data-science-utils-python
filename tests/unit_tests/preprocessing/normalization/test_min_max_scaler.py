@@ -1,9 +1,9 @@
 import textwrap
 
 from exasol_data_science_utils_python.preprocessing.normalization.min_max_scaler import MinMaxScaler
-from exasol_data_science_utils_python.preprocessing.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
+from exasol_data_science_utils_python.preprocessing.schema.table_name import Table
 from tests.unit_tests.preprocessing.mock_sql_executor import MockSQLExecutor
 
 

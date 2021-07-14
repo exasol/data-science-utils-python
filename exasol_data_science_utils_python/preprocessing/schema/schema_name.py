@@ -1,4 +1,4 @@
-from exasol_data_science_utils_python.preprocessing.schema.schema_element import SchemaElement
+from exasol_data_science_utils_python.preprocessing.schema.identifier import SchemaElement
 
 
 class Schema(SchemaElement):

@@ -16,17 +16,19 @@ class UnicodeCategories:
     FORMAT = 'Cf'
 
 
-# return (codePoint == 0x00B7);
-
 class SchemaElement(ABC):
 
     def __init__(self, name: str):
         if not self.validate_name(name):
             raise ValueError(f"Name '{name}' is not valid")
-        self.name = name
+        self._name = name
 
-    def quoted_name(self):
-        return f'"{self.name}"'
+    @property
+    def name(self) -> str:
+        return self._name
+
+    def quoted_name(self) -> str:
+        return f'"{self._name}"'
 
     @abstractmethod
     def fully_qualified(self) -> str:

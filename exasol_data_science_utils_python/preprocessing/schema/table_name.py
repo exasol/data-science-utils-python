@@ -1,5 +1,5 @@
-from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
-from exasol_data_science_utils_python.preprocessing.schema.schema_element import SchemaElement
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
+from exasol_data_science_utils_python.preprocessing.schema.identifier import SchemaElement
 
 
 class Table(SchemaElement):

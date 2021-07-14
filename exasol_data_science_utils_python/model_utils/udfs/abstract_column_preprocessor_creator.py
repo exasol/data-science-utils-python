@@ -3,9 +3,9 @@ from typing import List
 
 from sklearn.compose import ColumnTransformer
 
-from exasol_data_science_utils_python.preprocessing.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
+from exasol_data_science_utils_python.preprocessing.schema.table_name import Table
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 
