@@ -1,9 +1,9 @@
-from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
-from exasol_data_science_utils_python.preprocessing.schema.identifier import SchemaElement
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.identifier import ExasolIdentifier
 
 
-class Table(SchemaElement):
-    def __init__(self, table_name: str, schema: Schema = None):
+class TableName(ExasolIdentifier):
+    def __init__(self, table_name: str, schema: SchemaName = None):
         super().__init__(table_name)
         self.schema = schema
 
@@ -14,6 +14,6 @@ class Table(SchemaElement):
             return self.quoted_name()
 
     def __eq__(self, other):
-        return isinstance(other, Table) and \
+        return isinstance(other, TableName) and \
                self.name == other.name and \
                self.schema == other.schema

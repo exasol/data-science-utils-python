@@ -1,17 +1,17 @@
 import textwrap
 
 from exasol_data_science_utils_python.preprocessing.normalization.min_max_scaler import MinMaxScaler
-from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table_name import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
 from tests.unit_tests.preprocessing.mock_sql_executor import MockSQLExecutor
 
 
 def test_min_max_scaler_create_fit_queries():
-    source_schema = Schema("SRC_SCHEMA")
-    source_table = Table("SRC_TABLE", source_schema)
-    target_schema = Schema("TGT_SCHEMA")
-    source_column = Column("SRC_COLUMN1", source_table)
+    source_schema = SchemaName("SRC_SCHEMA")
+    source_table = TableName("SRC_TABLE", source_schema)
+    target_schema = SchemaName("TGT_SCHEMA")
+    source_column = ColumnName("SRC_COLUMN1", source_table)
     scaler = MinMaxScaler()
     mock_sql_executor = MockSQLExecutor()
     queries = scaler.fit(mock_sql_executor, source_column, target_schema)
@@ -26,12 +26,12 @@ def test_min_max_scaler_create_fit_queries():
 
 
 def test_min_max_scaler_create_from_clause_part():
-    source_schema = Schema("SRC_SCHEMA")
-    source_table = Table("SRC_TABLE", source_schema)
-    target_schema = Schema("TGT_SCHEMA")
-    source_column = Column("SRC_COLUMN1", source_table)
-    input_schema = Schema("IN_SCHEMA")
-    input_table = Table("IN_TABLE", input_schema)
+    source_schema = SchemaName("SRC_SCHEMA")
+    source_table = TableName("SRC_TABLE", source_schema)
+    target_schema = SchemaName("TGT_SCHEMA")
+    source_column = ColumnName("SRC_COLUMN1", source_table)
+    input_schema = SchemaName("IN_SCHEMA")
+    input_table = TableName("IN_TABLE", input_schema)
     scaler = MinMaxScaler()
     mock_sql_executor = MockSQLExecutor()
     from_clause_part = scaler.create_transform_from_clause_part(
@@ -41,12 +41,12 @@ def test_min_max_scaler_create_from_clause_part():
 
 
 def test_min_max_scaler_create_select_clause_part():
-    source_schema = Schema("SRC_SCHEMA")
-    source_table = Table("SRC_TABLE", source_schema)
-    target_schema = Schema("TGT_SCHEMA")
-    source_column = Column("SRC_COLUMN1", source_table)
-    input_schema = Schema("IN_SCHEMA")
-    input_table = Table("IN_TABLE", input_schema)
+    source_schema = SchemaName("SRC_SCHEMA")
+    source_table = TableName("SRC_TABLE", source_schema)
+    target_schema = SchemaName("TGT_SCHEMA")
+    source_column = ColumnName("SRC_COLUMN1", source_table)
+    input_schema = SchemaName("IN_SCHEMA")
+    input_table = TableName("IN_TABLE", input_schema)
     scaler = MinMaxScaler()
     mock_sql_executor = MockSQLExecutor()
     select_clause_part = scaler.create_transform_select_clause_part(

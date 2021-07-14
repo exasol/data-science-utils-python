@@ -2,9 +2,9 @@ import textwrap
 from typing import List
 
 from exasol_data_science_utils_python.preprocessing.column_preprocessor import ColumnPreprocessor
-from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table_name import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 
@@ -15,13 +15,13 @@ class ColumnPreprocesserDefinition:
 
 
 class TablePreprocessor():
-    def __init__(self, target_schema: Schema, source_table: Table,
+    def __init__(self, target_schema: SchemaName, source_table: TableName,
                  column_preprocessor_defintions: List[ColumnPreprocesserDefinition]):
         self.source_table = source_table
         self.target_schema = target_schema
         self.column_preprocessor_defintions = column_preprocessor_defintions
 
-    def fit(self, sql_executor: SQLExecutor) -> List[Table]:
+    def fit(self, sql_executor: SQLExecutor) -> List[TableName]:
         """
         This method calls the create_fit_queries for all column preprocessor definitions
         and returns the collected queries.
@@ -34,13 +34,13 @@ class TablePreprocessor():
         """
         result = []
         for column_preprocessor_defintion in self.column_preprocessor_defintions:
-            source_column = Column(column_preprocessor_defintion.column_name, self.source_table)
+            source_column = ColumnName(column_preprocessor_defintion.column_name, self.source_table)
             preprocessor = column_preprocessor_defintion.column_preprocessor
             created_tables = preprocessor.fit(sql_executor, source_column, self.target_schema)
             result.extend(created_tables)
         return result
 
-    def transform(self, sql_executor: SQLExecutor, input_table: Table) -> Table:
+    def transform(self, sql_executor: SQLExecutor, input_table: TableName) -> TableName:
         """
         This method creates the transform_query by calling create_transform_from_clause_part and
         create_transform_select_clause_part for all column preprocessor definitions.
@@ -52,7 +52,7 @@ class TablePreprocessor():
         """
         select_clause_parts_str = self._create_transform_select_clause_parts(sql_executor, input_table)
         from_clause_parts_str = self._create_transform_from_clause_parts(sql_executor, input_table)
-        transformation_table = Table(
+        transformation_table = TableName(
             f"{input_table.schema.name}_{input_table.name}_TRANSFORMED",
             self.target_schema)
         query = textwrap.dedent(
@@ -64,10 +64,10 @@ FROM {input_table.fully_qualified()}
         sql_executor.execute(query)
         return transformation_table
 
-    def _create_transform_from_clause_parts(self, sql_executor: SQLExecutor, input_table: Table) -> str:
+    def _create_transform_from_clause_parts(self, sql_executor: SQLExecutor, input_table: TableName) -> str:
         from_clause_parts = []
         for column_preprocessor_defintion in self.column_preprocessor_defintions:
-            source_column = Column(column_preprocessor_defintion.column_name, self.source_table)
+            source_column = ColumnName(column_preprocessor_defintion.column_name, self.source_table)
             column_preprocessor = column_preprocessor_defintion.column_preprocessor
             parts = column_preprocessor.create_transform_from_clause_part(
                 sql_executor,
@@ -78,10 +78,10 @@ FROM {input_table.fully_qualified()}
         from_clause_parts_str = "\n".join(from_clause_parts)
         return from_clause_parts_str
 
-    def _create_transform_select_clause_parts(self, sql_executor: SQLExecutor, input_table: Table) -> str:
+    def _create_transform_select_clause_parts(self, sql_executor: SQLExecutor, input_table: TableName) -> str:
         select_clause_parts = []
         for column_preprocessor_defintion in self.column_preprocessor_defintions:
-            source_column = Column(column_preprocessor_defintion.column_name, self.source_table)
+            source_column = ColumnName(column_preprocessor_defintion.column_name, self.source_table)
             preprocessor = column_preprocessor_defintion.column_preprocessor
             parts = preprocessor.create_transform_select_clause_part(
                 sql_executor,

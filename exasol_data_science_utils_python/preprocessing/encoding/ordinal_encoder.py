@@ -2,9 +2,9 @@ import textwrap
 from typing import List
 
 from exasol_data_science_utils_python.preprocessing.column_preprocessor import ColumnPreprocessor
-from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table_name import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX = "ORDINAL_ENCODER_DICTIONARY"
@@ -18,25 +18,25 @@ class OrdinalEncoder(ColumnPreprocessor):
 
     """
 
-    def _get_dictionary_table_alias(self, target_schema: Schema, source_column: Column):
+    def _get_dictionary_table_alias(self, target_schema: SchemaName, source_column: ColumnName):
         return self._get_table_alias(
             target_schema, source_column,
             ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX)
 
-    def _get_dictionary_table_name(self, target_schema: Schema, source_column: Column):
+    def _get_dictionary_table_name(self, target_schema: SchemaName, source_column: ColumnName):
         return self._get_target_table(
             target_schema, source_column,
             ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX)
 
-    def _get_id_column(self, table: Table = None):
-        min_column = Column("ID", table)
+    def _get_id_column(self, table: TableName = None):
+        min_column = ColumnName("ID", table)
         return min_column
 
-    def _get_value_column(self, table: Table = None):
-        range_column = Column("VALUE", table)
+    def _get_value_column(self, table: TableName = None):
+        range_column = ColumnName("VALUE", table)
         return range_column
 
-    def fit(self, sqlexecutor: SQLExecutor, source_column: Column, target_schema: Schema) -> List[Table]:
+    def fit(self, sqlexecutor: SQLExecutor, source_column: ColumnName, target_schema: SchemaName) -> List[TableName]:
         """
         This method creates a dictionary table from the source column where every distinct value of the source column
         is mapped to an id between 0 and number of distinct values - 1
@@ -48,7 +48,7 @@ class OrdinalEncoder(ColumnPreprocessor):
         dictionary_table = self._get_dictionary_table_name(target_schema, source_column)
         id_column = self._get_id_column()
         value_column = self._get_value_column()
-        value_column_alias = Column("VALUE")
+        value_column_alias = ColumnName("VALUE")
         query = textwrap.dedent(f"""
                 CREATE OR REPLACE TABLE {dictionary_table.fully_qualified()} AS
                 SELECT
@@ -65,9 +65,9 @@ class OrdinalEncoder(ColumnPreprocessor):
 
     def create_transform_from_clause_part(self,
                                           sql_executor: SQLExecutor,
-                                          source_column: Column,
-                                          input_table: Table,
-                                          target_schema: Schema) -> List[str]:
+                                          source_column: ColumnName,
+                                          input_table: TableName,
+                                          target_schema: SchemaName) -> List[str]:
         """
         This method generates a LEFT OUTER JOIN with the dictionary table and the input table.
         The LEFT OUTER JOIN is important to keep all rows, also those which contain a NULL.
@@ -79,7 +79,7 @@ class OrdinalEncoder(ColumnPreprocessor):
         """
         dictionary_table = self._get_dictionary_table_name(target_schema, source_column)
         alias = self._get_dictionary_table_alias(target_schema, source_column)
-        input_column = Column(source_column.name, input_table)
+        input_column = ColumnName(source_column.name, input_table)
         value_column = self._get_value_column(alias)
         from_clause_part = textwrap.dedent(f"""
             LEFT OUTER JOIN {dictionary_table.fully_qualified()}
@@ -92,9 +92,9 @@ class OrdinalEncoder(ColumnPreprocessor):
 
     def create_transform_select_clause_part(self,
                                             sql_executor: SQLExecutor,
-                                            source_column: Column,
-                                            input_table: Table,
-                                            target_schema: Schema) -> List[str]:
+                                            source_column: ColumnName,
+                                            input_table: TableName,
+                                            target_schema: SchemaName) -> List[str]:
         """
         This method replaces the value in the input_table with the id in the dictionary.
 

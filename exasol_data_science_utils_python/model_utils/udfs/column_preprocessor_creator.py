@@ -10,9 +10,9 @@ from exasol_data_science_utils_python.model_utils.udfs.abstract_column_preproces
     ColumnPreprocssorCreatorResult, AbstractColumnPreprocessorCreator
 from exasol_data_science_utils_python.preprocessing.encoding.ordinal_encoder import OrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.normalization.min_max_scaler import MinMaxScaler
-from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table_name import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.table_preprocessor import ColumnPreprocesserDefinition, \
     TablePreprocessor
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
@@ -22,10 +22,10 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
 
     def generate_column_transformers(self,
                                      sql_executor: SQLExecutor,
-                                     input_columns: List[Column],
-                                     target_columns: List[Column],
-                                     source_table: Table,
-                                     target_schema: Schema) -> ColumnPreprocssorCreatorResult:
+                                     input_columns: List[ColumnName],
+                                     target_columns: List[ColumnName],
+                                     source_table: TableName,
+                                     target_schema: SchemaName) -> ColumnPreprocssorCreatorResult:
         columns = input_columns + target_columns
         column_types = self._get_column_types(columns, source_table, sql_executor)
         fit_tables = self._fit_table_preprocessor(column_types, columns, source_table, sql_executor, target_schema)
@@ -37,8 +37,8 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
                                               target_column_transformer)
 
     def _get_column_types(self,
-                          columns: List[Column],
-                          source_table: Table,
+                          columns: List[ColumnName],
+                          source_table: TableName,
                           sql_executor: SQLExecutor):
         column_name_list = ",".join(f"'{column.name}'" for column in columns)
         query = f"""
@@ -55,10 +55,10 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
     def _fit_table_preprocessor(
             self,
             column_types: Dict[str, str],
-            columns: List[Column],
-            source_table: Table,
+            columns: List[ColumnName],
+            source_table: TableName,
             sql_executor: SQLExecutor,
-            target_schema: Schema):
+            target_schema: SchemaName):
         column_preprocessor_defintions = []
         for column in columns:
             column_type = column_types[column.name]
@@ -77,9 +77,9 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
     def _create_column_transformer(
             self,
             column_types: Dict[str, str],
-            fit_tables: List[Table],
-            columns: List[Column],
-            source_table: Table,
+            fit_tables: List[TableName],
+            columns: List[ColumnName],
+            source_table: TableName,
             sql_executor: SQLExecutor):
         sklearn_transformer = []
         for column in columns:
@@ -104,8 +104,8 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
 
     def _create_onehot_transformer(
             self,
-            column: Column,
-            fit_tables: List[Table],
+            column: ColumnName,
+            fit_tables: List[TableName],
             sql_executor: SQLExecutor):
         fit_table_for_column = [table for table in fit_tables if f"_{column.name}_" in table.name]
         if len(fit_table_for_column) != 1:
@@ -120,8 +120,8 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
 
     def _create_minmax_transformer(
             self,
-            column: Column,
-            fit_tables: List[Table],
+            column: ColumnName,
+            fit_tables: List[TableName],
             sql_executor: SQLExecutor):
         fit_table_for_column = [table for table in fit_tables if f"_{column.name}_" in table.name]
         if len(fit_table_for_column) != 1:
@@ -134,10 +134,10 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
         transformer = SKLearnMinMaxScalar(min_value=min_value, range_value=range_value)
         return transformer
 
-    def _get_select_list_for_columns(self, columns: List[Column]):
+    def _get_select_list_for_columns(self, columns: List[ColumnName]):
         column_name_list = self._get_column_name_list(columns)
         return ",".join(f'"{column_name}"' for column_name in column_name_list)
 
-    def _get_column_name_list(self, columns: List[Column]):
+    def _get_column_name_list(self, columns: List[ColumnName]):
         column_name_list = [column.name for column in columns]
         return column_name_list

@@ -2,9 +2,9 @@ import textwrap
 from typing import List
 
 from exasol_data_science_utils_python.preprocessing.column_preprocessor import ColumnPreprocessor
-from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table_name import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 from exasol_data_science_utils_python.preprocessing.table_preprocessor import TablePreprocessor, \
     ColumnPreprocesserDefinition
@@ -12,7 +12,7 @@ from tests.unit_tests.preprocessing.mock_sql_executor import MockSQLExecutor
 
 
 class MyColumnPreprocessor(ColumnPreprocessor):
-    def fit(self, sqlexecutor: SQLExecutor, source_column: Column, target_schema: Schema) -> List[
+    def fit(self, sqlexecutor: SQLExecutor, source_column: ColumnName, target_schema: SchemaName) -> List[
         str]:
         target_table = self._get_target_table(target_schema, source_column, "PREFIX")
         query = textwrap.dedent(f'''
@@ -24,26 +24,26 @@ class MyColumnPreprocessor(ColumnPreprocessor):
 
     def create_transform_from_clause_part(self,
                                           sql_executor: SQLExecutor,
-                                          source_column: Column,
-                                          input_table: Table,
-                                          target_schema: Schema) -> List[str]:
+                                          source_column: ColumnName,
+                                          input_table: TableName,
+                                          target_schema: SchemaName) -> List[str]:
         target_table = self._get_target_table(target_schema, source_column, "PREFIX")
         return [f"CROSS JOIN {target_table.fully_qualified()}"]
 
     def create_transform_select_clause_part(self,
                                             sql_executor: SQLExecutor,
-                                            source_column: Column,
-                                            input_table: Table,
-                                            target_schema: Schema) -> List[str]:
+                                            source_column: ColumnName,
+                                            input_table: TableName,
+                                            target_schema: SchemaName) -> List[str]:
         return [f'1 AS "{source_column.name}_VALUE"']
 
 
 def test_table_preprocessor_create_fit_queries():
-    source_schema = Schema("SRC_SCHEMA")
-    source_table = Table("SRC_TABLE", source_schema)
-    target_schema = Schema("TGT_SCHEMA")
-    source_column1 = Column("SRC_COLUMN1", source_table)
-    source_column2 = Column("SRC_COLUMN2", source_table)
+    source_schema = SchemaName("SRC_SCHEMA")
+    source_table = TableName("SRC_TABLE", source_schema)
+    target_schema = SchemaName("TGT_SCHEMA")
+    source_column1 = ColumnName("SRC_COLUMN1", source_table)
+    source_column2 = ColumnName("SRC_COLUMN2", source_table)
     column_preprocessor_defintions = [
         ColumnPreprocesserDefinition(source_column1.name, MyColumnPreprocessor()),
         ColumnPreprocesserDefinition(source_column2.name, MyColumnPreprocessor()),
@@ -66,13 +66,13 @@ def test_table_preprocessor_create_fit_queries():
 
 
 def test_table_preprocessor_create_transform_query():
-    source_schema = Schema("SRC_SCHEMA")
-    source_table = Table("SRC_TABLE", source_schema)
-    target_schema = Schema("TGT_SCHEMA")
-    source_column1 = Column("SRC_COLUMN1", source_table)
-    source_column2 = Column("SRC_COLUMN2", source_table)
-    input_schema = Schema("IN_SCHEMA")
-    input_table = Table("IN_TABLE", input_schema)
+    source_schema = SchemaName("SRC_SCHEMA")
+    source_table = TableName("SRC_TABLE", source_schema)
+    target_schema = SchemaName("TGT_SCHEMA")
+    source_column1 = ColumnName("SRC_COLUMN1", source_table)
+    source_column2 = ColumnName("SRC_COLUMN2", source_table)
+    input_schema = SchemaName("IN_SCHEMA")
+    input_table = TableName("IN_TABLE", input_schema)
 
     column_preprocessor_defintions = [
         ColumnPreprocesserDefinition(source_column1.name, MyColumnPreprocessor()),

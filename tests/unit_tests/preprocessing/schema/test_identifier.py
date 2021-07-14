@@ -1,9 +1,9 @@
 import pytest
 
-from exasol_data_science_utils_python.preprocessing.schema.identifier import SchemaElement
+from exasol_data_science_utils_python.preprocessing.schema.identifier import ExasolIdentifier
 
 
-class TestSchemaElement(SchemaElement):
+class TestSchemaElement(ExasolIdentifier):
     def __init__(self, name: str):
         super().__init__(name)
 

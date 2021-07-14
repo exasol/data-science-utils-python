@@ -1,7 +1,7 @@
-from exasol_data_science_utils_python.preprocessing.schema.identifier import SchemaElement
+from exasol_data_science_utils_python.preprocessing.schema.identifier import ExasolIdentifier
 
 
-class Schema(SchemaElement):
+class SchemaName(ExasolIdentifier):
     def __init__(self, schema_name: str):
         super().__init__(schema_name)
 
@@ -9,5 +9,5 @@ class Schema(SchemaElement):
         return self.quoted_name()
 
     def __eq__(self, other):
-        return isinstance(other, Schema) and \
+        return isinstance(other, SchemaName) and \
                self.name == other.name

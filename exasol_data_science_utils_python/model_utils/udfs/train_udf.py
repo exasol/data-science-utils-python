@@ -5,9 +5,9 @@ from exasol_data_science_utils_python.model_utils.udfs.abstract_column_preproces
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
 from exasol_data_science_utils_python.model_utils.udfs.training_runner import TrainingRunner
-from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table_name import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
 
 
 class TrainUDF:
@@ -19,15 +19,15 @@ class TrainUDF:
         model_connection_name = ctx.model_connection
         path_under_model_connection = PurePosixPath(ctx.path_under_model_connection)
         db_connection_name = ctx.db_connection
-        source_schema = Schema(ctx.source_schema_name)
-        target_schema = Schema(ctx.target_schema_name)
-        source_table = Table(ctx.source_table_name, schema=source_schema)
-        input_columns = [Column(column_name, table=source_table)
+        source_schema = SchemaName(ctx.source_schema_name)
+        target_schema = SchemaName(ctx.target_schema_name)
+        source_table = TableName(ctx.source_table_name, schema=source_schema)
+        input_columns = [ColumnName(column_name, table=source_table)
                          for column_name in ctx.input_columns.split(",")]
-        target_column = [Column(ctx.target_column, table=source_table)]
+        target_column = [ColumnName(ctx.target_column, table=source_table)]
         split_by_columns = []
         if ctx.split_by_columns is not None and ctx.split_by_columns != "":
-            split_by_columns = [Column(column_name, source_table)
+            split_by_columns = [ColumnName(column_name, source_table)
                                 for column_name in ctx.split_by_columns.split(",")]
         training_parameter = TrainingParameter(batch_size=ctx.batch_size,
                                                epochs=ctx.epochs,

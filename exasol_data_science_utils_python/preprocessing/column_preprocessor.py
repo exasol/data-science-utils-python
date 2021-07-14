@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema_name import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table_name import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 
@@ -12,24 +12,24 @@ class ColumnPreprocessor(ABC):
     A ColumnProcessor generates queries or parts of queries for a specific transformation of this column.
     """
 
-    def _get_table_alias(self, target_schema: Schema, source_column: Column, prefix: str):
+    def _get_table_alias(self, target_schema: SchemaName, source_column: ColumnName, prefix: str):
         target_schema_name = target_schema.name
         source_schema_name = source_column.table.schema.name
         source_table_name = source_column.table.name
-        alias = Table(f"{target_schema_name}_{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}")
+        alias = TableName(f"{target_schema_name}_{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}")
         return alias
 
-    def _get_target_table(self, target_schema: Schema, source_column: Column, prefix: str):
+    def _get_target_table(self, target_schema: SchemaName, source_column: ColumnName, prefix: str):
         source_schema_name = source_column.table.schema.name
         source_table_name = source_column.table.name
-        target_table = Table(f"{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}", target_schema)
+        target_table = TableName(f"{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}", target_schema)
         return target_table
 
     @abstractmethod
     def fit(self,
             sql_processor: SQLExecutor,
-            source_column: Column,
-            target_schema: Schema) -> List[Table]:
+            source_column: ColumnName,
+            target_schema: SchemaName) -> List[TableName]:
         """
         Subclasses need to implement this method to generate the fit-queries.
         Fit-queries are used to collect global statistics about the Source Table
@@ -46,9 +46,9 @@ class ColumnPreprocessor(ABC):
     @abstractmethod
     def create_transform_from_clause_part(self,
                                           sql_executor: SQLExecutor,
-                                          source_column: Column,
-                                          input_table: Table,
-                                          target_schema: Schema) -> List[str]:
+                                          source_column: ColumnName,
+                                          input_table: TableName,
+                                          target_schema: SchemaName) -> List[str]:
         """
         Subclasses need to implement this method to generate the from-clause parts of the transformation query-
         Transform queries apply the transformation and might use the collected global state from the fit-queries.
@@ -65,9 +65,9 @@ class ColumnPreprocessor(ABC):
     @abstractmethod
     def create_transform_select_clause_part(self,
                                             sql_executor: SQLExecutor,
-                                            source_column: Column,
-                                            input_table: Table,
-                                            target_schema: Schema) -> List[str]:
+                                            source_column: ColumnName,
+                                            input_table: TableName,
+                                            target_schema: SchemaName) -> List[str]:
         """
         Subclasses need to implement this method to generate the select-clause parts of the transformation query
         Transform queries apply the transformation and might use the collected global state from the fit-queries.

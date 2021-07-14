@@ -16,7 +16,7 @@ class UnicodeCategories:
     FORMAT = 'Cf'
 
 
-class SchemaElement(ABC):
+class ExasolIdentifier(ABC):
 
     def __init__(self, name: str):
         if not self.validate_name(name):

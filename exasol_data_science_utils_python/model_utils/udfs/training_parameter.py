@@ -2,7 +2,7 @@ from typing import List, Union
 
 from typeguard import typechecked
 
-from exasol_data_science_utils_python.preprocessing.schema.column_name import Column
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
 
 
 class TrainingParameter:
@@ -13,7 +13,7 @@ class TrainingParameter:
                  shuffle_buffer_size:int,
                  split_per_node:bool,
                  number_of_random_partitions:Union[None,int],
-                 split_by_columns:List[Column]):
+                 split_by_columns:List[ColumnName]):
         self.split_by_columns = split_by_columns
         self.number_of_random_partitions = number_of_random_partitions
         self.split_per_node = split_per_node
