@@ -2,6 +2,8 @@ from typing import Union
 
 from typeguard import typechecked
 
+from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
+
 
 class ColumnType:
     @typechecked
@@ -56,3 +58,17 @@ class ColumnType:
     @property
     def precision(self) -> Union[int, None]:
         return self._precision
+
+    def __repr__(self):
+        return generate_repr_for_object(self)
+
+    def __eq__(self, other):
+        return isinstance(other, ColumnType) and \
+               self._name == other.name and \
+               self._scale == other.scale and \
+               self._precision == other.precision and \
+               self._size == other.size and \
+               self._characterSet == other.characterSet and \
+               self._fraction == other.fraction and \
+               self._withLocalTimeZone == other.withLocalTimeZone and \
+               self._srid == other._srid

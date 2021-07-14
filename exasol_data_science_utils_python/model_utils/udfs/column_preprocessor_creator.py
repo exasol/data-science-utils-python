@@ -13,8 +13,8 @@ from exasol_data_science_utils_python.preprocessing.normalization.min_max_scaler
 from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
-from exasol_data_science_utils_python.preprocessing.table_preprocessor import ColumnPreprocesserDefinition, \
-    TablePreprocessor
+from exasol_data_science_utils_python.preprocessing.table_preprocessor import TablePreprocessor
+from exasol_data_science_utils_python.preprocessing.column_preprocessor_definition import ColumnPreprocessorDefinition
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 
@@ -63,11 +63,11 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
         for column in columns:
             column_type = column_types[column.name]
             if column_type == 'DECIMAL(18,0)':
-                column_preprocessor_defintions.append(ColumnPreprocesserDefinition(column.name, OrdinalEncoder()))
+                column_preprocessor_defintions.append(ColumnPreprocessorDefinition(column.name, OrdinalEncoder()))
             elif column_type.startswith('VARCHAR'):
-                column_preprocessor_defintions.append(ColumnPreprocesserDefinition(column.name, OrdinalEncoder()))
+                column_preprocessor_defintions.append(ColumnPreprocessorDefinition(column.name, OrdinalEncoder()))
             elif column_type == 'DOUBLE':
-                column_preprocessor_defintions.append(ColumnPreprocesserDefinition(column.name, MinMaxScaler()))
+                column_preprocessor_defintions.append(ColumnPreprocessorDefinition(column.name, MinMaxScaler()))
             else:
                 raise Exception(f"Type '{column_type}' of column {column.fully_qualified()} not supported")
         table_preprocessor = TablePreprocessor(target_schema, source_table, column_preprocessor_defintions)

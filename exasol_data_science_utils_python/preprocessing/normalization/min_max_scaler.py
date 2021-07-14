@@ -2,9 +2,16 @@ import textwrap
 from typing import List
 
 from exasol_data_science_utils_python.preprocessing.column_preprocessor import ColumnPreprocessor
+from exasol_data_science_utils_python.preprocessing.parameter_table import ParameterTable
+from exasol_data_science_utils_python.preprocessing.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.column_name_builder import ColumnNameBuilder
+from exasol_data_science_utils_python.preprocessing.schema.column_type import ColumnType
 from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table import Table
 from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.transform_select_clause_part import TransformSelectClausePart
+from exasol_data_science_utils_python.preprocessing.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX = "MIN_MAX_SCALAR_PARAMETERS"
@@ -33,7 +40,11 @@ class MinMaxScaler(ColumnPreprocessor):
         range_column = ColumnName("RANGE", table)
         return range_column
 
-    def fit(self, sqlexecutor: SQLExecutor, source_column: ColumnName, target_schema: SchemaName) -> List[TableName]:
+    def requires_global_transformation_for_training_data(self) -> bool:
+        return False
+
+    def fit(self, sqlexecutor: SQLExecutor, source_column: ColumnName, target_schema: SchemaName) -> List[
+        ParameterTable]:
         """
         This method creates a query which computes the parameter minimum and the range of the source column
         and stores them in a parameter table.
@@ -42,17 +53,30 @@ class MinMaxScaler(ColumnPreprocessor):
         :param target_schema: Schema where the result tables of the fit-queries should be stored
         :return: List of created tables or views
         """
-        parameter_table = self._get_parameter_table_name(target_schema, source_column)
+        parameter_table_name = self._get_parameter_table_name(target_schema, source_column)
         min_column = self._get_min_column()
         range_column = self._get_range_column()
         query = textwrap.dedent(f"""
-            CREATE OR REPLACE TABLE {parameter_table.fully_qualified()} AS
+            CREATE OR REPLACE TABLE {parameter_table_name.fully_qualified()} AS
             SELECT
-                MIN({source_column.fully_qualified()}) as {min_column.fully_qualified()},
-                MAX({source_column.fully_qualified()})-MIN({source_column.fully_qualified()}) as {range_column.fully_qualified()}
+                CAST(MIN({source_column.fully_qualified()}) as DOUBLE) as {min_column.fully_qualified()},
+                CAST(MAX({source_column.fully_qualified()})-MIN({source_column.fully_qualified()}) as DOUBLE) as {range_column.fully_qualified()}
             FROM {source_column.table_name.fully_qualified()}
             """)
         sqlexecutor.execute(query)
+        min_column = ColumnNameBuilder(min_column).with_table_name(parameter_table_name).build()
+        range_column = ColumnNameBuilder(range_column).with_table_name(parameter_table_name).build()
+        parameter_table = ParameterTable(
+            source_column=source_column,
+            purpose="StoreMinAndRange",
+            table=Table(
+                parameter_table_name,
+                columns=[
+                    Column(min_column, ColumnType("DOUBLE")),
+                    Column(range_column, ColumnType("DOUBLE"))
+                ]
+            )
+        )
         return [parameter_table]
 
     def create_transform_from_clause_part(self,
@@ -80,7 +104,7 @@ class MinMaxScaler(ColumnPreprocessor):
                                             sql_executor: SQLExecutor,
                                             source_column: ColumnName,
                                             input_table: TableName,
-                                            target_schema: SchemaName) -> List[str]:
+                                            target_schema: SchemaName) -> List[TransformSelectClausePart]:
         """
         This method generates the normalization for the select clause which uses the paramter from the parameter table.
 
@@ -93,6 +117,16 @@ class MinMaxScaler(ColumnPreprocessor):
         input_column = ColumnName(source_column.name, input_table)
         min_column = self._get_min_column(alias)
         range_column = self._get_range_column(alias)
-        select_clause_part = textwrap.dedent(
-            f'''({input_column.fully_qualified()}-{min_column.fully_qualified()})/{range_column.fully_qualified()} AS "{source_column.name}_MIN_MAX_SCALED"''')
+        target_column_name = ColumnName(f"{source_column.name}_MIN_MAX_SCALED")
+        select_clause_part_str = textwrap.dedent(
+            f'''({input_column.fully_qualified()}-{min_column.fully_qualified()})/{range_column.fully_qualified()} AS {target_column_name.quoted_name()}''')
+        select_clause_part = TransformSelectClausePart(
+            tranformation_column=TransformationColumn(
+                column=Column(target_column_name, ColumnType("DOUBLE")),
+                input_column=input_column,
+                source_column=source_column,
+                purpose="MinMaxScaled"
+            ),
+            select_clause_part_expression=select_clause_part_str
+        )
         return [select_clause_part]

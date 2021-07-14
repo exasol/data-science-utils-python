@@ -1,6 +1,7 @@
 from typeguard import typechecked
 
 from exasol_data_science_utils_python.preprocessing.schema.identifier import ExasolIdentifier
+from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
 
 
@@ -24,3 +25,6 @@ class TableName(ExasolIdentifier):
         return isinstance(other, TableName) and \
                self._name == other.name and \
                self._schema_name == other.schema_name
+
+    def __repr__(self):
+        return generate_repr_for_object(self)

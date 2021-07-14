@@ -6,8 +6,8 @@ from exasol_data_science_utils_python.udf_utils.pyexasol_sql_executor import Pye
 from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
-from exasol_data_science_utils_python.preprocessing.table_preprocessor import TablePreprocessor, \
-    ColumnPreprocesserDefinition
+from exasol_data_science_utils_python.preprocessing.table_preprocessor import TablePreprocessor
+from exasol_data_science_utils_python.preprocessing.column_preprocessor_definition import ColumnPreprocessorDefinition
 
 
 def test_table_preprocessor_create_fit_queries():
@@ -32,8 +32,8 @@ def test_table_preprocessor_create_fit_queries():
     source_column1 = ColumnName("CATEGORY", source_table)
     source_column2 = ColumnName("NUMERICAL", source_table)
     column_preprocessor_defintions = [
-        ColumnPreprocesserDefinition(source_column1.name, OrdinalEncoder()),
-        ColumnPreprocesserDefinition(source_column2.name, MinMaxScaler()),
+        ColumnPreprocessorDefinition(source_column1.name, OrdinalEncoder()),
+        ColumnPreprocessorDefinition(source_column2.name, MinMaxScaler()),
     ]
 
     sql_executor = PyexasolSQLExecutor(c)
@@ -92,8 +92,8 @@ def test_table_preprocessor_transform_queries():
     source_column1 = ColumnName("CATEGORY", source_table)
     source_column2 = ColumnName("NUMERICAL", source_table)
     column_preprocessor_defintions = [
-        ColumnPreprocesserDefinition(source_column1.name, OrdinalEncoder()),
-        ColumnPreprocesserDefinition(source_column2.name, MinMaxScaler()),
+        ColumnPreprocessorDefinition(source_column1.name, OrdinalEncoder()),
+        ColumnPreprocessorDefinition(source_column2.name, MinMaxScaler()),
     ]
 
     sql_executor = PyexasolSQLExecutor(c)
