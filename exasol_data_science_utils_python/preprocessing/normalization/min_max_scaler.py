@@ -50,7 +50,7 @@ class MinMaxScaler(ColumnPreprocessor):
             SELECT
                 MIN({source_column.fully_qualified()}) as {min_column.fully_qualified()},
                 MAX({source_column.fully_qualified()})-MIN({source_column.fully_qualified()}) as {range_column.fully_qualified()}
-            FROM {source_column.table.fully_qualified()}
+            FROM {source_column.table_name.fully_qualified()}
             """)
         sqlexecutor.execute(query)
         return [parameter_table]

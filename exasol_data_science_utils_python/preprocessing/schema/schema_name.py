@@ -1,7 +1,10 @@
+from typeguard import typechecked
+
 from exasol_data_science_utils_python.preprocessing.schema.identifier import ExasolIdentifier
 
 
 class SchemaName(ExasolIdentifier):
+    @typechecked
     def __init__(self, schema_name: str):
         super().__init__(schema_name)
 

@@ -56,7 +56,7 @@ class OrdinalEncoder(ColumnPreprocessor):
                     {value_column_alias.fully_qualified()}
                 FROM (
                     SELECT DISTINCT {source_column.fully_qualified()} as {value_column_alias.fully_qualified()}
-                    FROM {source_column.table.fully_qualified()}
+                    FROM {source_column.table_name.fully_qualified()}
                     ORDER BY {source_column.fully_qualified()}
                 );
                 """)

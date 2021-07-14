@@ -53,7 +53,7 @@ class TablePreprocessor():
         select_clause_parts_str = self._create_transform_select_clause_parts(sql_executor, input_table)
         from_clause_parts_str = self._create_transform_from_clause_parts(sql_executor, input_table)
         transformation_table = TableName(
-            f"{input_table.schema.name}_{input_table.name}_TRANSFORMED",
+            f"{input_table.schema_name.name}_{input_table.name}_TRANSFORMED",
             self.target_schema)
         query = textwrap.dedent(
 f"""CREATE OR REPLACE VIEW {transformation_table.fully_qualified()} AS

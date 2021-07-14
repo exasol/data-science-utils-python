@@ -44,7 +44,7 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
         query = f"""
             SELECT COLUMN_NAME, COLUMN_TYPE 
             FROM SYS.EXA_ALL_COLUMNS 
-            WHERE COLUMN_SCHEMA='{source_table.schema.name}'
+            WHERE COLUMN_SCHEMA='{source_table.schema_name.name}'
             AND COLUMN_TABLE='{source_table.name}'
             AND COLUMN_NAME in ({column_name_list})
             """

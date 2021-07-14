@@ -1,6 +1,8 @@
 import unicodedata
 from abc import ABC, abstractmethod
 
+from typeguard import typechecked
+
 
 class UnicodeCategories:
     UPPERCASE_LETTER = 'Lu'
@@ -17,7 +19,7 @@ class UnicodeCategories:
 
 
 class ExasolIdentifier(ABC):
-
+    @typechecked
     def __init__(self, name: str):
         if not self.validate_name(name):
             raise ValueError(f"Name '{name}' is not valid")

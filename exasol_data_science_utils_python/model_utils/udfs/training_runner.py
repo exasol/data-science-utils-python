@@ -46,7 +46,7 @@ class TrainingRunner:
         self.model = model
         self.column_preprocessor_creator = column_preprocessor_creator
         self.columns = self.input_columns + self.target_columns
-        if any(column.table != self.columns[0].table for column in self.columns):
+        if any(column.table_name != self.columns[0].table_name for column in self.columns):
             raise ValueError(
                 f"Not all columns in {[column.fully_qualified() for column in self.columns]} are from the same table.")
 

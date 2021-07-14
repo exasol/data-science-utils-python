@@ -14,14 +14,14 @@ class ColumnPreprocessor(ABC):
 
     def _get_table_alias(self, target_schema: SchemaName, source_column: ColumnName, prefix: str):
         target_schema_name = target_schema.name
-        source_schema_name = source_column.table.schema.name
-        source_table_name = source_column.table.name
+        source_schema_name = source_column.table_name.schema_name.name
+        source_table_name = source_column.table_name.name
         alias = TableName(f"{target_schema_name}_{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}")
         return alias
 
     def _get_target_table(self, target_schema: SchemaName, source_column: ColumnName, prefix: str):
-        source_schema_name = source_column.table.schema.name
-        source_table_name = source_column.table.name
+        source_schema_name = source_column.table_name.schema_name.name
+        source_table_name = source_column.table_name.name
         target_table = TableName(f"{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}", target_schema)
         return target_table
 

@@ -22,9 +22,9 @@ class TrainUDF:
         source_schema = SchemaName(ctx.source_schema_name)
         target_schema = SchemaName(ctx.target_schema_name)
         source_table = TableName(ctx.source_table_name, schema=source_schema)
-        input_columns = [ColumnName(column_name, table=source_table)
+        input_columns = [ColumnName(column_name, table_name=source_table)
                          for column_name in ctx.input_columns.split(",")]
-        target_column = [ColumnName(ctx.target_column, table=source_table)]
+        target_column = [ColumnName(ctx.target_column, table_name=source_table)]
         split_by_columns = []
         if ctx.split_by_columns is not None and ctx.split_by_columns != "":
             split_by_columns = [ColumnName(column_name, source_table)
