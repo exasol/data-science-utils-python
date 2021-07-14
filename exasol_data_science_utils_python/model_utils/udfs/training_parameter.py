@@ -26,5 +26,5 @@ class TrainingParameter:
             raise ValueError("batch_size needs to be >0")
         if not shuffle_buffer_size>0:
             raise ValueError("shuffle_buffer_size needs to be >0")
-        if not number_of_random_partitions>0:
+        if isinstance(number_of_random_partitions,int) and not number_of_random_partitions>0:
             raise ValueError("number_of_random_partitions needs to be >0")

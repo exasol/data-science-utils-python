@@ -40,3 +40,19 @@ def test_invalid_input_types(epochs, batch_size, shuffle_buffer_size, split_per_
     with pytest.raises(TypeError):
         TrainingParameter(epochs, batch_size, shuffle_buffer_size, split_per_node, number_of_random_partitions,
                           split_by_columns)
+
+
+@pytest.mark.parametrize(
+    "epochs,batch_size,shuffle_buffer_size,split_per_node,number_of_random_partitions,split_by_columns",
+    [
+        (-1, 2, 3, True, 4, []),
+        (1, -2, 3, True, 4, []),
+        (1, 2, -3, True, 4, []),
+        (1, 2, -3, True, -4, []),
+    ]
+)
+def test_invalid_input_values(epochs, batch_size, shuffle_buffer_size, split_per_node, number_of_random_partitions,
+                              split_by_columns):
+    with pytest.raises(ValueError):
+        TrainingParameter(epochs, batch_size, shuffle_buffer_size, split_per_node, number_of_random_partitions,
+                          split_by_columns)
