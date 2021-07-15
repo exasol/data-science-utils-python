@@ -78,7 +78,15 @@ def udf_wrapper():
     from exasol_udf_mock_python.udf_context import UDFContext
     from sklearn.linear_model import SGDRegressor
     from numpy.random import RandomState
-    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_transformer_creator import ColumnTransformerCreator
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_description_based_table_preprocessor_factory import \
+        ColumnDescriptionBasedTablePreprocessorFactory
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor_description import \
+        ColumnPreprocessorDescription
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.exact_column_name_selector import \
+        ExactColumnNameSelector
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.normalization.min_max_scaler_factory import \
+        MinMaxScalerFactory
+
     from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
 
     train_udf = TrainUDF()
@@ -86,8 +94,25 @@ def udf_wrapper():
     def run(ctx: UDFContext):
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
                              fit_intercept=True, eta0=0.9, power_t=0.1, learning_rate='invscaling')
-        column_preprocessor_creator = ColumnTransformerCreator()
-        train_udf.run(exa, ctx, model, column_preprocessor_creator)
+        table_preprocessor_factory = ColumnDescriptionBasedTablePreprocessorFactory(
+            input_column_preprocessor_descriptions=[
+                ColumnPreprocessorDescription(
+                    column_selector=ExactColumnNameSelector("A"),
+                    column_preprocessor_factory=MinMaxScalerFactory()
+                ),
+                ColumnPreprocessorDescription(
+                    column_selector=ExactColumnNameSelector("B"),
+                    column_preprocessor_factory=MinMaxScalerFactory()
+                ),
+            ],
+            target_column_preprocessor_descriptions=[
+                ColumnPreprocessorDescription(
+                    column_selector=ExactColumnNameSelector("C"),
+                    column_preprocessor_factory=MinMaxScalerFactory()
+                ),
+            ]
+        )
+        train_udf.run(exa, ctx, model, table_preprocessor_factory)
 
 
 def test_train_udf_with_mock_random_partitions(
@@ -377,17 +402,41 @@ def test_train_udf(
     ) AS
     from sklearn.linear_model import SGDRegressor
     from numpy.random import RandomState
-    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_transformer_creator import ColumnTransformerCreator
-    from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_description_based_table_preprocessor_factory import \
+        ColumnDescriptionBasedTablePreprocessorFactory
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor_description import \
+        ColumnPreprocessorDescription
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.exact_column_name_selector import \
+        ExactColumnNameSelector
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.normalization.min_max_scaler_factory import \
+        MinMaxScalerFactory
 
+    from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
 
     train_udf = TrainUDF()
 
     def run(ctx):
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
                              fit_intercept=True, eta0=0.9, power_t=0.1, learning_rate='invscaling')
-        column_preprocessor_creator = ColumnPreprocessorCreator()
-        train_udf.run(exa, ctx, model, column_preprocessor_creator)
+        table_preprocessor_factory = ColumnDescriptionBasedTablePreprocessorFactory(
+            input_column_preprocessor_descriptions=[
+                ColumnPreprocessorDescription(
+                    column_selector=ExactColumnNameSelector("A"),
+                    column_preprocessor_factory=MinMaxScalerFactory()
+                ),
+                ColumnPreprocessorDescription(
+                    column_selector=ExactColumnNameSelector("B"),
+                    column_preprocessor_factory=MinMaxScalerFactory()
+                ),
+            ],
+            target_column_preprocessor_descriptions=[
+                ColumnPreprocessorDescription(
+                    column_selector=ExactColumnNameSelector("C"),
+                    column_preprocessor_factory=MinMaxScalerFactory()
+                ),
+            ]
+        )
+        train_udf.run(exa, ctx, model, table_preprocessor_factory)
     """)
     pyexasol_connection.execute(udf_sql)
     query_udf = f"""

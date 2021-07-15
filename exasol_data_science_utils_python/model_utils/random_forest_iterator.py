@@ -9,24 +9,22 @@ from sklearn.ensemble import RandomForestClassifier
 
 from exasol_data_science_utils_python.model_utils.persistence import dump_to_base64_string
 from exasol_data_science_utils_python.model_utils.score_iterator import ScoreIterator
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
 from exasol_data_science_utils_python.udf_utils.iterator_utils import iterate_trough_dataset
 
 
 class RandomForestIterator(ScoreIterator):
     def __init__(self,
-                 input_preprocessor: ColumnTransformer,
-                 output_preprocessor: ColumnTransformer,
+                 table_preprocessor:TablePreprocessor,
                  target_classes: int,
                  model: Union[ClassifierMixin, RegressorMixin]):
-        super().__init__(input_preprocessor, output_preprocessor, model)
+        super().__init__(table_preprocessor, model)
         self.target_classes = target_classes
-        self.output_preprocessor = output_preprocessor
-        self.model = model
         getattr(model, "fit")
 
     def _train_batch(self, df: pd.DataFrame):
-        input_columns = self.input_preprocessor.transform(df)
-        target_columns = self.output_preprocessor.transform(df)
+        input_columns = self._get_input_columns(df)
+        target_columns = self._get_output_columns(df)
         if target_columns.shape[1] > 1:
             raise Exception("target columns have more than 1 column")
         if len(np.unique(target_columns)) != self.target_classes:
@@ -60,15 +58,3 @@ class RandomForestIterator(ScoreIterator):
             lambda state, result: ctx.emit(result),
             lambda: ctx.reset()
         )
-    #
-    # @classmethod
-    # def combine_to_random_forrest(cls, rf_estimators: List["RandomForestIterator"]) -> "RandomForestIterator":
-    #     for estimator in rf_estimators:
-    #         if not estimator.is_compatible(rf_estimators[0]):
-    #             raise Exception("Estimators are not compatible")
-    #     estimators_ = [estimator.model for estimator in rf_estimators]
-    #     voting_classifiier = combine_random_forrest_classifier(estimators_)
-    #     return RandomForestIterator(
-    #         iterator_config=rf_estimators[0].iterator_config,
-    #         classifier=voting_classifiier
-    #     )

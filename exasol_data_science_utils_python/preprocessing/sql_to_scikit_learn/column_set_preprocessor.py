@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
     SKLearnPrefittedColumnTransformer
@@ -10,9 +10,9 @@ from exasol_data_science_utils_python.utils.repr_generation_for_object import ge
 
 class ColumnSetPreprocessor:
     def __init__(self,
-                 column_preprocessors: List[ColumnPreprocessor],
-                 column_transformer:SKLearnPrefittedColumnTransformer,
-                 source_table: TableName, target_schema: SchemaName):
+                 column_transformer: SKLearnPrefittedColumnTransformer,
+                 column_preprocessors: Optional[List[ColumnPreprocessor]]=None,
+                 source_table: Optional[TableName]=None, target_schema: Optional[SchemaName]=None):
         self.target_schema = target_schema
         self.source_table = source_table
         self.column_transformer = column_transformer

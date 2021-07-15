@@ -5,14 +5,15 @@ import pyexasol
 
 from exasol_data_science_utils_python.model_utils.partial_fit_iterator import RegressorPartialFitIterator
 from exasol_data_science_utils_python.model_utils.udfs import sql_udf_stub_creator
-from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.abstract_column_transfomer_creator import \
-    ColumnTransformerCreatorResult, AbstractColumnTransformerCreator
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
 from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regressor_udf import PartialFitRegressorUDF
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor_factory import \
+    TablePreprocessorFactory
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
 from exasol_data_science_utils_python.udf_utils.bucketfs_location import BucketFSLocation
 from exasol_data_science_utils_python.udf_utils.pyexasol_sql_executor import PyexasolSQLExecutor
@@ -32,7 +33,7 @@ class TrainingRunner:
                  source_table: TableName,
                  target_schema: SchemaName,
                  model,
-                 column_preprocessor_creator: AbstractColumnTransformerCreator):
+                 table_preprocessor_factory: TablePreprocessorFactory):
         self.job_id = job_id
         self.model_id = model_id
         self.path_under_model_connection = path_under_model_connection
@@ -44,7 +45,7 @@ class TrainingRunner:
         self.db_connection_object = db_connection_object
         self.model_connection_object = model_connection_object
         self.model = model
-        self.column_preprocessor_creator = column_preprocessor_creator
+        self.table_preprocessor_factory = table_preprocessor_factory
         self.columns = self.input_columns + self.target_columns
         if any(column.table_name != self.columns[0].table_name for column in self.columns):
             raise ValueError(
@@ -63,16 +64,14 @@ class TrainingRunner:
                              password=self.db_connection_object.password)
         sql_executor = PyexasolSQLExecutor(c)
 
-        column_transformer_creator_result = \
-            self.column_preprocessor_creator.generate_column_transformers(
+        table_preprocessor = \
+            self.table_preprocessor_factory.create_table_processor(
                 sql_executor,
-                self.input_columns,
-                self.target_columns,
                 self.source_table,
                 self.target_schema)
         self.upload_model_prototype(
             model_bucketfs_location,
-            column_transformer_creator_result,
+            table_preprocessor,
             self.model)
         sql_udf_stub_creator.create_partial_fit_regressor_udf(sql_executor, self.target_schema)
         sql_udf_stub_creator.create_combine_to_voting_regressor_udf(sql_executor, self.target_schema)
@@ -236,11 +235,10 @@ class TrainingRunner:
 
     def upload_model_prototype(self,
                                model_bucketfs_location: BucketFSLocation,
-                               column_transformer_creator_result: ColumnTransformerCreatorResult,
+                               table_preprocessor: TablePreprocessor,
                                model):
         regressor_partial_fit_iterator = RegressorPartialFitIterator(
-            input_preprocessor=column_transformer_creator_result.input_columns_transformer,
-            output_preprocessor=column_transformer_creator_result.target_column_transformer,
+            table_preprocessor=table_preprocessor,
             model=model
         )
         model_bucketfs_location.upload_object_to_bucketfs_via_joblib(regressor_partial_fit_iterator,

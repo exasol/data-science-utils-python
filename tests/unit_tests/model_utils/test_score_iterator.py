@@ -8,19 +8,33 @@ from exasol_udf_mock_python.udf_mock_executor import UDFMockExecutor
 def udf_wrapper():
     from exasol_udf_mock_python.udf_context import UDFContext
     from sklearn.linear_model import SGDRegressor
-    from sklearn.compose import ColumnTransformer
     from numpy.random import RandomState
-    from sklearn.preprocessing import FunctionTransformer
+    from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_identity_transformer import \
+        SKLearnIdentityTransformer
+    from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
+        SKLearnPrefittedColumnTransformer
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_set_preprocessor import \
+        ColumnSetPreprocessor
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
 
     from exasol_data_science_utils_python.model_utils.score_iterator import ScoreIterator
 
     def run(ctx: UDFContext):
-        input_preprocessor = ColumnTransformer(transformers=[
-            ("t2", FunctionTransformer(), ["t2"])
-        ])
-        output_preprocessor = ColumnTransformer(transformers=[
-            ("t2", FunctionTransformer(), ["t2"])
-        ])
+        input_preprocessor = SKLearnPrefittedColumnTransformer(
+            transformer_mapping=[("t2", SKLearnIdentityTransformer())]
+        )
+        output_preprocessor = SKLearnPrefittedColumnTransformer(
+            transformer_mapping=[("t2", SKLearnIdentityTransformer())]
+        )
+        table_preprocessor = TablePreprocessor(
+            input_column_set_preprocessors=ColumnSetPreprocessor(
+                column_transformer=input_preprocessor,
+            ),
+            target_column_set_preprocessors=ColumnSetPreprocessor(
+                column_transformer=output_preprocessor,
+            ),
+        )
+
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False, max_iter=100000,
                              tol=1e-10)
         df = ctx.get_dataframe(101)
@@ -30,8 +44,7 @@ def udf_wrapper():
         y = output_preprocessor.transform(df[["t2"]])
         model.fit(X, y)
         iterator = ScoreIterator(
-            input_preprocessor=input_preprocessor,
-            output_preprocessor=output_preprocessor,
+            table_preprocessor=table_preprocessor,
             model=model
         )
         score_sum, score_count = iterator.compute_score(ctx, 10)

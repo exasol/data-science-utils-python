@@ -8,7 +8,7 @@ from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitt
 
 
 class SKLearnPrefittedColumnTransformer(SKLearnPrefittedTransformer):
-    def __init__(self, transformer_mapping: List[Tuple[str, SKLearnPrefittedTransformer]]):
+    def __init__(self, transformer_mapping: List[Tuple[str, SKLearnPrefittedTransformer]]) -> object:
         self._transformer_mapping = transformer_mapping
 
     def align_column(self,transformed_column:Union[pd.DataFrame,pd.Series,np.ndarray]):

@@ -1,13 +1,13 @@
 from pathlib import PurePosixPath
 
-from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.abstract_column_transfomer_creator import \
-    AbstractColumnTransformerCreator
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
 from exasol_data_science_utils_python.model_utils.udfs.training_runner import TrainingRunner
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor_factory import \
+    TablePreprocessorFactory
 
 
 class TrainUDF:
@@ -15,7 +15,7 @@ class TrainUDF:
     def __init__(self):
         self.counter = 0
 
-    def run(self, exa, ctx, model, column_preprocessor_creator: AbstractColumnTransformerCreator):
+    def run(self, exa, ctx, model, table_preprocessor_factory: TablePreprocessorFactory):
         model_connection_name = ctx.model_connection
         path_under_model_connection = PurePosixPath(ctx.path_under_model_connection)
         db_connection_name = ctx.db_connection
@@ -59,7 +59,7 @@ class TrainUDF:
             source_table,
             target_schema,
             model,
-            column_preprocessor_creator)
+            table_preprocessor_factory)
         model_info = training_runner.run()
         ctx.emit(model_info["job_id"],
                  model_info["model_id"],

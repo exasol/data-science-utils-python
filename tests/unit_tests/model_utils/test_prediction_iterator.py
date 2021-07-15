@@ -8,23 +8,33 @@ from exasol_udf_mock_python.udf_mock_executor import UDFMockExecutor
 def udf_wrapper():
     from exasol_udf_mock_python.udf_context import UDFContext
     from sklearn.linear_model import SGDRegressor
-    from sklearn.compose import ColumnTransformer
     from exasol_data_science_utils_python.model_utils.prediction_iterator import PredictionIterator
     from numpy.random import RandomState
-    from sklearn.preprocessing import FunctionTransformer
     from sklearn.pipeline import Pipeline
+    from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_identity_transformer import \
+        SKLearnIdentityTransformer
+    from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
+        SKLearnPrefittedColumnTransformer
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_set_preprocessor import \
+        ColumnSetPreprocessor
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
 
     def run(ctx: UDFContext):
-        input_preprocessor = ColumnTransformer(transformers=[
-            ("t2", FunctionTransformer(), ["t2"])
-        ])
+        input_preprocessor = SKLearnPrefittedColumnTransformer(
+            transformer_mapping=[("t2", SKLearnIdentityTransformer())]
+        )
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False, max_iter=100000,
                              tol=1e-10)
         pipeline = Pipeline([("p", input_preprocessor), ("m", model)])
         df = ctx.get_dataframe(101)
         pipeline.fit(df[["t2"]], df["t2"])
+        table_preprocessor = TablePreprocessor(
+            input_column_set_preprocessors=ColumnSetPreprocessor(
+                column_transformer=input_preprocessor,
+            ),
+        )
         iterator = PredictionIterator(
-            input_preprocessor=input_preprocessor,
+            table_preprocessor=table_preprocessor,
             model=model
         )
         iterator.predict(ctx, 10, lambda result: ctx.emit(result))

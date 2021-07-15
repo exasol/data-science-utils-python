@@ -1,3 +1,5 @@
+from typing import Optional
+
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_set_preprocessor import \
@@ -8,8 +10,8 @@ from exasol_data_science_utils_python.utils.repr_generation_for_object import ge
 class TablePreprocessor:
     def __init__(self,
                  input_column_set_preprocessors: ColumnSetPreprocessor,
-                 target_column_set_preprocessors: ColumnSetPreprocessor,
-                 source_table: TableName, target_schema: SchemaName):
+                 target_column_set_preprocessors: Optional[ColumnSetPreprocessor] = None,
+                 source_table: Optional[TableName] = None, target_schema: Optional[SchemaName] = None):
         self.target_schema = target_schema
         self.source_table = source_table
         self.target_column_set_preprocessors = target_column_set_preprocessors
