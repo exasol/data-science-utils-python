@@ -4,8 +4,8 @@ from collections import OrderedDict
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
-from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor_creator import \
-    ColumnPreprocessorCreator
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_transformer_creator import \
+    ColumnTransformerCreator
 from tests.unit_tests.mock_result_set import MockResultSet
 from tests.unit_tests.mock_sql_executor import MockSQLExecutor
 
@@ -69,7 +69,7 @@ def test_happy_path():
                     (1.0,),
                 ], ),
         ])
-    creator = ColumnPreprocessorCreator()
+    creator = ColumnTransformerCreator()
     result = creator.generate_column_transformers(
         sql_executor=sql_executor,
         input_columns=[ColumnName("a"), ColumnName("b"), ColumnName("c")],

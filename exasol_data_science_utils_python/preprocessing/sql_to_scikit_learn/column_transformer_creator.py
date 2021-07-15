@@ -6,9 +6,8 @@ from sklearn.compose import ColumnTransformer
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_contrast_matrix_transformer import \
     SKLearnContrastMatrixTransformer
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_min_max_scalar import SKLearnMinMaxScalar
-from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.abstract_column_preprocessor_creator import \
-    ColumnPreprocssorCreatorResult, AbstractColumnPreprocessorCreator
-from exasol_data_science_utils_python.preprocessing.sql.column_preprocessor_definition import ColumnPreprocessorDefinition
+from exasol_data_science_utils_python.preprocessing.sql.column_preprocessor_definition import \
+    ColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.encoding.ordinal_encoder import OrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.sql.normalization.min_max_scaler import MinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
@@ -16,17 +15,19 @@ from exasol_data_science_utils_python.preprocessing.sql.schema.column_name impor
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql.table_preprocessor import TablePreprocessor
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.abstract_column_transfomer_creator import \
+    AbstractColumnTransformerCreator, ColumnTransformerCreatorResult
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 
-class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
+class ColumnTransformerCreator(AbstractColumnTransformerCreator):
 
     def generate_column_transformers(self,
                                      sql_executor: SQLExecutor,
                                      input_columns: List[ColumnName],
                                      target_columns: List[ColumnName],
                                      source_table: TableName,
-                                     target_schema: SchemaName) -> ColumnPreprocssorCreatorResult:
+                                     target_schema: SchemaName) -> ColumnTransformerCreatorResult:
         columns = input_columns + target_columns
         column_types = self._get_column_types(columns, source_table, sql_executor)
         parameter_tables = self._fit_table_preprocessor(column_types, columns, source_table, sql_executor,
@@ -35,8 +36,8 @@ class ColumnPreprocessorCreator(AbstractColumnPreprocessorCreator):
                                                                     source_table, sql_executor)
         target_column_transformer = self._create_column_transformer(column_types, parameter_tables, target_columns,
                                                                     source_table, sql_executor)
-        return ColumnPreprocssorCreatorResult(input_columns_transformer,
-                                              target_column_transformer)
+        return ColumnTransformerCreatorResult(input_columns_transformer,
+                                             target_column_transformer)
 
     def _get_column_types(self,
                           columns: List[ColumnName],
