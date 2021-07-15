@@ -1,6 +1,6 @@
 from pathlib import PurePosixPath
 
-from exasol_data_science_utils_python.model_utils.udfs.abstract_column_preprocessor_creator import \
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.abstract_column_preprocessor_creator import \
     AbstractColumnPreprocessorCreator
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter

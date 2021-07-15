@@ -16,7 +16,7 @@ from exasol_data_science_utils_python.preprocessing.sql.tranformation_table impo
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
 from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
-from tests.unit_tests.preprocessing.mock_sql_executor import MockSQLExecutor
+from tests.unit_tests.mock_sql_executor import MockSQLExecutor
 
 
 class MyColumnPreprocessor(ColumnPreprocessor):

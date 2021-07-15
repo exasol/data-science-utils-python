@@ -9,7 +9,7 @@ from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name impor
 from exasol_data_science_utils_python.preprocessing.sql.schema.table import Table
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
-from tests.unit_tests.preprocessing.mock_sql_executor import MockSQLExecutor
+from tests.unit_tests.mock_sql_executor import MockSQLExecutor
 
 
 def test_ordinal_encoder_create_fit_queries():
