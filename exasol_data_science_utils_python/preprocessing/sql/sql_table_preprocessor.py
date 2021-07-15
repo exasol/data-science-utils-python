@@ -1,7 +1,7 @@
 import textwrap
 from typing import List, Tuple
 
-from exasol_data_science_utils_python.preprocessing.sql.column_preprocessor_definition import ColumnPreprocessorDefinition
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
@@ -12,9 +12,9 @@ from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 
-class TablePreprocessor():
+class SQLTablePreprocessor():
     def __init__(self, target_schema: SchemaName, source_table: TableName,
-                 column_preprocessor_defintions: List[ColumnPreprocessorDefinition]):
+                 column_preprocessor_defintions: List[SQLColumnPreprocessorDefinition]):
         self.source_table = source_table
         self.target_schema = target_schema
         self.column_preprocessor_defintions = column_preprocessor_defintions

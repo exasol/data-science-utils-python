@@ -1,6 +1,6 @@
 import textwrap
 
-from exasol_data_science_utils_python.preprocessing.sql.encoding.ordinal_encoder import OrdinalEncoder
+from exasol_data_science_utils_python.preprocessing.sql.encoding.sql_ordinal_encoder import SQLOrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
@@ -17,7 +17,7 @@ def test_ordinal_encoder_create_fit_queries():
     source_table = TableName("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
     source_column = ColumnName("SRC_COLUMN1", source_table)
-    encoder = OrdinalEncoder()
+    encoder = SQLOrdinalEncoder()
     mock_sql_executor = MockSQLExecutor()
     parameter_tables = encoder.fit(mock_sql_executor, source_column, target_schema)
     expected = textwrap.dedent(f"""
@@ -58,7 +58,7 @@ def test_ordinal_encoder_create_from_clause_part():
     source_column = ColumnName("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
     input_table = TableName("IN_TABLE", input_schema)
-    encoder = OrdinalEncoder()
+    encoder = SQLOrdinalEncoder()
     mock_sql_executor = MockSQLExecutor()
     from_clause_part = encoder.create_transform_from_clause_part(
         mock_sql_executor, source_column, input_table, target_schema)
@@ -79,7 +79,7 @@ def test_ordinal_encoder_create_select_clause_part():
     source_column = ColumnName("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
     input_table = TableName("IN_TABLE", input_schema)
-    encoder = OrdinalEncoder()
+    encoder = SQLOrdinalEncoder()
     mock_sql_executor = MockSQLExecutor()
     select_clause_part = encoder.create_transform_select_clause_part(
         mock_sql_executor, source_column, input_table, target_schema)

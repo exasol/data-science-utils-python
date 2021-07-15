@@ -1,6 +1,6 @@
 import textwrap
 
-from exasol_data_science_utils_python.preprocessing.sql.normalization.min_max_scaler import MinMaxScaler
+from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_min_max_scaler import SQLMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
@@ -17,7 +17,7 @@ def test_min_max_scaler_create_fit_queries():
     source_table = TableName("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
     source_column = ColumnName("SRC_COLUMN1", source_table)
-    scaler = MinMaxScaler()
+    scaler = SQLMinMaxScaler()
     mock_sql_executor = MockSQLExecutor()
     parameter_tables = scaler.fit(mock_sql_executor, source_column, target_schema)
 
@@ -57,7 +57,7 @@ def test_min_max_scaler_create_from_clause_part():
     source_column = ColumnName("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
     input_table = TableName("IN_TABLE", input_schema)
-    scaler = MinMaxScaler()
+    scaler = SQLMinMaxScaler()
     mock_sql_executor = MockSQLExecutor()
     from_clause_part = scaler.create_transform_from_clause_part(
         mock_sql_executor, source_column, input_table, target_schema)
@@ -72,7 +72,7 @@ def test_min_max_scaler_create_select_clause_part():
     source_column = ColumnName("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
     input_table = TableName("IN_TABLE", input_schema)
-    scaler = MinMaxScaler()
+    scaler = SQLMinMaxScaler()
     mock_sql_executor = MockSQLExecutor()
     select_clause_parts = scaler.create_transform_select_clause_part(
         mock_sql_executor, source_column, input_table, target_schema)

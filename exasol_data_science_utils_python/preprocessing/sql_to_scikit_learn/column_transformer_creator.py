@@ -6,15 +6,15 @@ from sklearn.compose import ColumnTransformer
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_contrast_matrix_transformer import \
     SKLearnContrastMatrixTransformer
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_min_max_scalar import SKLearnMinMaxScalar
-from exasol_data_science_utils_python.preprocessing.sql.column_preprocessor_definition import \
-    ColumnPreprocessorDefinition
-from exasol_data_science_utils_python.preprocessing.sql.encoding.ordinal_encoder import OrdinalEncoder
-from exasol_data_science_utils_python.preprocessing.sql.normalization.min_max_scaler import MinMaxScaler
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import \
+    SQLColumnPreprocessorDefinition
+from exasol_data_science_utils_python.preprocessing.sql.encoding.sql_ordinal_encoder import SQLOrdinalEncoder
+from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_min_max_scaler import SQLMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
-from exasol_data_science_utils_python.preprocessing.sql.table_preprocessor import TablePreprocessor
+from exasol_data_science_utils_python.preprocessing.sql.sql_table_preprocessor import SQLTablePreprocessor
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.abstract_column_transfomer_creator import \
     AbstractColumnTransformerCreator, ColumnTransformerCreatorResult
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
@@ -66,14 +66,14 @@ class ColumnTransformerCreator(AbstractColumnTransformerCreator):
         for column in columns:
             column_type = column_types[column.name]
             if column_type == 'DECIMAL(18,0)':
-                column_preprocessor_defintions.append(ColumnPreprocessorDefinition(column.name, OrdinalEncoder()))
+                column_preprocessor_defintions.append(SQLColumnPreprocessorDefinition(column.name, SQLOrdinalEncoder()))
             elif column_type.startswith('VARCHAR'):
-                column_preprocessor_defintions.append(ColumnPreprocessorDefinition(column.name, OrdinalEncoder()))
+                column_preprocessor_defintions.append(SQLColumnPreprocessorDefinition(column.name, SQLOrdinalEncoder()))
             elif column_type == 'DOUBLE':
-                column_preprocessor_defintions.append(ColumnPreprocessorDefinition(column.name, MinMaxScaler()))
+                column_preprocessor_defintions.append(SQLColumnPreprocessorDefinition(column.name, SQLMinMaxScaler()))
             else:
                 raise Exception(f"Type '{column_type}' of column {column.fully_qualified()} not supported")
-        table_preprocessor = TablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
+        table_preprocessor = SQLTablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
         fit_tables = table_preprocessor.fit(sql_executor)
         return fit_tables
 

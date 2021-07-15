@@ -1,7 +1,7 @@
 import textwrap
 from typing import List
 
-from exasol_data_science_utils_python.preprocessing.sql.column_preprocessor import ColumnPreprocessor
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor import SQLColumnPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
@@ -17,7 +17,7 @@ from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX = "ORDINAL_ENCODER_DICTIONARY"
 
 
-class OrdinalEncoder(ColumnPreprocessor):
+class SQLOrdinalEncoder(SQLColumnPreprocessor):
     """
     This ColumnPreprocessor implements a OrdinalEncoder.
         It was inspired by the

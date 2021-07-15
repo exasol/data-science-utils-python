@@ -1,8 +1,8 @@
 import textwrap
 from typing import List
 
-from exasol_data_science_utils_python.preprocessing.sql.column_preprocessor import ColumnPreprocessor
-from exasol_data_science_utils_python.preprocessing.sql.column_preprocessor_definition import ColumnPreprocessorDefinition
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor import SQLColumnPreprocessor
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
@@ -11,7 +11,7 @@ from exasol_data_science_utils_python.preprocessing.sql.schema.column_type impor
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table import Table
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
-from exasol_data_science_utils_python.preprocessing.sql.table_preprocessor import TablePreprocessor
+from exasol_data_science_utils_python.preprocessing.sql.sql_table_preprocessor import SQLTablePreprocessor
 from exasol_data_science_utils_python.preprocessing.sql.tranformation_table import TransformationTable
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
 from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
@@ -19,7 +19,7 @@ from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 from tests.unit_tests.mock_sql_executor import MockSQLExecutor
 
 
-class MyColumnPreprocessor(ColumnPreprocessor):
+class MyColumnPreprocessor(SQLColumnPreprocessor):
 
     def requires_global_transformation_for_training_data(self):
         return False
@@ -70,11 +70,11 @@ def test_table_preprocessor_create_fit_queries():
     source_column1 = ColumnName("SRC_COLUMN1", source_table)
     source_column2 = ColumnName("SRC_COLUMN2", source_table)
     column_preprocessor_defintions = [
-        ColumnPreprocessorDefinition(source_column1.name, MyColumnPreprocessor()),
-        ColumnPreprocessorDefinition(source_column2.name, MyColumnPreprocessor()),
+        SQLColumnPreprocessorDefinition(source_column1.name, MyColumnPreprocessor()),
+        SQLColumnPreprocessorDefinition(source_column2.name, MyColumnPreprocessor()),
     ]
 
-    table_preprocessor = TablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
+    table_preprocessor = SQLTablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
     mock_sql_executor = MockSQLExecutor()
     parameter_tables = table_preprocessor.fit(mock_sql_executor)
     source_column1_create_table = textwrap.dedent('''
@@ -121,11 +121,11 @@ def test_table_preprocessor_create_transform_query():
     input_table = TableName("IN_TABLE", input_schema)
 
     column_preprocessor_defintions = [
-        ColumnPreprocessorDefinition(source_column1.name, MyColumnPreprocessor()),
-        ColumnPreprocessorDefinition(source_column2.name, MyColumnPreprocessor()),
+        SQLColumnPreprocessorDefinition(source_column1.name, MyColumnPreprocessor()),
+        SQLColumnPreprocessorDefinition(source_column2.name, MyColumnPreprocessor()),
     ]
 
-    table_preprocessor = TablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
+    table_preprocessor = SQLTablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
     mock_sql_executor = MockSQLExecutor()
     transformation_table = table_preprocessor.transform(mock_sql_executor, input_table)
     expected_transformation_table = get_expected_transformation_table()

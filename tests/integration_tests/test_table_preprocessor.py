@@ -1,13 +1,13 @@
 import pyexasol
 
-from exasol_data_science_utils_python.preprocessing.sql.encoding.ordinal_encoder import OrdinalEncoder
-from exasol_data_science_utils_python.preprocessing.sql.normalization.min_max_scaler import MinMaxScaler
+from exasol_data_science_utils_python.preprocessing.sql.encoding.sql_ordinal_encoder import SQLOrdinalEncoder
+from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_min_max_scaler import SQLMinMaxScaler
 from exasol_data_science_utils_python.udf_utils.pyexasol_sql_executor import PyexasolSQLExecutor
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
-from exasol_data_science_utils_python.preprocessing.sql.table_preprocessor import TablePreprocessor
-from exasol_data_science_utils_python.preprocessing.sql.column_preprocessor_definition import ColumnPreprocessorDefinition
+from exasol_data_science_utils_python.preprocessing.sql.sql_table_preprocessor import SQLTablePreprocessor
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import SQLColumnPreprocessorDefinition
 
 
 def test_table_preprocessor_create_fit_queries():
@@ -32,12 +32,12 @@ def test_table_preprocessor_create_fit_queries():
     source_column1 = ColumnName("CATEGORY", source_table)
     source_column2 = ColumnName("NUMERICAL", source_table)
     column_preprocessor_defintions = [
-        ColumnPreprocessorDefinition(source_column1.name, OrdinalEncoder()),
-        ColumnPreprocessorDefinition(source_column2.name, MinMaxScaler()),
+        SQLColumnPreprocessorDefinition(source_column1.name, SQLOrdinalEncoder()),
+        SQLColumnPreprocessorDefinition(source_column2.name, SQLMinMaxScaler()),
     ]
 
     sql_executor = PyexasolSQLExecutor(c)
-    table_preprocessor = TablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
+    table_preprocessor = SQLTablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
     fit_tables = table_preprocessor.fit(sql_executor)
 
     query = '''
@@ -92,12 +92,12 @@ def test_table_preprocessor_transform_queries():
     source_column1 = ColumnName("CATEGORY", source_table)
     source_column2 = ColumnName("NUMERICAL", source_table)
     column_preprocessor_defintions = [
-        ColumnPreprocessorDefinition(source_column1.name, OrdinalEncoder()),
-        ColumnPreprocessorDefinition(source_column2.name, MinMaxScaler()),
+        SQLColumnPreprocessorDefinition(source_column1.name, SQLOrdinalEncoder()),
+        SQLColumnPreprocessorDefinition(source_column2.name, SQLMinMaxScaler()),
     ]
 
     sql_executor = PyexasolSQLExecutor(c)
-    table_preprocessor = TablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
+    table_preprocessor = SQLTablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
     fit_tables = table_preprocessor.fit(sql_executor)
 
     transform_table = table_preprocessor.transform(sql_executor, input_table)

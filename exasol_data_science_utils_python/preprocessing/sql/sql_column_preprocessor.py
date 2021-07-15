@@ -10,7 +10,7 @@ from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 
-class ColumnPreprocessor(ABC):
+class SQLColumnPreprocessor(ABC):
     """
     A ColumnProcessor generates queries or parts of queries for a specific transformation of this column.
     """
