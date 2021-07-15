@@ -1,5 +1,5 @@
 from pathlib import PurePosixPath
-from typing import List, Generator, Any, Dict
+from typing import List, Any, Dict
 
 import pyexasol
 
@@ -10,9 +10,9 @@ from exasol_data_science_utils_python.model_utils.udfs.abstract_column_preproces
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
 from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regressor_udf import PartialFitRegressorUDF
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
-from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
-from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
 from exasol_data_science_utils_python.udf_utils.bucketfs_location import BucketFSLocation
 from exasol_data_science_utils_python.udf_utils.pyexasol_sql_executor import PyexasolSQLExecutor
