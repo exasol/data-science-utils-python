@@ -3,11 +3,11 @@ import pyexasol
 from exasol_data_science_utils_python.preprocessing.encoding.ordinal_encoder import OrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.normalization.min_max_scaler import MinMaxScaler
 from exasol_data_science_utils_python.udf_utils.pyexasol_sql_executor import PyexasolSQLExecutor
-from exasol_data_science_utils_python.preprocessing.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table import Table
-from exasol_data_science_utils_python.preprocessing.table_preprocessor import TablePreprocessor, \
-    ColumnPreprocesserDefinition
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.table_preprocessor import TablePreprocessor
+from exasol_data_science_utils_python.preprocessing.column_preprocessor_definition import ColumnPreprocessorDefinition
 
 
 def test_table_preprocessor_create_fit_queries():
@@ -26,14 +26,14 @@ def test_table_preprocessor_create_fit_queries():
     )
     """)
     c.execute("""INSERT INTO "SOURCE_SCHEMA"."SOURCE_TABLE" VALUES ('A',1),('B',2);""")
-    source_schema = Schema("SOURCE_SCHEMA")
-    source_table = Table("SOURCE_TABLE", source_schema)
-    target_schema = Schema("TARGET_SCHEMA")
-    source_column1 = Column("CATEGORY", source_table)
-    source_column2 = Column("NUMERICAL", source_table)
+    source_schema = SchemaName("SOURCE_SCHEMA")
+    source_table = TableName("SOURCE_TABLE", source_schema)
+    target_schema = SchemaName("TARGET_SCHEMA")
+    source_column1 = ColumnName("CATEGORY", source_table)
+    source_column2 = ColumnName("NUMERICAL", source_table)
     column_preprocessor_defintions = [
-        ColumnPreprocesserDefinition(source_column1.name, OrdinalEncoder()),
-        ColumnPreprocesserDefinition(source_column2.name, MinMaxScaler()),
+        ColumnPreprocessorDefinition(source_column1.name, OrdinalEncoder()),
+        ColumnPreprocessorDefinition(source_column2.name, MinMaxScaler()),
     ]
 
     sql_executor = PyexasolSQLExecutor(c)
@@ -85,15 +85,15 @@ def test_table_preprocessor_transform_queries():
     """)
     c.execute("""INSERT INTO "SOURCE_SCHEMA"."INPUT_TABLE" VALUES ('A',1),('B',3),('A',2),('C',4);""")
 
-    source_schema = Schema("SOURCE_SCHEMA")
-    source_table = Table("SOURCE_TABLE", source_schema)
-    input_table = Table("INPUT_TABLE", source_schema)
-    target_schema = Schema("TARGET_SCHEMA")
-    source_column1 = Column("CATEGORY", source_table)
-    source_column2 = Column("NUMERICAL", source_table)
+    source_schema = SchemaName("SOURCE_SCHEMA")
+    source_table = TableName("SOURCE_TABLE", source_schema)
+    input_table = TableName("INPUT_TABLE", source_schema)
+    target_schema = SchemaName("TARGET_SCHEMA")
+    source_column1 = ColumnName("CATEGORY", source_table)
+    source_column2 = ColumnName("NUMERICAL", source_table)
     column_preprocessor_defintions = [
-        ColumnPreprocesserDefinition(source_column1.name, OrdinalEncoder()),
-        ColumnPreprocesserDefinition(source_column2.name, MinMaxScaler()),
+        ColumnPreprocessorDefinition(source_column1.name, OrdinalEncoder()),
+        ColumnPreprocessorDefinition(source_column2.name, MinMaxScaler()),
     ]
 
     sql_executor = PyexasolSQLExecutor(c)

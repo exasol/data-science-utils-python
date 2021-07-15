@@ -10,9 +10,9 @@ from exasol_data_science_utils_python.model_utils.udfs.abstract_column_preproces
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
 from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regressor_udf import PartialFitRegressorUDF
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
-from exasol_data_science_utils_python.preprocessing.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
-from exasol_data_science_utils_python.preprocessing.schema.table import Table
+from exasol_data_science_utils_python.preprocessing.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.preprocessing.schema.table_name import TableName
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
 from exasol_data_science_utils_python.udf_utils.bucketfs_location import BucketFSLocation
 from exasol_data_science_utils_python.udf_utils.pyexasol_sql_executor import PyexasolSQLExecutor
@@ -27,10 +27,10 @@ class TrainingRunner:
                  path_under_model_connection: PurePosixPath,
                  db_connection_object: ConnectionObject,
                  training_parameter: TrainingParameter,
-                 input_columns: List[Column],
-                 target_columns: List[Column],
-                 source_table: Table,
-                 target_schema: Schema,
+                 input_columns: List[ColumnName],
+                 target_columns: List[ColumnName],
+                 source_table: TableName,
+                 target_schema: SchemaName,
                  model,
                  column_preprocessor_creator: AbstractColumnPreprocessorCreator):
         self.job_id = job_id
@@ -46,7 +46,7 @@ class TrainingRunner:
         self.model = model
         self.column_preprocessor_creator = column_preprocessor_creator
         self.columns = self.input_columns + self.target_columns
-        if any(column.table != self.columns[0].table for column in self.columns):
+        if any(column.table_name != self.columns[0].table_name for column in self.columns):
             raise ValueError(
                 f"Not all columns in {[column.fully_qualified() for column in self.columns]} are from the same table.")
 
@@ -246,10 +246,10 @@ class TrainingRunner:
         model_bucketfs_location.upload_object_to_bucketfs_via_joblib(regressor_partial_fit_iterator,
                                                                      PartialFitRegressorUDF.INIT_MODEL_FILE_NAME)
 
-    def get_select_list_for_columns(self, columns: List[Column]):
+    def get_select_list_for_columns(self, columns: List[ColumnName]):
         column_name_list = self.get_column_name_list(columns)
         return ",".join(f'"{column_name}"' for column_name in column_name_list)
 
-    def get_column_name_list(self, columns: List[Column]):
+    def get_column_name_list(self, columns: List[ColumnName]):
         column_name_list = [column.name for column in columns]
         return column_name_list

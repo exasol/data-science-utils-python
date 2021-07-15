@@ -10,7 +10,7 @@ from exasol_udf_mock_python.mock_exa_environment import MockExaEnvironment
 from exasol_udf_mock_python.mock_meta_data import MockMetaData
 from exasol_udf_mock_python.udf_mock_executor import UDFMockExecutor
 
-from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
 
 
@@ -349,7 +349,7 @@ def test_train_udf(
         create_model_connection(pyexasol_connection)
     db_connection, db_connection_name = \
         create_db_connection(pyexasol_connection, db_connection)
-    target_schema = Schema("TARGET_SCHEMA")
+    target_schema = SchemaName("TARGET_SCHEMA")
     drop_and_create_target_schema(pyexasol_connection)
     udf_sql = textwrap.dedent(f"""
     CREATE OR REPLACE PYTHON3_DSUP SET SCRIPT {target_schema.fully_qualified()}."TRAIN_UDF"(

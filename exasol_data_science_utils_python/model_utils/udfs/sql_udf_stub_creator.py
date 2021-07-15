@@ -1,10 +1,10 @@
 import textwrap
 
-from exasol_data_science_utils_python.preprocessing.schema.schema import Schema
+from exasol_data_science_utils_python.preprocessing.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 
-def create_combine_to_voting_regressor_udf(sql_executor: SQLExecutor, target_schema: Schema):
+def create_combine_to_voting_regressor_udf(sql_executor: SQLExecutor, target_schema: SchemaName):
     udf = textwrap.dedent(f"""
     CREATE OR REPLACE PYTHON3_DSUP SET SCRIPT {target_schema.fully_qualified()}."COMBINE_TO_VOTING_REGRESSOR_UDF"(
     model_connection VARCHAR(2000000),
@@ -27,7 +27,7 @@ def create_combine_to_voting_regressor_udf(sql_executor: SQLExecutor, target_sch
     sql_executor.execute(udf)
 
 
-def create_partial_fit_regressor_udf(sql_executor: SQLExecutor, target_schema: Schema):
+def create_partial_fit_regressor_udf(sql_executor: SQLExecutor, target_schema: SchemaName):
     udf = textwrap.dedent(f"""
     CREATE OR REPLACE PYTHON3_DSUP SET SCRIPT {target_schema.fully_qualified()}."PARTIAL_FIT_REGRESSOR_UDF"(...) 
     EMITS (
