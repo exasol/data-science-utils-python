@@ -3,9 +3,9 @@ from typing import List, Dict
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 
-from exasol_data_science_utils_python.model_utils.sklearn_contrast_matrix_transformer import \
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_contrast_matrix_transformer import \
     SKLearnContrastMatrixTransformer
-from exasol_data_science_utils_python.model_utils.sklearn_min_max_scalar import SKLearnMinMaxScalar
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_min_max_scalar import SKLearnMinMaxScalar
 from exasol_data_science_utils_python.model_utils.udfs.abstract_column_preprocessor_creator import \
     ColumnPreprocssorCreatorResult, AbstractColumnPreprocessorCreator
 from exasol_data_science_utils_python.preprocessing.sql.column_preprocessor_definition import ColumnPreprocessorDefinition

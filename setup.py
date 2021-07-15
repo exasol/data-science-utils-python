@@ -6,6 +6,7 @@ packages = \
  'exasol_data_science_utils_python.model_utils',
  'exasol_data_science_utils_python.model_utils.udfs',
  'exasol_data_science_utils_python.preprocessing',
+ 'exasol_data_science_utils_python.preprocessing.scikit_learn',
  'exasol_data_science_utils_python.preprocessing.sql',
  'exasol_data_science_utils_python.preprocessing.sql.encoding',
  'exasol_data_science_utils_python.preprocessing.sql.normalization',
