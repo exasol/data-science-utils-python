@@ -1,14 +1,19 @@
 from typing import List, Tuple, Dict
 
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
+    SKLearnPrefittedColumnTransformer
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor import ColumnPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor_description import \
     ColumnPreprocessorDescription
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor_factory import \
     ColumnPreprocessorFactory
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_set_preprocessor import \
+    ColumnSetPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor_factory import \
     TablePreprocessorFactory
@@ -43,23 +48,45 @@ class ColumnDescriptionBasedTablePreprocessorFactory(TablePreprocessorFactory):
                 columns, self._target_column_preprocessor_descriptions)
         self._check_if_input_and_target_columns_are_disjunct(
             input_column_preprocessor_factory_mapping, target_column_preprocessor_factory_mapping)
-        input_column_preprocessors = \
-            self._create_column_preprocessors(input_column_preprocessor_factory_mapping,
-                                              sql_executor, target_schema)
-        target_column_preprocessors = \
-            self._create_column_preprocessors(target_column_preprocessor_factory_mapping,
-                                              sql_executor, target_schema)
+        input_column_set_preprocessors = \
+            self._create_column_set_preprocessors(input_column_preprocessor_factory_mapping,
+                                                  sql_executor, target_schema, source_table)
+        target_column_set_preprocessors = \
+            self._create_column_set_preprocessors(target_column_preprocessor_factory_mapping,
+                                                  sql_executor, target_schema, source_table)
         table_preproccesor = \
-            TablePreprocessor(input_column_preprocessors,
-                              target_column_preprocessors,
+            TablePreprocessor(input_column_set_preprocessors,
+                              target_column_set_preprocessors,
                               source_table, target_schema)
         return table_preproccesor
+
+    def _create_column_set_preprocessors(
+            self,
+            column_preprocessor_factory_mapping: Dict[str, Tuple[Column, ColumnPreprocessorFactory]],
+            sql_executor: SQLExecutor, target_schema: SchemaName, source_table: TableName) \
+            -> ColumnSetPreprocessor:
+        column_preprocessors = \
+            self._create_column_preprocessors(column_preprocessor_factory_mapping,
+                                              sql_executor, target_schema)
+        column_transformer = self._create_column_transformers(column_preprocessors)
+        column_set_preprocessor = ColumnSetPreprocessor(
+            column_preprocessors=column_preprocessors,
+            column_transformer=column_transformer,
+            source_table=source_table,
+            target_schema=target_schema
+        )
+        return column_set_preprocessor
+
+    def _create_column_transformers(self, column_preprocessors: List[ColumnPreprocessor]):
+        column_transformer = SKLearnPrefittedColumnTransformer(
+            [(column_preprocessor.source_column.name.name, column_preprocessor.transformer)
+             for column_preprocessor in column_preprocessors])
+        return column_transformer
 
     def _create_column_preprocessors(
             self,
             column_preprocessor_factory_mapping: Dict[str, Tuple[Column, ColumnPreprocessorFactory]],
-            sql_executor: SQLExecutor,
-            target_schema: SchemaName):
+            sql_executor: SQLExecutor, target_schema: SchemaName):
         column_preprocessors = \
             [column_preprocessor_factory.create(sql_executor, column, target_schema)
              for column, column_preprocessor_factory

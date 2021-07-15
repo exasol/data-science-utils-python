@@ -1,5 +1,9 @@
+import joblib
+
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_identity_transformer import \
     SKLearnIdentityTransformer
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
+    SKLearnPrefittedColumnTransformer
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
@@ -81,13 +85,20 @@ def test_happy_path():
     assert sqlexecutor.queries[0] == get_columns_query
     assert table_preproccesor.source_table == source_table
     assert table_preproccesor.target_schema == target_schema
-    assert len(table_preproccesor.input_column_preprocessors) == 2
-    assert len(table_preproccesor.target_column_preprocessors) == 2
-    assert table_preproccesor.input_column_preprocessors[0].source_column == \
+    assert len(table_preproccesor.input_column_set_preprocessors.column_preprocessors) == 2
+    assert len(table_preproccesor.target_column_set_preprocessors.column_preprocessors) == 2
+    assert table_preproccesor.input_column_set_preprocessors.column_preprocessors[0].source_column == \
            Column(ColumnName("a", source_table), ColumnType("INTEGER"))
-    assert table_preproccesor.input_column_preprocessors[1].source_column == \
+    assert table_preproccesor.input_column_set_preprocessors.column_preprocessors[1].source_column == \
            Column(ColumnName("b", source_table), ColumnType("VARCHAR(20000)"))
-    assert table_preproccesor.target_column_preprocessors[0].source_column == \
+    assert table_preproccesor.target_column_set_preprocessors.column_preprocessors[0].source_column == \
            Column(ColumnName("c", source_table), ColumnType("DOUBLE"))
-    assert table_preproccesor.target_column_preprocessors[1].source_column == \
+    assert table_preproccesor.target_column_set_preprocessors.column_preprocessors[1].source_column == \
            Column(ColumnName("d", source_table), ColumnType("DOUBLE"))
+    assert isinstance(table_preproccesor.target_column_set_preprocessors.column_transformer,
+                      SKLearnPrefittedColumnTransformer)
+    assert isinstance(table_preproccesor.input_column_set_preprocessors
+                      .column_transformer,
+                      SKLearnPrefittedColumnTransformer)
+
+
