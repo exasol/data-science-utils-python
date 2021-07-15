@@ -1,7 +1,6 @@
 import textwrap
 from typing import List
 
-from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor import SQLColumnPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
@@ -10,6 +9,7 @@ from exasol_data_science_utils_python.preprocessing.sql.schema.column_type impor
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table import Table
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor import SQLColumnPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
 from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
@@ -23,6 +23,8 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
     It was inspired by the
     `MinMaxScaler of scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html>`_
     """
+
+    MIN_AND_RANGE_TABLE = "MIN_AND_RANGE_TABLE"
 
     def _get_parameter_table_name(self, target_schema: SchemaName, source_column: ColumnName):
         table = self._get_target_table(target_schema, source_column, MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX)
@@ -68,7 +70,7 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         range_column = ColumnNameBuilder(range_column).with_table_name(parameter_table_name).build()
         parameter_table = ParameterTable(
             source_column=source_column,
-            purpose="StoreMinAndRange",
+            purpose=self.MIN_AND_RANGE_TABLE,
             table=Table(
                 parameter_table_name,
                 columns=[

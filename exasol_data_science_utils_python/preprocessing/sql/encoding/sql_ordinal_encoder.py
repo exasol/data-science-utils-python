@@ -25,6 +25,8 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
 
     """
 
+    PURPOSE_DICTIONARY_TABLE = "DictionaryTable"
+
     def _get_dictionary_table_alias(self, target_schema: SchemaName, source_column: ColumnName):
         return self._get_table_alias(
             target_schema, source_column,
@@ -79,7 +81,7 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
                     Column(name=id_column_name, type=ColumnType("INTEGER")),
                     Column(name=value_column_name, type=ColumnType("ANY"))
                 ]),
-            purpose="DictionaryTable",
+            purpose=self.PURPOSE_DICTIONARY_TABLE,
         )
         return [parameter_table]
 

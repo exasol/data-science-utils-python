@@ -26,3 +26,6 @@ class Column:
         return isinstance(other, Column) and \
                self._name == other.name and \
                self._type == other.type
+
+    def __hash__(self):
+        return

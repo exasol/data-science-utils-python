@@ -3,9 +3,9 @@ from typing import List, Dict
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 
-from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_contrast_matrix_transformer import \
-    SKLearnContrastMatrixTransformer
-from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_min_max_scalar import SKLearnMinMaxScalar
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_contrast_matrix_transformer import \
+    SKLearnPrefittedContrastMatrixTransformer
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scalar import SKLearnPrefittedMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import \
     SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.encoding.sql_ordinal_encoder import SQLOrdinalEncoder
@@ -116,7 +116,7 @@ class ColumnTransformerCreator(AbstractColumnTransformerCreator):
         dictionary = pd.DataFrame(data=result_set.fetchall(), columns=result_set.column_names())
         dictionary = dictionary.set_index("VALUE", drop=False)
         contrast_matrix = pd.get_dummies(dictionary, columns=["VALUE"], drop_first=True)
-        transformer = SKLearnContrastMatrixTransformer(contrast_matrix)
+        transformer = SKLearnPrefittedContrastMatrixTransformer(contrast_matrix)
         return transformer
 
     def get_parameter_table_for_column(self, column: ColumnName,
@@ -137,7 +137,7 @@ class ColumnTransformerCreator(AbstractColumnTransformerCreator):
         rows = result_set.fetchall()
         min_value = rows[0][0]
         range_value = rows[0][1]
-        transformer = SKLearnMinMaxScalar(min_value=min_value, range_value=range_value)
+        transformer = SKLearnPrefittedMinMaxScaler(min_value=min_value, range_value=range_value)
         return transformer
 
     def _get_select_list_for_columns(self, columns: List[ColumnName]):

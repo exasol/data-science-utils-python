@@ -45,7 +45,7 @@ def get_expected_parameter_tables():
                         Column(ColumnName("MIN", target_table_name), ColumnType("DOUBLE")),
                         Column(ColumnName("RANGE", target_table_name), ColumnType("DOUBLE"))
                     ]),
-        purpose="StoreMinAndRange"
+        purpose="MIN_AND_RANGE_TABLE"
     )
     return [expected_parameter_table]
 
