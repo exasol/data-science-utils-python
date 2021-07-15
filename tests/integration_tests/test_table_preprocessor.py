@@ -1,6 +1,6 @@
 import pyexasol
 
-from exasol_data_science_utils_python.preprocessing.sql.encoding import OrdinalEncoder
+from exasol_data_science_utils_python.preprocessing.sql.encoding.ordinal_encoder import OrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.sql.normalization.min_max_scaler import MinMaxScaler
 from exasol_data_science_utils_python.udf_utils.pyexasol_sql_executor import PyexasolSQLExecutor
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName

@@ -78,7 +78,7 @@ def udf_wrapper():
     from exasol_udf_mock_python.udf_context import UDFContext
     from sklearn.linear_model import SGDRegressor
     from numpy.random import RandomState
-    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor_creator import ColumnPreprocessorCreator
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_transformer_creator import ColumnTransformerCreator
     from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
 
     train_udf = TrainUDF()
@@ -86,7 +86,7 @@ def udf_wrapper():
     def run(ctx: UDFContext):
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
                              fit_intercept=True, eta0=0.9, power_t=0.1, learning_rate='invscaling')
-        column_preprocessor_creator = ColumnPreprocessorCreator()
+        column_preprocessor_creator = ColumnTransformerCreator()
         train_udf.run(exa, ctx, model, column_preprocessor_creator)
 
 
@@ -377,8 +377,9 @@ def test_train_udf(
     ) AS
     from sklearn.linear_model import SGDRegressor
     from numpy.random import RandomState
-    from exasol_data_science_utils_python.model_utils.udfs.column_preprocessor_creator import ColumnPreprocessorCreator
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_transformer_creator import ColumnTransformerCreator
     from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
+
 
     train_udf = TrainUDF()
 

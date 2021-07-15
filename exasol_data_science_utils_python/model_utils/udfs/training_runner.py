@@ -5,8 +5,8 @@ import pyexasol
 
 from exasol_data_science_utils_python.model_utils.partial_fit_iterator import RegressorPartialFitIterator
 from exasol_data_science_utils_python.model_utils.udfs import sql_udf_stub_creator
-from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.abstract_column_preprocessor_creator import \
-    ColumnPreprocssorCreatorResult, AbstractColumnPreprocessorCreator
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.abstract_column_transfomer_creator import \
+    ColumnTransformerCreatorResult, AbstractColumnTransformerCreator
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
 from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regressor_udf import PartialFitRegressorUDF
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
@@ -32,7 +32,7 @@ class TrainingRunner:
                  source_table: TableName,
                  target_schema: SchemaName,
                  model,
-                 column_preprocessor_creator: AbstractColumnPreprocessorCreator):
+                 column_preprocessor_creator: AbstractColumnTransformerCreator):
         self.job_id = job_id
         self.model_id = model_id
         self.path_under_model_connection = path_under_model_connection
@@ -236,7 +236,7 @@ class TrainingRunner:
 
     def upload_model_prototype(self,
                                model_bucketfs_location: BucketFSLocation,
-                               column_transformer_creator_result: ColumnPreprocssorCreatorResult,
+                               column_transformer_creator_result: ColumnTransformerCreatorResult,
                                model):
         regressor_partial_fit_iterator = RegressorPartialFitIterator(
             input_preprocessor=column_transformer_creator_result.input_columns_transformer,
