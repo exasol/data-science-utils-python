@@ -1,20 +1,26 @@
 import textwrap
 from typing import List, Tuple
 
-from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import \
+    SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.tranformation_table import TransformationTable
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
+from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 
 class SQLTablePreprocessor():
-    def __init__(self, target_schema: SchemaName, source_table: TableName,
+    def __init__(self,
+                 target_schema: SchemaName,
+                 source_table: TableName,
+                 experiment_name: ExperimentName,
                  column_preprocessor_defintions: List[SQLColumnPreprocessorDefinition]):
+        self.experiment_name = experiment_name
         self.source_table = source_table
         self.target_schema = target_schema
         self.column_preprocessor_defintions = column_preprocessor_defintions
@@ -34,7 +40,7 @@ class SQLTablePreprocessor():
         for column_preprocessor_defintion in self.column_preprocessor_defintions:
             source_column = ColumnName(column_preprocessor_defintion.column_name, self.source_table)
             preprocessor = column_preprocessor_defintion.column_preprocessor
-            parameter_tables = preprocessor.fit(sql_executor, source_column, self.target_schema)
+            parameter_tables = preprocessor.fit(sql_executor, source_column, self.target_schema, self.experiment_name)
             result.extend(parameter_tables)
         return result
 
@@ -53,7 +59,7 @@ class SQLTablePreprocessor():
         from_clause_parts_str = self._create_transform_from_clause_parts(sql_executor, input_table)
         transformation_table_name = \
             TableName(
-                f"{input_table.schema_name.name}_{input_table.name}_TRANSFORMED",
+                f"{self.experiment_name.name}_{input_table.schema_name.name}_{input_table.name}_TRANSFORMED",
                 self.target_schema)
         transformation_columns = [select_clause_part.tranformation_column for select_clause_part in select_clause_parts]
         transformation_table = TransformationTable(transformation_table_name, transformation_columns)
@@ -75,7 +81,8 @@ FROM {input_table.fully_qualified()}
                 sql_executor,
                 source_column,
                 input_table,
-                self.target_schema)
+                self.target_schema,
+                self.experiment_name)
             from_clause_parts.extend(parts)
         from_clause_parts_str = "\n".join(from_clause_parts)
         return from_clause_parts_str
@@ -90,7 +97,8 @@ FROM {input_table.fully_qualified()}
                 sql_executor,
                 source_column,
                 input_table,
-                self.target_schema)
+                self.target_schema,
+                self.experiment_name)
             select_clause_parts.extend(parts)
         select_clause_parts_strs = [select_clause_part.select_clause_part_expression for select_clause_part in
                                     select_clause_parts]

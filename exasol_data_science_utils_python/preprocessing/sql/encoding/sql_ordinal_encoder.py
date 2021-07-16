@@ -1,15 +1,16 @@
 import textwrap
 from typing import List
 
-from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor import SQLColumnPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name_builder import ColumnNameBuilder
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table import Table
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor import SQLColumnPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
 from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
@@ -32,9 +33,14 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
             target_schema, source_column,
             ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX)
 
-    def _get_dictionary_table_name(self, target_schema: SchemaName, source_column: ColumnName):
+    def _get_dictionary_table_name(self,
+                                   target_schema: SchemaName,
+                                   source_column: ColumnName,
+                                   experiment_name: ExperimentName):
         return self._get_target_table(
-            target_schema, source_column,
+            target_schema,
+            source_column,
+            experiment_name,
             ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX)
 
     def _get_id_column(self, table: TableName = None):
@@ -48,7 +54,11 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
     def requires_global_transformation_for_training_data(self) -> bool:
         return False
 
-    def fit(self, sqlexecutor: SQLExecutor, source_column: ColumnName, target_schema: SchemaName) -> List[
+    def fit(self,
+            sqlexecutor: SQLExecutor,
+            source_column: ColumnName,
+            target_schema: SchemaName,
+            experiment_name: ExperimentName) -> List[
         ParameterTable]:
         """
         This method creates a dictionary table from the source column where every distinct value of the source column
@@ -58,7 +68,7 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         :param target_schema: Schema where the result tables of the fit-queries should be stored
         :return: List of fit-queries as strings
         """
-        dictionary_table_name = self._get_dictionary_table_name(target_schema, source_column)
+        dictionary_table_name = self._get_dictionary_table_name(target_schema, source_column, experiment_name)
         id_column_name = self._get_id_column()
         value_column_name = self._get_value_column()
         query = textwrap.dedent(f"""
@@ -89,7 +99,8 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
                                           sql_executor: SQLExecutor,
                                           source_column: ColumnName,
                                           input_table: TableName,
-                                          target_schema: SchemaName) -> List[str]:
+                                          target_schema: SchemaName,
+                                          experiment_name: ExperimentName) -> List[str]:
         """
         This method generates a LEFT OUTER JOIN with the dictionary table and the input table.
         The LEFT OUTER JOIN is important to keep all rows, also those which contain a NULL.
@@ -99,7 +110,7 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         :param target_schema: Schema where result table of the transformation should be stored
         :return: List of from-clause parts which can be concatenated with "\n"
         """
-        dictionary_table = self._get_dictionary_table_name(target_schema, source_column)
+        dictionary_table = self._get_dictionary_table_name(target_schema, source_column, experiment_name)
         alias = self._get_dictionary_table_alias(target_schema, source_column)
         input_column = ColumnName(source_column.name, input_table)
         value_column = self._get_value_column(alias)
@@ -116,7 +127,8 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
                                             sql_executor: SQLExecutor,
                                             source_column: ColumnName,
                                             input_table: TableName,
-                                            target_schema: SchemaName) -> List[TransformSelectClausePart]:
+                                            target_schema: SchemaName,
+                                            experiment_name: ExperimentName) -> List[TransformSelectClausePart]:
         """
         This method replaces the value in the input_table with the id in the dictionary.
 

@@ -3,6 +3,7 @@ from typing import List
 
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
@@ -23,11 +24,15 @@ class SQLColumnPreprocessor(ABC):
             f"{target_schema_name}_{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}")
         return alias
 
-    def _get_target_table(self, target_schema: SchemaName, source_column: ColumnName, prefix: str):
+    def _get_target_table(self,
+                          target_schema: SchemaName,
+                          source_column: ColumnName,
+                          experiment_name: ExperimentName, prefix: str):
         source_schema_name = source_column.table_name.schema_name.name
         source_table_name = source_column.table_name.name
-        target_table = TableName(f"{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}",
-                                 target_schema)
+        target_table = TableName(
+            f"{experiment_name.name}_{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}",
+            target_schema)
         return target_table
 
     @abstractmethod
@@ -38,7 +43,8 @@ class SQLColumnPreprocessor(ABC):
     def fit(self,
             sql_processor: SQLExecutor,
             source_column: ColumnName,
-            target_schema: SchemaName) -> List[ParameterTable]:
+            target_schema: SchemaName,
+            experiment_name: ExperimentName) -> List[ParameterTable]:
         """
         Subclasses need to implement this method to generate the parameter tables.
         Parameter tables are used to collect global statistics about the Source Table
@@ -57,7 +63,8 @@ class SQLColumnPreprocessor(ABC):
                                           sql_executor: SQLExecutor,
                                           source_column: ColumnName,
                                           input_table: TableName,
-                                          target_schema: SchemaName) -> List[str]:
+                                          target_schema: SchemaName,
+                                          experiment_name: ExperimentName) -> List[str]:
         """
         Subclasses need to implement this method to generate the from-clause parts of the transformation query-
         Transform queries apply the transformation and might use the collected global state from the parameter tables.
@@ -76,7 +83,8 @@ class SQLColumnPreprocessor(ABC):
                                             sql_executor: SQLExecutor,
                                             source_column: ColumnName,
                                             input_table: TableName,
-                                            target_schema: SchemaName) -> List[TransformSelectClausePart]:
+                                            target_schema: SchemaName,
+                                            experiment_name: ExperimentName) -> List[TransformSelectClausePart]:
         """
         Subclasses need to implement this method to generate the select-clause parts of the transformation query
         Transform queries apply the transformation and might use the collected global state from the fit-queries.

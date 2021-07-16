@@ -1,16 +1,18 @@
 import textwrap
 from typing import List
 
-from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor import SQLColumnPreprocessor
-from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name_builder import ColumnNameBuilder
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table import Table
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor import SQLColumnPreprocessor
+from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import \
+    SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.sql_table_preprocessor import SQLTablePreprocessor
 from exasol_data_science_utils_python.preprocessing.sql.tranformation_table import TransformationTable
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
@@ -24,9 +26,13 @@ class MyColumnPreprocessor(SQLColumnPreprocessor):
     def requires_global_transformation_for_training_data(self):
         return False
 
-    def fit(self, sqlexecutor: SQLExecutor, source_column: ColumnName, target_schema: SchemaName) \
+    def fit(self,
+            sqlexecutor: SQLExecutor,
+            source_column: ColumnName,
+            target_schema: SchemaName,
+            experiment_name: ExperimentName) \
             -> List[ParameterTable]:
-        target_table_name = self._get_target_table(target_schema, source_column, "PREFIX")
+        target_table_name = self._get_target_table(target_schema, source_column, experiment_name, "PREFIX")
         query = textwrap.dedent(f'''
                    CREATE OR REPLACE TABLE {target_table_name.fully_qualified()} AS 
                    SELECT 1 AS "VALUE"
@@ -41,15 +47,17 @@ class MyColumnPreprocessor(SQLColumnPreprocessor):
                                           sql_executor: SQLExecutor,
                                           source_column: ColumnName,
                                           input_table: TableName,
-                                          target_schema: SchemaName) -> List[str]:
-        target_table = self._get_target_table(target_schema, source_column, "PREFIX")
+                                          target_schema: SchemaName,
+                                          experiment_name: ExperimentName) -> List[str]:
+        target_table = self._get_target_table(target_schema, source_column, experiment_name, "PREFIX")
         return [f"CROSS JOIN {target_table.fully_qualified()}"]
 
     def create_transform_select_clause_part(self,
                                             sql_executor: SQLExecutor,
                                             source_column: ColumnName,
                                             input_table: TableName,
-                                            target_schema: SchemaName) \
+                                            target_schema: SchemaName,
+                                            experiment_name: ExperimentName) \
             -> List[TransformSelectClausePart]:
         transformation_column_name = ColumnName(f"{source_column.name}_VALUE")
         transformation_column = Column(transformation_column_name, ColumnType("INTEGER"))
@@ -73,16 +81,19 @@ def test_table_preprocessor_create_fit_queries():
         SQLColumnPreprocessorDefinition(source_column1.name, MyColumnPreprocessor()),
         SQLColumnPreprocessorDefinition(source_column2.name, MyColumnPreprocessor()),
     ]
-
-    table_preprocessor = SQLTablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
+    experiment = ExperimentName("EXPERIMENT")
+    table_preprocessor = SQLTablePreprocessor(target_schema,
+                                              source_table,
+                                              experiment,
+                                              column_preprocessor_defintions)
     mock_sql_executor = MockSQLExecutor()
     parameter_tables = table_preprocessor.fit(mock_sql_executor)
     source_column1_create_table = textwrap.dedent('''
-        CREATE OR REPLACE TABLE "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_PREFIX" AS 
+        CREATE OR REPLACE TABLE "TGT_SCHEMA"."EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_PREFIX" AS 
         SELECT 1 AS "VALUE"
         ''')
     source_column2_create_table = textwrap.dedent('''
-        CREATE OR REPLACE TABLE "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN2_PREFIX" AS 
+        CREATE OR REPLACE TABLE "TGT_SCHEMA"."EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN2_PREFIX" AS 
         SELECT 1 AS "VALUE"
         ''')
     expected_parameter_tables = get_expected_parameter_table()
@@ -92,8 +103,8 @@ def test_table_preprocessor_create_fit_queries():
 
 
 def get_expected_parameter_table():
-    target_table1_name = TableName("SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_PREFIX", SchemaName("TGT_SCHEMA"))
-    target_table2_name = TableName("SRC_SCHEMA_SRC_TABLE_SRC_COLUMN2_PREFIX", SchemaName("TGT_SCHEMA"))
+    target_table1_name = TableName("EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_PREFIX", SchemaName("TGT_SCHEMA"))
+    target_table2_name = TableName("EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN2_PREFIX", SchemaName("TGT_SCHEMA"))
     expected_parameter_tables = [
         ParameterTable(
             source_column=ColumnName("SRC_COLUMN1", TableName("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
@@ -119,31 +130,35 @@ def test_table_preprocessor_create_transform_query():
     source_column2 = ColumnName("SRC_COLUMN2", source_table)
     input_schema = SchemaName("IN_SCHEMA")
     input_table = TableName("IN_TABLE", input_schema)
+    experiment = ExperimentName("EXPERIMENT")
 
     column_preprocessor_defintions = [
         SQLColumnPreprocessorDefinition(source_column1.name, MyColumnPreprocessor()),
         SQLColumnPreprocessorDefinition(source_column2.name, MyColumnPreprocessor()),
     ]
 
-    table_preprocessor = SQLTablePreprocessor(target_schema, source_table, column_preprocessor_defintions)
+    table_preprocessor = SQLTablePreprocessor(target_schema,
+                                              source_table,
+                                              experiment,
+                                              column_preprocessor_defintions)
     mock_sql_executor = MockSQLExecutor()
     transformation_table = table_preprocessor.transform(mock_sql_executor, input_table)
     expected_transformation_table = get_expected_transformation_table()
     expected = textwrap.dedent(
-        '''CREATE OR REPLACE VIEW "TGT_SCHEMA"."IN_SCHEMA_IN_TABLE_TRANSFORMED" AS
+        '''CREATE OR REPLACE VIEW "TGT_SCHEMA"."EXPERIMENT_IN_SCHEMA_IN_TABLE_TRANSFORMED" AS
 SELECT
 1 AS "SRC_COLUMN1_VALUE",
 1 AS "SRC_COLUMN2_VALUE"
 FROM "IN_SCHEMA"."IN_TABLE"
-CROSS JOIN "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_PREFIX"
-CROSS JOIN "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN2_PREFIX"''')
+CROSS JOIN "TGT_SCHEMA"."EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_PREFIX"
+CROSS JOIN "TGT_SCHEMA"."EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN2_PREFIX"''')
     # TODO assert table
     assert expected == mock_sql_executor.queries[0]
     assert expected_transformation_table == transformation_table
 
 
 def get_expected_transformation_table():
-    expected_transformation_table_name = TableName("IN_SCHEMA_IN_TABLE_TRANSFORMED", SchemaName("TGT_SCHEMA"))
+    expected_transformation_table_name = TableName("EXPERIMENT_IN_SCHEMA_IN_TABLE_TRANSFORMED", SchemaName("TGT_SCHEMA"))
     expected_input_table_name = TableName("IN_TABLE", SchemaName("IN_SCHEMA"))
     expected_source_table_name = TableName("SRC_TABLE", SchemaName("SRC_SCHEMA"))
     expected_transformation_table = \

@@ -1,5 +1,6 @@
 from abc import abstractmethod, ABC
 
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import \
@@ -13,5 +14,6 @@ class TablePreprocessorFactory(ABC):
     def create_table_processor(self,
                                sql_executor: SQLExecutor,
                                input_table: TableName,
-                               target_schema: SchemaName) -> TablePreprocessor:
+                               target_schema: SchemaName,
+                               experiment_name: ExperimentName) -> TablePreprocessor:
         pass

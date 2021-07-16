@@ -4,6 +4,7 @@ from exasol_data_science_utils_python.model_utils.udfs.connection_object import 
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
 from exasol_data_science_utils_python.model_utils.udfs.training_runner import TrainingRunner
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor_factory import \
@@ -22,6 +23,7 @@ class TrainUDF:
         db_connection_name = ctx.db_connection
         source_schema = SchemaName(ctx.source_schema_name)
         target_schema = SchemaName(ctx.target_schema_name)
+        experiment_name = ExperimentName(ctx.experiment_name)
         source_table = TableName(ctx.source_table_name, schema=source_schema)
         input_columns = [ColumnName(column_name, table_name=source_table)
                          for column_name in ctx.input_columns.split(",")]
@@ -60,6 +62,7 @@ class TrainUDF:
             target_column,
             source_table,
             target_schema,
+            experiment_name,
             model,
             table_preprocessor_factory)
         model_info = training_runner.run()
