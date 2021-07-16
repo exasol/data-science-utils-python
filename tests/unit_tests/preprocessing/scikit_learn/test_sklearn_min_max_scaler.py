@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scalar import SKLearnPrefittedMinMaxScaler
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scaler import SKLearnPrefittedMinMaxScaler
 
 
 def test_happy_path():

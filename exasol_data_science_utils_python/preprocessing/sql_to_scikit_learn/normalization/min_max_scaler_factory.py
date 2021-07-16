@@ -1,4 +1,4 @@
-from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scalar import \
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scaler import \
     SKLearnPrefittedMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_min_max_scaler import SQLMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column

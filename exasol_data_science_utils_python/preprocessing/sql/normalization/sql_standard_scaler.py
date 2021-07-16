@@ -53,7 +53,7 @@ class SQLStandardScaler(SQLColumnPreprocessor):
     CREATE OR REPLACE TABLE {parameter_table_name.fully_qualified()} AS
     SELECT
         CAST(AVG({source_column.fully_qualified()}) as DOUBLE) as {avg_column.fully_qualified()},
-        CAST(STDDEV({source_column.fully_qualified()}) as DOUBLE) as {stddev_column.fully_qualified()}
+        CAST(STDDEV_POP({source_column.fully_qualified()}) as DOUBLE) as {stddev_column.fully_qualified()}
     FROM {source_column.table_name.fully_qualified()}
     """)
         sqlexecutor.execute(query)

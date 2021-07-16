@@ -66,13 +66,13 @@ def test_table_preprocessor_create_fit_queries():
     FROM "TARGET_SCHEMA"."EXPERIMENT_SOURCE_SCHEMA_SOURCE_TABLE_NUMERICAL_STANDARD_SCALER_PARAMETERS";
      '''
     result = c.execute(query).fetchall()
-    assert result == [(1.5, 0.7071067811865476)]
+    assert result == [(1.5, 0.5)]
 
     transform_table = table_preprocessor.transform(sql_executor, source_table)
 
     query = '''SELECT * FROM "TARGET_SCHEMA"."EXPERIMENT_SOURCE_SCHEMA_SOURCE_TABLE_TRANSFORMED"'''
     result = c.execute(query).fetchall()
-    assert result == [(0, 0.0, -0.7071067811865475), (1, 1.0, 0.7071067811865475)]
+    assert result == [(0, 0.0, -1.0), (1, 1.0, 1.0)]
 
 
 def test_table_preprocessor_transform_queries():
@@ -121,4 +121,4 @@ def test_table_preprocessor_transform_queries():
     rs = c.execute(
         """select * from "TARGET_SCHEMA"."EXPERIMENT_SOURCE_SCHEMA_INPUT_TABLE_TRANSFORMED" ORDER BY "NUMERICAL_MIN_MAX_SCALED" """)
     rows = rs.fetchall()
-    assert rows == [(0, 0.0, -0.7071067811865475), (0, 0.5, 0.0), (1, 1.0, 0.7071067811865475), (None, 1.5, 1.414213562373095)]
+    assert rows == [(0, 0.0, -1.0), (0, 0.5, 0.0), (1, 1.0, 1.0), (None, 1.5, 2.0)]

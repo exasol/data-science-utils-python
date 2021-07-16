@@ -29,7 +29,7 @@ def test_standard_scaler_create_fit_queries():
         CREATE OR REPLACE TABLE "TGT_SCHEMA"."EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_STANDARD_SCALER_PARAMETERS" AS
         SELECT
             CAST(AVG("SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1") as DOUBLE) as "AVG",
-            CAST(STDDEV("SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1") as DOUBLE) as "STDDEV"
+            CAST(STDDEV_POP("SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1") as DOUBLE) as "STDDEV"
         FROM "SRC_SCHEMA"."SRC_TABLE"
         """)
     assert mock_sql_executor.queries == [expected]
