@@ -2,7 +2,7 @@ from pathlib import PurePosixPath
 
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
-from exasol_data_science_utils_python.model_utils.udfs.training_runner import TrainingRunner
+from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regression_training_runner import PartialFitRegressionTrainingRunner
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
@@ -11,7 +11,7 @@ from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_pr
     TablePreprocessorFactory
 
 
-class TrainUDF:
+class PartialFitRegressionTrainUDF:
 
     def __init__(self):
         self.counter = 0
@@ -25,9 +25,8 @@ class TrainUDF:
         target_schema = SchemaName(ctx.target_schema_name)
         experiment_name = ExperimentName(ctx.experiment_name)
         source_table = TableName(ctx.source_table_name, schema=source_schema)
-        input_columns = [ColumnName(column_name, table_name=source_table)
-                         for column_name in ctx.input_columns.split(",")]
-        target_column = [ColumnName(ctx.target_column, table_name=source_table)]
+        columns = [ColumnName(column_name, table_name=source_table)
+                         for column_name in ctx.columns.split(",")]
         split_by_columns = []
         if ctx.split_by_columns is not None and ctx.split_by_columns != "":
             split_by_columns = [ColumnName(column_name, source_table)
@@ -50,7 +49,7 @@ class TrainUDF:
                                                 password=db_connection.password)
         job_id = str(exa.meta.statement_id)
         model_id = f"{job_id}_{exa.meta.node_id}_{exa.meta.vm_id}_{self.counter}"
-        training_runner = TrainingRunner(
+        training_runner = PartialFitRegressionTrainingRunner(
             job_id,
             model_id,
             model_connection_object,
@@ -58,8 +57,7 @@ class TrainUDF:
             download_retry_seconds,
             db_connection_object,
             training_parameter,
-            input_columns,
-            target_column,
+            columns,
             source_table,
             target_schema,
             experiment_name,

@@ -21,7 +21,7 @@ from exasol_data_science_utils_python.udf_utils.pyexasol_sql_executor import Pye
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 
-class TrainingRunner:
+class PartialFitRegressionTrainingRunner:
     def __init__(self,
                  job_id: str,
                  model_id: str,
@@ -30,8 +30,7 @@ class TrainingRunner:
                  download_retry_seconds: int,
                  db_connection_object: ConnectionObject,
                  training_parameter: TrainingParameter,
-                 input_columns: List[ColumnName],
-                 target_columns: List[ColumnName],
+                 columns: List[ColumnName],
                  source_table: TableName,
                  target_schema: SchemaName,
                  experiment_name: ExperimentName,
@@ -43,14 +42,12 @@ class TrainingRunner:
         self.source_table = source_table
         self.target_schema = target_schema
         self.experiment_name = experiment_name
-        self.target_columns = target_columns
-        self.input_columns = input_columns
         self.training_parameter = training_parameter
         self.db_connection_object = db_connection_object
         self.model_connection_object = model_connection_object
         self.model = model
         self.table_preprocessor_factory = table_preprocessor_factory
-        self.columns = self.input_columns + self.target_columns
+        self.columns = columns
         self.download_retry_seconds = download_retry_seconds
         if any(column.table_name != self.columns[0].table_name for column in self.columns):
             raise ValueError(

@@ -87,9 +87,9 @@ def udf_wrapper():
     from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.normalization.min_max_scaler_factory import \
         MinMaxScalerFactory
 
-    from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
+    from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regression_train_udf import PartialFitRegressionTrainUDF
 
-    train_udf = TrainUDF()
+    train_udf = PartialFitRegressionTrainUDF()
 
     def run(ctx: UDFContext):
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
@@ -318,8 +318,7 @@ def run_mock_test(db_connection,
             Column("db_connection", str, "VARCHAR(2000000)"),
             Column("source_schema_name", str, "VARCHAR(2000000)"),
             Column("source_table_name", str, "VARCHAR(2000000)"),
-            Column("input_columns", str, "VARCHAR(2000000)"),
-            Column("target_column", str, "VARCHAR(2000000)"),
+            Column("columns", str, "VARCHAR(2000000)"),
             Column("target_schema_name", str, "VARCHAR(2000000)"),
             Column("experiment_name", str, "VARCHAR(2000000)"),
             Column("epochs", int, "INTEGER"),
@@ -354,8 +353,7 @@ def run_mock_test(db_connection,
         "DB_CONNECTION",
         "TEST",
         "ABC",
-        "A,B",
-        "C",
+        "A,B,C",
         "TARGET_SCHEMA",
         "EXPERIMENT",
         10,
@@ -388,8 +386,7 @@ def test_train_udf(
         db_connection VARCHAR(2000000),
         source_schema_name VARCHAR(2000000),
         source_table_name VARCHAR(2000000),
-        input_columns VARCHAR(2000000),
-        target_column VARCHAR(2000000),
+        columns VARCHAR(2000000),
         target_schema_name VARCHAR(2000000),
         experiment_name VARCHAR(2000000),
         epochs INTEGER,
@@ -417,9 +414,9 @@ def test_train_udf(
     from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.normalization.min_max_scaler_factory import \
         MinMaxScalerFactory
 
-    from exasol_data_science_utils_python.model_utils.udfs.train_udf import TrainUDF
+    from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regression_train_udf import PartialFitRegressionTrainUDF
 
-    train_udf = TrainUDF()
+    train_udf = PartialFitRegressionTrainUDF()
 
     def run(ctx):
         model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
@@ -453,8 +450,7 @@ def test_train_udf(
         '{db_connection_name}',
         'TEST',
         'ABC',
-        'A,B',
-        'C',
+        'A,B,C',
         'TARGET_SCHEMA',
         'EXPERIMENT',
         10,
