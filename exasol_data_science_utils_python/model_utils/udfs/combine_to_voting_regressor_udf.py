@@ -1,8 +1,11 @@
 from pathlib import PurePosixPath
 
+from tenacity import stop_after_delay, Retrying, wait_fixed
+
 from exasol_data_science_utils_python.model_utils.model_aggregator import combine_to_voting_regressor
 from exasol_data_science_utils_python.model_utils.partial_fit_iterator import RegressorPartialFitIterator
 from exasol_data_science_utils_python.model_utils.score_iterator import ScoreIterator
+from exasol_data_science_utils_python.udf_utils.abstract_bucketfs_location import AbstractBucketFSLocation
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
 
 
@@ -17,6 +20,7 @@ class CombineToVotingRegressorUDF:
         model_connection_name = ctx.model_connection
         path_under_model_connection = ctx.path_under_model_connection
         model_connection = self.exa.get_connection(model_connection_name)
+        download_retry_seconds = ctx.download_retry_seconds
         bucket_fs_factory = BucketFSFactory()
         model_bucketfs_location = \
             bucket_fs_factory.create_bucketfs_location(
@@ -30,7 +34,13 @@ class CombineToVotingRegressorUDF:
         table_preprocessor = None
         while True:
             input_model_path = ctx.input_model_path
-            iterator = model_bucketfs_location.download_object_from_bucketfs_via_joblib(input_model_path)
+            retryer = Retrying(stop=stop_after_delay(download_retry_seconds), wait=wait_fixed(1), reraise=True)
+            try:
+                iterator = retryer(self.load_base_model, input_model_path, model_bucketfs_location)
+            except Exception as e:
+                print("Retry didn't work",e)
+                raise e
+
             if not isinstance(iterator, RegressorPartialFitIterator):
                 raise Exception(
                     f"Model from {input_model_path} is not a RegressorPartialFitIterator, instead we got {iterator}")
@@ -48,3 +58,7 @@ class CombineToVotingRegressorUDF:
                                                                      combined_model_path)
         ctx.emit(model_connection_name, path_under_model_connection, str(combined_model_path))
         self.counter += 1
+
+    def load_base_model(self, input_model_path: str, model_bucketfs_location: AbstractBucketFSLocation):
+        iterator = model_bucketfs_location.download_object_from_bucketfs_via_joblib(input_model_path)
+        return iterator

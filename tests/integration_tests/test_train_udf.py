@@ -314,6 +314,7 @@ def run_mock_test(db_connection,
         input_columns=[
             Column("model_connection", str, "VARCHAR(2000000)"),
             Column("path_under_model_connection", str, "VARCHAR(2000000)"),
+            Column("download_retry_seconds", int, "INTEGER"),
             Column("db_connection", str, "VARCHAR(2000000)"),
             Column("source_schema_name", str, "VARCHAR(2000000)"),
             Column("source_table_name", str, "VARCHAR(2000000)"),
@@ -348,6 +349,7 @@ def run_mock_test(db_connection,
     groups = [Group([(
         model_connection_name,
         "my_path_under_model_connection_" + str(i),
+        60,
         "DB_CONNECTION",
         "TEST",
         "ABC",
@@ -380,6 +382,7 @@ def test_train_udf(
     CREATE OR REPLACE PYTHON3_DSUP SET SCRIPT {target_schema.fully_qualified()}."TRAIN_UDF"(
         model_connection VARCHAR(2000000),
         path_under_model_connection VARCHAR(2000000),
+        download_retry_seconds INTEGER,
         db_connection VARCHAR(2000000),
         source_schema_name VARCHAR(2000000),
         source_table_name VARCHAR(2000000),
@@ -443,6 +446,7 @@ def test_train_udf(
     select {target_schema.fully_qualified()}."TRAIN_UDF"(
         '{model_connection_name}',
         'my_path_under_model_connection',
+        60,
         '{db_connection_name}',
         'TEST',
         'ABC',

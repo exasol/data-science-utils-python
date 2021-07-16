@@ -18,6 +18,7 @@ class TrainUDF:
     def run(self, exa, ctx, model, table_preprocessor_factory: TablePreprocessorFactory):
         model_connection_name = ctx.model_connection
         path_under_model_connection = PurePosixPath(ctx.path_under_model_connection)
+        download_retry_seconds = ctx.download_retry_seconds
         db_connection_name = ctx.db_connection
         source_schema = SchemaName(ctx.source_schema_name)
         target_schema = SchemaName(ctx.target_schema_name)
@@ -52,6 +53,7 @@ class TrainUDF:
             model_id,
             model_connection_object,
             path_under_model_connection,
+            download_retry_seconds,
             db_connection_object,
             training_parameter,
             input_columns,

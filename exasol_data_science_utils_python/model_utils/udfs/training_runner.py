@@ -26,6 +26,7 @@ class TrainingRunner:
                  model_id: str,
                  model_connection_object: ConnectionObject,
                  path_under_model_connection: PurePosixPath,
+                 download_retry_seconds: int,
                  db_connection_object: ConnectionObject,
                  training_parameter: TrainingParameter,
                  input_columns: List[ColumnName],
@@ -33,7 +34,7 @@ class TrainingRunner:
                  source_table: TableName,
                  target_schema: SchemaName,
                  model,
-                 table_preprocessor_factory: TablePreprocessorFactory):
+                 table_preprocessor_factory: TablePreprocessorFactory, ):
         self.job_id = job_id
         self.model_id = model_id
         self.path_under_model_connection = path_under_model_connection
@@ -47,6 +48,7 @@ class TrainingRunner:
         self.model = model
         self.table_preprocessor_factory = table_preprocessor_factory
         self.columns = self.input_columns + self.target_columns
+        self.download_retry_seconds = download_retry_seconds
         if any(column.table_name != self.columns[0].table_name for column in self.columns):
             raise ValueError(
                 f"Not all columns in {[column.fully_qualified() for column in self.columns]} are from the same table.")
@@ -136,7 +138,8 @@ class TrainingRunner:
                 SELECT {self.target_schema.fully_qualified()}."COMBINE_TO_VOTING_REGRESSOR_UDF"(
                     model_connection_name,
                     path_under_model_connection,
-                    model_path) 
+                    model_path,
+                    {self.download_retry_seconds}) 
                 FROM {self.target_schema.fully_qualified()}."FITTED_BASE_MODELS"
                 WHERE job_id = '{self.job_id}'
                 AND model_id = '{self.model_id}'
