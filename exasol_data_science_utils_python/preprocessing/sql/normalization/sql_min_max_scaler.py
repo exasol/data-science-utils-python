@@ -15,7 +15,7 @@ from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_
 from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
-MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX = "MIN_MAX_SCALAR_PARAMETERS"
+MIN_MAX_SCALER_PARAMETER_TABLE_PREFIX = "MIN_MAX_SCALER_PARAMETERS"
 
 
 class SQLMinMaxScaler(SQLColumnPreprocessor):
@@ -34,11 +34,11 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         table = self._get_target_table(target_schema,
                                        source_column,
                                        experiment_name,
-                                       MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX)
+                                       MIN_MAX_SCALER_PARAMETER_TABLE_PREFIX)
         return table
 
     def _get_parameter_table_alias(self, target_schema: SchemaName, source_column: ColumnName):
-        alias = self._get_table_alias(target_schema, source_column, MIN_MAX_SCALAR_PARAMETER_TABLE_PREFIX)
+        alias = self._get_table_alias(target_schema, source_column, MIN_MAX_SCALER_PARAMETER_TABLE_PREFIX)
         return alias
 
     def _get_min_column(self, table: TableName = None):

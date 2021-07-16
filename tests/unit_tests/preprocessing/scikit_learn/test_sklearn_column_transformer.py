@@ -3,7 +3,7 @@ import pandas as pd
 
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
     SKLearnPrefittedColumnTransformer
-from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scalar import \
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scaler import \
     SKLearnPrefittedMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_one_hot_transformer import \
     SKLearnPrefittedOneHotTransformer

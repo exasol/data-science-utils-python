@@ -1,7 +1,9 @@
+import pandas as pd
 import pyexasol
 
 from exasol_data_science_utils_python.preprocessing.sql.encoding.sql_ordinal_encoder import SQLOrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_min_max_scaler import SQLMinMaxScaler
+from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_standard_scaler import SQLStandardScaler
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
@@ -37,6 +39,7 @@ def test_table_preprocessor_create_fit_queries():
     column_preprocessor_defintions = [
         SQLColumnPreprocessorDefinition(source_column1.name, SQLOrdinalEncoder()),
         SQLColumnPreprocessorDefinition(source_column2.name, SQLMinMaxScaler()),
+        SQLColumnPreprocessorDefinition(source_column2.name, SQLStandardScaler()),
     ]
 
     sql_executor = PyexasolSQLExecutor(c)
@@ -53,16 +56,23 @@ def test_table_preprocessor_create_fit_queries():
 
     query = '''
     SELECT "MIN", "RANGE"
-    FROM "TARGET_SCHEMA"."EXPERIMENT_SOURCE_SCHEMA_SOURCE_TABLE_NUMERICAL_MIN_MAX_SCALAR_PARAMETERS";
+    FROM "TARGET_SCHEMA"."EXPERIMENT_SOURCE_SCHEMA_SOURCE_TABLE_NUMERICAL_MIN_MAX_SCALER_PARAMETERS";
      '''
     result = c.execute(query).fetchall()
     assert result == [(1.0, 1.0)]
+
+    query = '''
+    SELECT "AVG", "STDDEV"
+    FROM "TARGET_SCHEMA"."EXPERIMENT_SOURCE_SCHEMA_SOURCE_TABLE_NUMERICAL_STANDARD_SCALER_PARAMETERS";
+     '''
+    result = c.execute(query).fetchall()
+    assert result == [(1.5, 0.5)]
 
     transform_table = table_preprocessor.transform(sql_executor, source_table)
 
     query = '''SELECT * FROM "TARGET_SCHEMA"."EXPERIMENT_SOURCE_SCHEMA_SOURCE_TABLE_TRANSFORMED"'''
     result = c.execute(query).fetchall()
-    assert result == [(0, 0.0), (1, 1.0)]
+    assert result == [(0, 0.0, -1.0), (1, 1.0, 1.0)]
 
 
 def test_table_preprocessor_transform_queries():
@@ -99,6 +109,7 @@ def test_table_preprocessor_transform_queries():
     column_preprocessor_defintions = [
         SQLColumnPreprocessorDefinition(source_column1.name, SQLOrdinalEncoder()),
         SQLColumnPreprocessorDefinition(source_column2.name, SQLMinMaxScaler()),
+        SQLColumnPreprocessorDefinition(source_column2.name, SQLStandardScaler()),
     ]
 
     sql_executor = PyexasolSQLExecutor(c)
@@ -110,4 +121,4 @@ def test_table_preprocessor_transform_queries():
     rs = c.execute(
         """select * from "TARGET_SCHEMA"."EXPERIMENT_SOURCE_SCHEMA_INPUT_TABLE_TRANSFORMED" ORDER BY "NUMERICAL_MIN_MAX_SCALED" """)
     rows = rs.fetchall()
-    assert rows == [(0, 0.0), (0, 0.5), (1, 1.0), (None, 1.5)]
+    assert rows == [(0, 0.0, -1.0), (0, 0.5, 0.0), (1, 1.0, 1.0), (None, 1.5, 2.0)]

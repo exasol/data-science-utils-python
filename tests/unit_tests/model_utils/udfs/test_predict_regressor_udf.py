@@ -13,7 +13,7 @@ from sklearn.linear_model import SGDRegressor
 from exasol_data_science_utils_python.model_utils.prediction_iterator import PredictionIterator
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
     SKLearnPrefittedColumnTransformer
-from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scalar import \
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scaler import \
     SKLearnPrefittedMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_set_preprocessor import \
     ColumnSetPreprocessor
