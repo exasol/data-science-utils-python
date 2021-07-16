@@ -9,6 +9,7 @@ from exasol_data_science_utils_python.model_utils.udfs.connection_object import 
 from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regressor_udf import PartialFitRegressorUDF
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
@@ -33,13 +34,15 @@ class TrainingRunner:
                  target_columns: List[ColumnName],
                  source_table: TableName,
                  target_schema: SchemaName,
+                 experiment_name: ExperimentName,
                  model,
-                 table_preprocessor_factory: TablePreprocessorFactory, ):
+                 table_preprocessor_factory: TablePreprocessorFactory):
         self.job_id = job_id
         self.model_id = model_id
         self.path_under_model_connection = path_under_model_connection
         self.source_table = source_table
         self.target_schema = target_schema
+        self.experiment_name = experiment_name
         self.target_columns = target_columns
         self.input_columns = input_columns
         self.training_parameter = training_parameter
@@ -70,7 +73,9 @@ class TrainingRunner:
             self.table_preprocessor_factory.create_table_processor(
                 sql_executor,
                 self.source_table,
-                self.target_schema)
+                self.target_schema,
+                self.experiment_name
+            )
         self.upload_model_prototype(
             model_bucketfs_location,
             table_preprocessor,

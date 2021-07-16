@@ -1,5 +1,3 @@
-import joblib
-
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_identity_transformer import \
     SKLearnIdentityTransformer
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
@@ -7,6 +5,7 @@ from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitt
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_description_based_table_preprocessor_factory import \
@@ -28,9 +27,11 @@ class MockColumnPreprocessorFactory(ColumnPreprocessorFactory):
     def create(self,
                sql_executor: SQLExecutor,
                source_column: Column,
-               target_schema: SchemaName) -> ColumnPreprocessor:
+               target_schema: SchemaName,
+               experiment_name: ExperimentName) -> ColumnPreprocessor:
         return ColumnPreprocessor(source_column,
                                   target_schema,
+                                  experiment_name,
                                   SKLearnIdentityTransformer())
 
 
@@ -72,9 +73,11 @@ def test_happy_path():
     )
     source_table = TableName("SRC_TABLE", SchemaName("SRC_SCHEMA"))
     target_schema = SchemaName("TGT_SCHEMA")
+    experiment_name = ExperimentName("EXPERIMENT")
     table_preproccesor = factory.create_table_processor(sqlexecutor,
                                                         source_table,
-                                                        target_schema)
+                                                        target_schema,
+                                                        experiment_name)
     get_columns_query = """
             SELECT COLUMN_NAME, COLUMN_TYPE 
             FROM SYS.EXA_ALL_COLUMNS 
@@ -100,5 +103,4 @@ def test_happy_path():
     assert isinstance(table_preproccesor.input_column_set_preprocessors
                       .column_transformer,
                       SKLearnPrefittedColumnTransformer)
-
-
+    assert table_preproccesor.experiment_name.name == "EXPERIMENT"

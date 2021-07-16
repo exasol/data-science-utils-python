@@ -9,6 +9,7 @@ from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitt
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.encoding.one_hot_encoder_factory import \
@@ -40,9 +41,10 @@ def test_happy_path():
     source_column = Column(ColumnName("SRC_COLUMN1", TableName("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
                            ColumnType(name="INTEGER"))
     target_schema = SchemaName("TGT_SCHEMA")
-    column_preprocessor = factory.create(sql_executor, source_column, target_schema)
+    experiment_name = ExperimentName("EXPERIMENT")
+    column_preprocessor = factory.create(sql_executor, source_column, target_schema, experiment_name)
     create_dictionary_query = textwrap.dedent('''
-               CREATE OR REPLACE TABLE "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY" AS
+               CREATE OR REPLACE TABLE "TGT_SCHEMA"."EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY" AS
                SELECT
                    CAST(rownum - 1 AS INTEGER) as "ID",
                    "VALUE"
@@ -52,7 +54,7 @@ def test_happy_path():
                    ORDER BY "SRC_SCHEMA"."SRC_TABLE"."SRC_COLUMN1"
                );
     ''')
-    get_dictionary_query = 'SELECT "VALUE" FROM "TGT_SCHEMA"."SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"'
+    get_dictionary_query = 'SELECT "VALUE" FROM "TGT_SCHEMA"."EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"'
     assert sql_executor.queries[0] == create_dictionary_query
     assert sql_executor.queries[1] == get_dictionary_query
     assert column_preprocessor.source_column == source_column

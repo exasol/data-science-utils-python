@@ -5,6 +5,7 @@ from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitt
 from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
 from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
+from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor import ColumnPreprocessor
@@ -30,7 +31,8 @@ class ColumnDescriptionBasedTablePreprocessorFactory(TablePreprocessorFactory):
     def create_table_processor(self,
                                sql_executor: SQLExecutor,
                                source_table: TableName,
-                               target_schema: SchemaName) -> TablePreprocessor:
+                               target_schema: SchemaName,
+                               experiment_name: ExperimentName) -> TablePreprocessor:
         query = f"""
             SELECT COLUMN_NAME, COLUMN_TYPE 
             FROM SYS.EXA_ALL_COLUMNS 
@@ -50,24 +52,27 @@ class ColumnDescriptionBasedTablePreprocessorFactory(TablePreprocessorFactory):
             input_column_preprocessor_factory_mapping, target_column_preprocessor_factory_mapping)
         input_column_set_preprocessors = \
             self._create_column_set_preprocessors(input_column_preprocessor_factory_mapping,
-                                                  sql_executor, target_schema, source_table)
+                                                  sql_executor, target_schema, source_table, experiment_name)
         target_column_set_preprocessors = \
             self._create_column_set_preprocessors(target_column_preprocessor_factory_mapping,
-                                                  sql_executor, target_schema, source_table)
+                                                  sql_executor, target_schema, source_table, experiment_name)
         table_preproccesor = \
             TablePreprocessor(input_column_set_preprocessors,
                               target_column_set_preprocessors,
-                              source_table, target_schema)
+                              source_table, target_schema, experiment_name)
         return table_preproccesor
 
     def _create_column_set_preprocessors(
             self,
             column_preprocessor_factory_mapping: Dict[str, Tuple[Column, ColumnPreprocessorFactory]],
-            sql_executor: SQLExecutor, target_schema: SchemaName, source_table: TableName) \
+            sql_executor: SQLExecutor,
+            target_schema: SchemaName,
+            source_table: TableName,
+            experiment_name: ExperimentName) \
             -> ColumnSetPreprocessor:
         column_preprocessors = \
             self._create_column_preprocessors(column_preprocessor_factory_mapping,
-                                              sql_executor, target_schema)
+                                              sql_executor, target_schema, experiment_name)
         column_transformer = self._create_column_transformers(column_preprocessors)
         column_set_preprocessor = ColumnSetPreprocessor(
             column_preprocessors=column_preprocessors,
@@ -86,9 +91,11 @@ class ColumnDescriptionBasedTablePreprocessorFactory(TablePreprocessorFactory):
     def _create_column_preprocessors(
             self,
             column_preprocessor_factory_mapping: Dict[str, Tuple[Column, ColumnPreprocessorFactory]],
-            sql_executor: SQLExecutor, target_schema: SchemaName):
+            sql_executor: SQLExecutor,
+            target_schema: SchemaName,
+            experiment_name: ExperimentName):
         column_preprocessors = \
-            [column_preprocessor_factory.create(sql_executor, column, target_schema)
+            [column_preprocessor_factory.create(sql_executor, column, target_schema, experiment_name)
              for column, column_preprocessor_factory
              in column_preprocessor_factory_mapping.values()]
         return column_preprocessors
