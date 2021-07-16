@@ -9,7 +9,8 @@ def create_combine_to_voting_regressor_udf(sql_executor: SQLExecutor, target_sch
     CREATE OR REPLACE PYTHON3_DSUP SET SCRIPT {target_schema.fully_qualified()}."COMBINE_TO_VOTING_REGRESSOR_UDF"(
     model_connection VARCHAR(2000000),
     path_under_model_connection VARCHAR(2000000),
-    input_model_path VARCHAR(2000000)
+    input_model_path VARCHAR(2000000),
+    download_retry_seconds INTEGER
     ) 
     EMITS (
         model_connection_name VARCHAR(2000000),
