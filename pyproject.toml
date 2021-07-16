@@ -32,4 +32,5 @@ typeguard = "^2.11.1"
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.1"
 pytest-cov = "^2.10.1"
+coverage = "^5.5"
 exasol-udf-mock-python = { git = "https://github.com/exasol/udf-mock-python.git", branch = "master" }

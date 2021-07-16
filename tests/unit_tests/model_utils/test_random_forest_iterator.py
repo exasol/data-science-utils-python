@@ -10,26 +10,36 @@ from exasol_data_science_utils_python.model_utils.persistence import load_from_b
 
 def udf_wrapper():
     from sklearn.ensemble import RandomForestClassifier
+    from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
+        SKLearnPrefittedColumnTransformer
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_set_preprocessor import \
+        ColumnSetPreprocessor
+    from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
+    from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_identity_transformer import \
+        SKLearnIdentityTransformer
 
     from exasol_data_science_utils_python.model_utils.random_forest_iterator import RandomForestIterator
 
     def run(ctx):
         model = RandomForestClassifier(random_state=0)
-        from sklearn.compose import ColumnTransformer
-        from sklearn.preprocessing import FunctionTransformer
-        input_preprocessor = ColumnTransformer(transformers=[
-            ("t2", FunctionTransformer(), ["t2"])
+        input_preprocessor = SKLearnPrefittedColumnTransformer(transformer_mapping=[
+            ("t1", SKLearnIdentityTransformer()),
+            ("t2", SKLearnIdentityTransformer()),
         ])
-        output_preprocessor = ColumnTransformer(transformers=[
-            ("t3", FunctionTransformer(), ["t3"])
+        output_preprocessor = SKLearnPrefittedColumnTransformer(transformer_mapping=[
+            ("t3", SKLearnIdentityTransformer()),
         ])
-        df = ctx.get_dataframe(101)
-        input_preprocessor.fit(df)
-        output_preprocessor.fit(df)
+        table_preprocessor = TablePreprocessor(
+            input_column_set_preprocessors=ColumnSetPreprocessor(
+                column_transformer=input_preprocessor,
+            ),
+            target_column_set_preprocessors=ColumnSetPreprocessor(
+                column_transformer=output_preprocessor,
+            ),
+        )
 
         iterator = RandomForestIterator(
-            input_preprocessor=input_preprocessor,
-            output_preprocessor=output_preprocessor,
+            table_preprocessor=table_preprocessor,
             target_classes=10,
             model=model
         )

@@ -5,16 +5,16 @@ import pandas as pd
 from sklearn.base import ClassifierMixin, RegressorMixin
 from sklearn.compose import ColumnTransformer
 
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
 from exasol_data_science_utils_python.udf_utils.iterator_utils import iterate_trough_dataset
 
 
 class PredictionIterator:
     def __init__(self,
-                 input_preprocessor: ColumnTransformer,
+                 table_preprocessor: TablePreprocessor,
                  model: Union[ClassifierMixin, RegressorMixin]
                  ):
-        self.input_preprocessor = input_preprocessor
-        self.input_preprocessor_columns = self._get_columns_from_column_transformer(self.input_preprocessor)
+        self.table_preprocessor = table_preprocessor
         getattr(model, "predict")
         self.model = model
 
@@ -24,11 +24,14 @@ class PredictionIterator:
         return columns
 
     def _predict_batch(self, df: pd.DataFrame):
-        input_df = df[self.input_preprocessor_columns]
-        input_columns = self.input_preprocessor.transform(input_df)
+        input_columns = self._get_input_columns(df)
         result = self.model.predict(input_columns)
         df["predicted_result"] = result
         return df
+
+    def _get_input_columns(self, df):
+        input_columns = self.table_preprocessor.input_column_set_preprocessors.column_transformer.transform(df)
+        return input_columns
 
     def predict(self, ctx, batch_size: int, result_callback: Callable[[pd.DataFrame], None]):
         iterate_trough_dataset(

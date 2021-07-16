@@ -9,14 +9,19 @@ from exasol_udf_mock_python.mock_exa_environment import MockExaEnvironment
 from exasol_udf_mock_python.mock_meta_data import MockMetaData
 from exasol_udf_mock_python.udf_mock_executor import UDFMockExecutor
 from numpy.random import RandomState
-from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import VotingRegressor
 from sklearn.linear_model import SGDRegressor
-from sklearn.preprocessing import MinMaxScaler
 
 from exasol_data_science_utils_python.model_utils.partial_fit_iterator import RegressorPartialFitIterator
 from exasol_data_science_utils_python.model_utils.score_iterator import ScoreIterator
 from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regressor_udf import PartialFitRegressorUDF
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
+    SKLearnPrefittedColumnTransformer
+from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scalar import \
+    SKLearnPrefittedMinMaxScaler
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_set_preprocessor import \
+    ColumnSetPreprocessor
+from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
 
 
@@ -100,21 +105,26 @@ def test_combine_to_voting_regressor_udf():
 
 
 def create_regressor_partial_fit_iterator():
-    input_preprocessor = ColumnTransformer(transformers=[
-        ("a", MinMaxScaler(), ["a"]),
+    input_preprocessor = SKLearnPrefittedColumnTransformer(transformer_mapping=[
+        ("a", SKLearnPrefittedMinMaxScaler(min_value=0, range_value=100)),
     ])
-    input_preprocessor.fit(pd.DataFrame.from_dict({"a": [0.0, 1.0]}))
-    output_preprocessor = ColumnTransformer(transformers=[
-        ("b", MinMaxScaler(), ["b"]),
+    output_preprocessor = SKLearnPrefittedColumnTransformer(transformer_mapping=[
+        ("b", SKLearnPrefittedMinMaxScaler(min_value=0, range_value=100)),
     ])
-    output_preprocessor.fit(pd.DataFrame.from_dict({"b": [0.0, 1.0]}))
+    table_preprocessor = TablePreprocessor(
+        input_column_set_preprocessors=ColumnSetPreprocessor(
+            column_transformer=input_preprocessor,
+        ),
+        target_column_set_preprocessors=ColumnSetPreprocessor(
+            column_transformer=output_preprocessor,
+        ),
+    )
     model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False)
-    X = pd.DataFrame.from_dict({"a": [0.0, 1.0]})
-    y = pd.DataFrame.from_dict({"b": [0.0, 1.0]})
+    X = pd.DataFrame.from_dict({"a": [(1.0 * i) / 100 for i in range(100)]})
+    y = pd.DataFrame.from_dict({"b": [(1.0 * i) / 100 for i in range(100)]})
     model.fit(X, y)
-    regressor_partial_fit_iterator = RegressorPartialFitIterator(
-        input_preprocessor=input_preprocessor,
-        output_preprocessor=output_preprocessor,
+    iterator = RegressorPartialFitIterator(
+        table_preprocessor=table_preprocessor,
         model=model
     )
-    return regressor_partial_fit_iterator
+    return iterator
