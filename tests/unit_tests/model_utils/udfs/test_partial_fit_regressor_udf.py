@@ -41,13 +41,14 @@ def test_partial_fit_regressor_udf():
             # Config
             Column("0", str, "VARCHAR(2000000)"),
             Column("1", str, "VARCHAR(2000000)"),
-            Column("2", str, "VARCHAR(2000000)"),
-            Column("3", int, "INTEGER"),
+            Column("2", int, "INTEGER"),
+            Column("3", str, "VARCHAR(2000000)"),
             Column("4", int, "INTEGER"),
             Column("5", int, "INTEGER"),
+            Column("6", int, "INTEGER"),
             # Data
-            Column("6", float, "FLOAT"),
             Column("7", float, "FLOAT"),
+            Column("8", float, "FLOAT"),
         ],
         output_type="EMIT",
         output_columns=[
@@ -83,6 +84,7 @@ def test_partial_fit_regressor_udf():
             (
                 "MODEL_CONNECTION",
                 str(path_under_model_connection),
+                10,
                 "a,b",
                 epochs,
                 batch_size,

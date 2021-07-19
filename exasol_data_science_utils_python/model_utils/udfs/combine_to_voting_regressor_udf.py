@@ -34,12 +34,9 @@ class CombineToVotingRegressorUDF:
         table_preprocessor = None
         while True:
             input_model_path = ctx.input_model_path
+
             retryer = Retrying(stop=stop_after_delay(download_retry_seconds), wait=wait_fixed(1), reraise=True)
-            try:
-                iterator = retryer(self.load_base_model, input_model_path, model_bucketfs_location)
-            except Exception as e:
-                print("Retry didn't work",e)
-                raise e
+            iterator = retryer(self.load_base_model, input_model_path, model_bucketfs_location)
 
             if not isinstance(iterator, RegressorPartialFitIterator):
                 raise Exception(

@@ -205,6 +205,7 @@ class PartialFitRegressionTrainingRunner:
                 SELECT {self.target_schema.fully_qualified()}."PARTIAL_FIT_REGRESSOR_UDF"(
                     '{self.model_connection_object.name}',
                     {self._get_path_under_model_connection_as_sql_value()},
+                    {self.download_retry_seconds},
                     '{column_name_list}',
                     {self.training_parameter.epochs},
                     {self.training_parameter.batch_size},
