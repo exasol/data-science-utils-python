@@ -1,16 +1,19 @@
 from collections import OrderedDict
 from pathlib import PurePosixPath
 
+from tenacity import Retrying, stop_after_delay, wait_fixed
+
 from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
 from exasol_data_science_utils_python.udf_utils.udf_context_wrapper import UDFContextWrapper
 
 MODEL_CONNECTION_NAME_PARAMETER = "0"
 PATH_UNDER_MODEL_CONNECTION_PARAMETER = "1"
-COLUMN_NAME_LIST_PARAMETER = "2"
-EPOCHS_PARAMETER = "3"
-BATCH_SIZE_PARAMETER = "4"
-SHUFFLE_BUFFER_SIZE_PARAMETER = "5"
-FIRST_VARARG_PARAMETER = 6
+DOWNLOAD_RETRY_SECONDS = "2"
+COLUMN_NAME_LIST_PARAMETER = "3"
+EPOCHS_PARAMETER = "4"
+BATCH_SIZE_PARAMETER = "5"
+SHUFFLE_BUFFER_SIZE_PARAMETER = "6"
+FIRST_VARARG_PARAMETER = 7
 
 
 class PartialFitRegressorUDF:
@@ -25,6 +28,7 @@ class PartialFitRegressorUDF:
         df = ctx.get_dataframe(1)
         model_connection_name = df[MODEL_CONNECTION_NAME_PARAMETER][0]
         path_under_model_connection = PurePosixPath(df[PATH_UNDER_MODEL_CONNECTION_PARAMETER][0])
+        download_retry_seconds = df[DOWNLOAD_RETRY_SECONDS][0].item()
         column_name_list = df[COLUMN_NAME_LIST_PARAMETER][0].split(",")
         epochs = df[EPOCHS_PARAMETER][0].item()
         batch_size = df[BATCH_SIZE_PARAMETER][0].item()
@@ -38,8 +42,11 @@ class PartialFitRegressorUDF:
                 pwd=model_connection.password,
                 base_path=path_under_model_connection
             )
+
+        retryer = Retrying(stop=stop_after_delay(download_retry_seconds), wait=wait_fixed(1), reraise=True)
         regressor_partial_fit_iterator = \
-            model_bucketfs_location.download_object_from_bucketfs_via_joblib(self.INIT_MODEL_FILE_NAME)
+            retryer(model_bucketfs_location.download_object_from_bucketfs_via_joblib, self.INIT_MODEL_FILE_NAME)
+
         column_mapping = OrderedDict([(str(FIRST_VARARG_PARAMETER + index), column)
                                       for index, column in enumerate(column_name_list)])
         udf_conext_wrapper = UDFContextWrapper(ctx, column_mapping=column_mapping)
