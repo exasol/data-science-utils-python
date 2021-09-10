@@ -37,7 +37,7 @@ setup_kwargs = {
     'name': 'exasol-data-science-utils-python',
     'version': '0.1.0',
     'description': 'Exasol specific Data Science utilities for the Python programming language',
-    'long_description': '',
+    'long_description': 'This project provides utilities for developing data science integrations for Exasol.\n\n** Note: This project is in a very early development phase. **',
     'author': 'Torsten Kilias',
     'author_email': 'torsten.kilias@exasol.com',
     'maintainer': None,
