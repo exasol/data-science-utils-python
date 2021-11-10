@@ -2,7 +2,7 @@ from collections import OrderedDict
 from pathlib import PurePosixPath
 
 from exasol_data_science_utils_python.model_utils.prediction_iterator import PredictionIterator
-from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
+from exasol_bucketfs_utils_python.bucketfs_factory import BucketFSFactory
 from exasol_data_science_utils_python.udf_utils.udf_context_wrapper import UDFContextWrapper
 
 MODEL_CONNECTION_NAME_PARAMETER = "0"

@@ -10,7 +10,6 @@ from exasol_udf_mock_python.udf_mock_executor import UDFMockExecutor
 from numpy.random import RandomState
 from sklearn.linear_model import SGDRegressor
 
-from exasol_data_science_utils_python.model_utils.partial_fit_iterator import RegressorPartialFitIterator
 from exasol_data_science_utils_python.model_utils.score_iterator import ScoreIterator
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
     SKLearnPrefittedColumnTransformer
@@ -19,7 +18,7 @@ from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitt
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_set_preprocessor import \
     ColumnSetPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
-from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
+from exasol_bucketfs_utils_python.bucketfs_factory import BucketFSFactory
 
 
 def udf_wrapper():

@@ -2,7 +2,7 @@ from collections import OrderedDict
 from pathlib import PurePosixPath
 
 from exasol_data_science_utils_python.model_utils.score_iterator import ScoreIterator
-from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
+from exasol_bucketfs_utils_python.bucketfs_factory import BucketFSFactory
 from exasol_data_science_utils_python.udf_utils.udf_context_wrapper import UDFContextWrapper
 
 
