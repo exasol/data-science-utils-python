@@ -26,8 +26,8 @@ from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitt
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_set_preprocessor import \
     ColumnSetPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
-from exasol_data_science_utils_python.udf_utils.abstract_bucketfs_location import AbstractBucketFSLocation
-from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
+from exasol_bucketfs_utils_python.abstract_bucketfs_location import AbstractBucketFSLocation
+from exasol_bucketfs_utils_python.bucketfs_factory import BucketFSFactory
 
 
 def udf_wrapper():

@@ -3,7 +3,7 @@ from pathlib import PurePosixPath
 
 from tenacity import Retrying, stop_after_delay, wait_fixed
 
-from exasol_data_science_utils_python.udf_utils.bucketfs_factory import BucketFSFactory
+from exasol_bucketfs_utils_python.bucketfs_factory import BucketFSFactory
 from exasol_data_science_utils_python.udf_utils.udf_context_wrapper import UDFContextWrapper
 
 MODEL_CONNECTION_NAME_PARAMETER = "0"
