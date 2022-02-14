@@ -12,7 +12,7 @@ GIT_DIR="$(readlink -f "${GIT_DIR}")"
 if [[ ! -d "$GIT_DIR" ]]; then
   if [[ -d "$REPO_DIR/../.git" ]]; then
     GIT_DIR="$REPO_DIR/../.git"
-    GITHOOKS_PATH="$GIT_DIR/modules/bucketfs-utils-python/hooks"
+    GITHOOKS_PATH="$GIT_DIR/modules/data-science-utils-python/hooks"
   else
     echo "$GIT_DIR is not a git directory." >&2
     exit 1
