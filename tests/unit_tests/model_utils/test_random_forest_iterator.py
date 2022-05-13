@@ -54,7 +54,7 @@ def test_random_forest_iterator():
         input_columns=[Column("t1", int, "INTEGER"),
                        Column("t2", float, "FLOAT"),
                        Column("t3", int, "INTEGER")],
-        output_type="EMIT",
+        output_type="EMITS",
         output_columns=[Column("serialized_random_forest", str, "VARCHAR(2000000)")]
     )
     exa = MockExaEnvironment(meta)

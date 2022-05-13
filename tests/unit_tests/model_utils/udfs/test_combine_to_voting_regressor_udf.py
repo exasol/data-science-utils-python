@@ -201,7 +201,7 @@ def create_mock_metadata():
             Column("input_model_path", str, "VARCHAR(2000000)"),
             Column("download_retry_seconds", int, "INTEGER"),
         ],
-        output_type="EMIT",
+        output_type="EMITS",
         output_columns=[
             Column("model_connection", str, "VARCHAR(2000000)"),
             Column("path_under_model_connection", str, "VARCHAR(2000000)"),

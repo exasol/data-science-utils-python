@@ -58,7 +58,7 @@ def test_score_iterator():
         input_type="SET",
         input_columns=[Column("t1", int, "INTEGER"),
                        Column("t2", float, "FLOAT"), ],
-        output_type="EMIT",
+        output_type="EMITS",
         output_columns=[Column("SCORE_SUM", float, "FLOAD"),
                         Column("SCORE_COUNT", int, "INT"), ]
     )

@@ -52,7 +52,7 @@ def test_partial_fit_iterator():
             Column("t2", float, "FLOAT"),
             Column("t3", float, "FLOAT"),
         ],
-        output_type="EMIT",
+        output_type="EMITS",
         output_columns=[Column("t1", int, "INTEGER"),
                         Column("t2", float, "FLOAT")]
     )

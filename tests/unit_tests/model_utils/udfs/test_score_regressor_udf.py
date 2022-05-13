@@ -44,7 +44,7 @@ def test_score_regressor_udf():
             Column("4", float, "FLOAT"),
             Column("5", float, "FLOAT"),
         ],
-        output_type="EMIT",
+        output_type="EMITS",
         output_columns=[
             Column("SCORE_SUM", float, "FLOAT"),
             Column("SCORE_COUNT", int, "INTEGER"),

@@ -50,7 +50,7 @@ def test_partial_fit_regressor_udf():
             Column("7", float, "FLOAT"),
             Column("8", float, "FLOAT"),
         ],
-        output_type="EMIT",
+        output_type="EMITS",
         output_columns=[
             Column("model_connection_name", str, "VARCHAR(2000000)"),
             Column("path_under_model_connection", str, "VARCHAR(2000000)"),
