@@ -18,7 +18,7 @@ homepage = "https://github.com/exasol/data-science-utils-python"
 keywords = ['exasol', 'data-science']
 
 [tool.poetry.dependencies]
-python = ">=3.6.1,<4.0"
+python = ">=3.8,<4.0"
 pyexasol = "^0.17.0"
 pandas = "^1.1.0"
 joblib = "^1.0.1"
