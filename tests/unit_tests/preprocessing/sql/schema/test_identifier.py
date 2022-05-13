@@ -18,7 +18,8 @@ class TestSchemaElement(ExasolIdentifier):
                              "B_",
                              "Z1",
                              "Q\uFE33",
-                             "Ü"
+                             "Ü",
+                             "1"
                          ])
 def test_name_valid(test_name):
     TestSchemaElement(test_name)
@@ -32,7 +33,6 @@ def test_name_valid(test_name):
                              ",",
                              ";",
                              ":",
-                             "1",
                              "\uFE33",
                              '"',
                              'A"',

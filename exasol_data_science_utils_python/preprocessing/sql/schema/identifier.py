@@ -56,7 +56,8 @@ class ExasolIdentifier(ABC):
             unicode_category == UnicodeCategories.TITLECASE_LETTER or \
             unicode_category == UnicodeCategories.MODIFIER_LETTER or \
             unicode_category == UnicodeCategories.OTHER_LETTER or \
-            unicode_category == UnicodeCategories.LETTER_NUMBER
+            unicode_category == UnicodeCategories.LETTER_NUMBER or \
+            unicode_category == UnicodeCategories.DECIMAL_DIGIT_NUMBER
 
     @classmethod
     def _validate_follow_up_character(self, chararcter: str) -> bool:
