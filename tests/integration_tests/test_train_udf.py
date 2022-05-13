@@ -328,7 +328,7 @@ def run_mock_test(db_connection,
             Column("number_of_random_partitions", int, "INTEGER"),
             Column("split_by_columns", str, "VARCHAR(2000000)"),
         ],
-        output_type="EMIT",
+        output_type="EMITS",
         output_columns=[
             Column("job_id", str, "VARCHAR(2000000)"),
             Column("model_id", str, "VARCHAR(2000000)"),

@@ -24,7 +24,7 @@ def test_ctx_iterator(input_size):
         input_type="SET",
         input_columns=[Column("t1", int, "INTEGER"),
                        Column("t2", float, "FLOAT"), ],
-        output_type="EMIT",
+        output_type="EMITS",
         output_columns=[Column("t1", int, "INTEGER"),
                         Column("t2", float, "FLOAT")]
     )
