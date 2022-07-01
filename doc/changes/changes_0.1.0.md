@@ -8,4 +8,4 @@
 ### Bug Fixes
 
   - #43: Corrected the git hooks path
-  - 
+  
