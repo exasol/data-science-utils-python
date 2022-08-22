@@ -25,10 +25,10 @@ install_requires = \
  'git+https://github.com/exasol/bucketfs-utils-python.git@main',
  'joblib>=1.0.1,<2.0.0',
  'jsonpickle>=2.0.0,<3.0.0',
- 'mlxtend>=0.18.0,<0.19.0',
+ 'mlxtend>=0.20.0,<0.21.0',
  'pandas>=1.1.0,<2.0.0',
- 'pyexasol>=0.17.0,<0.18.0',
- 'scikit-learn>=0.24.1,<0.25.0',
+ 'pyexasol>=0.25.0,<0.26.0',
+ 'scikit-learn>=1.1.2,<2.0.0',
  'simplejson>=3.17.2,<4.0.0',
  'tenacity>=8.0.1,<9.0.0',
  'typeguard>=2.11.1,<3.0.0']
