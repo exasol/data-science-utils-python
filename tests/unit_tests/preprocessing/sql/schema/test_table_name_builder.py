@@ -1,6 +1,6 @@
-from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name_builder import TableNameBuilder
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table_name import TableName
+from exasol_data_science_utils_python.schema.table_name_builder import TableNameBuilder
 
 
 def test_create_table_with_name_only():

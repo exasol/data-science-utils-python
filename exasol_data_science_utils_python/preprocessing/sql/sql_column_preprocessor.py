@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
-from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object

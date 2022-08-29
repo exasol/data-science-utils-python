@@ -2,8 +2,8 @@ from typing import List
 
 from typeguard import typechecked
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 

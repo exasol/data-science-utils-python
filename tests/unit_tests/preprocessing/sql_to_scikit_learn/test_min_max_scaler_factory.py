@@ -4,16 +4,16 @@ import numpy as np
 import pandas as pd
 
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_min_max_scaler import SKLearnPrefittedMinMaxScaler
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
-from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
-from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.column import ColumnType
+from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.normalization.min_max_scaler_factory import \
     MinMaxScalerFactory
-from tests.unit_tests.mock_result_set import MockResultSet
-from tests.unit_tests.mock_sql_executor import MockSQLExecutor
+from exasol_data_science_utils_python.udf_utils.testing.mock_result_set import MockResultSet
+from exasol_data_science_utils_python.udf_utils.testing.mock_sql_executor import MockSQLExecutor
 
 
 def test_happy_path():

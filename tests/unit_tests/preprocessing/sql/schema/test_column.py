@@ -1,8 +1,8 @@
 import pytest
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.column import ColumnType
 
 
 def test_set_new_type_fail():

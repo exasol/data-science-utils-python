@@ -1,5 +1,5 @@
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_selector import ColumnSelector
+from exasol_data_science_utils_python.schema.column import Column
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 

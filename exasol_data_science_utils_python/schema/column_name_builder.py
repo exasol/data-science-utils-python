@@ -1,7 +1,7 @@
 from typing import Union
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.schema.column_name import ColumnName
+from exasol_data_science_utils_python.schema.table_name import TableName
 
 
 class ColumnNameBuilder:

@@ -1,8 +1,8 @@
 from typing import Union, List
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.sql.schema.table import Table
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.table import Table
+from exasol_data_science_utils_python.schema.table_name import TableName
 
 
 class TableBuilder:

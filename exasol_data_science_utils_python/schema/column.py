@@ -1,7 +1,7 @@
 from typeguard import typechecked
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
+from exasol_data_science_utils_python.schema.column_name import ColumnName
+from exasol_data_science_utils_python.schema.column_type import ColumnType
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 

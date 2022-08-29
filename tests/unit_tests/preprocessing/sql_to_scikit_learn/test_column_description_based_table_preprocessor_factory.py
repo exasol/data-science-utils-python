@@ -2,12 +2,12 @@ from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_identit
     SKLearnIdentityTransformer
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
     SKLearnPrefittedColumnTransformer
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
-from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
-from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.column import ColumnType
+from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_description_based_table_preprocessor_factory import \
     ColumnDescriptionBasedTablePreprocessorFactory
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor import ColumnPreprocessor
@@ -18,8 +18,8 @@ from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_p
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.exact_column_name_selector import \
     ExactColumnNameSelector
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
-from tests.unit_tests.mock_result_set import MockResultSet
-from tests.unit_tests.mock_sql_executor import MockSQLExecutor
+from exasol_data_science_utils_python.udf_utils.testing.mock_result_set import MockResultSet
+from exasol_data_science_utils_python.udf_utils.testing.mock_sql_executor import MockSQLExecutor
 
 
 class MockColumnPreprocessorFactory(ColumnPreprocessorFactory):
