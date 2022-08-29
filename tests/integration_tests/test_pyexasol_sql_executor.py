@@ -42,9 +42,7 @@ def test_sql_executor(pyexasol_sql_executor):
 
 def test_for_loop(pyexasol_result_set):
     input = pyexasol_result_set[EXPECTED_RESULT_INDEX]
-    result = []
-    for row in pyexasol_result_set[RESULT_SET_INDEX]:
-        result.append(row)
+    result = [row for row in pyexasol_result_set[RESULT_SET_INDEX]]
     assert input == result
 
 
@@ -62,5 +60,5 @@ def test_fetchmany(pyexasol_result_set):
 
 def test_columns(pyexasol_result_set):
     expected_columns = pyexasol_result_set[EXPECTED_COLUMNS_INDEX]
-    acutal_columns = pyexasol_result_set[RESULT_SET_INDEX].columns()
-    assert expected_columns == acutal_columns
+    actual_columns = pyexasol_result_set[RESULT_SET_INDEX].columns()
+    assert expected_columns == actual_columns
