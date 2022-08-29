@@ -30,10 +30,10 @@ def test_happy_path():
                     ("D", 3),
                     ("E", 4)
                 ],
-                columns=OrderedDict([
-                    ("VALUE", {"TYPE_NAME": "VARCHAR(2000)"}),
-                    ("ID", {"TYPE_NAME": "INTEGER"}),
-                ])
+                columns=[
+                    Column(ColumnName("VALUE"), ColumnType(name="VARCHAR(2000)")),
+                    Column(ColumnName("ID"), ColumnType(name="INTEGER")),
+                ]
             )
         ]
     )
