@@ -10,7 +10,7 @@ from exasol_udf_mock_python.mock_exa_environment import MockExaEnvironment
 from exasol_udf_mock_python.mock_meta_data import MockMetaData
 from exasol_udf_mock_python.udf_mock_executor import UDFMockExecutor
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema import SchemaName
 from exasol_bucketfs_utils_python.bucketfs_factory import BucketFSFactory
 
 

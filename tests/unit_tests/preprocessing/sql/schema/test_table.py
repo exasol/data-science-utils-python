@@ -1,10 +1,10 @@
 import pytest
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
-from exasol_data_science_utils_python.preprocessing.sql.schema.table import Table
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.schema import Column
+from exasol_data_science_utils_python.schema import ColumnName
+from exasol_data_science_utils_python.schema import ColumnType
+from exasol_data_science_utils_python.schema import Table
+from exasol_data_science_utils_python.schema import TableName
 
 
 def test_set_new_name_fail():

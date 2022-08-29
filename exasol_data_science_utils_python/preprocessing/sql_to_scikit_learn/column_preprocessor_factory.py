@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
-from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema import Column
+from exasol_data_science_utils_python.schema import ExperimentName
+from exasol_data_science_utils_python.schema import SchemaName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor import \
     ColumnPreprocessor
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor

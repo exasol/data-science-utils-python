@@ -1,11 +1,10 @@
-from abc import ABC
 from typing import List
 
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_transformer import SKLearnPrefittedTransformer
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
-from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
-from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema import Column
+from exasol_data_science_utils_python.schema import ExperimentName
+from exasol_data_science_utils_python.schema import SchemaName
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 

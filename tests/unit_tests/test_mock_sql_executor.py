@@ -1,5 +1,5 @@
-from tests.unit_tests.mock_result_set import MockResultSet
-from tests.unit_tests.mock_sql_executor import MockSQLExecutor
+from exasol_data_science_utils_python.udf_utils.testing.mock_result_set import MockResultSet
+from exasol_data_science_utils_python.udf_utils.testing.mock_sql_executor import MockSQLExecutor
 
 
 def test_no_resultset():

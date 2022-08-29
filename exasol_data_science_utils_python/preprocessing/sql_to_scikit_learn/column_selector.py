@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.column import Column
+from exasol_data_science_utils_python.schema import Column
 
 
 class ColumnSelector(ABC):

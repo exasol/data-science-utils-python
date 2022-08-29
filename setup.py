@@ -10,11 +10,12 @@ packages = \
  'exasol_data_science_utils_python.preprocessing.sql',
  'exasol_data_science_utils_python.preprocessing.sql.encoding',
  'exasol_data_science_utils_python.preprocessing.sql.normalization',
- 'exasol_data_science_utils_python.preprocessing.sql.schema',
  'exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn',
  'exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.encoding',
  'exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.normalization',
+ 'exasol_data_science_utils_python.schema',
  'exasol_data_science_utils_python.udf_utils',
+ 'exasol_data_science_utils_python.udf_utils.testing',
  'exasol_data_science_utils_python.utils']
 
 package_data = \

@@ -1,13 +1,12 @@
-import pandas as pd
 import pyexasol
 
 from exasol_data_science_utils_python.preprocessing.sql.encoding.sql_ordinal_encoder import SQLOrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_min_max_scaler import SQLMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_standard_scaler import SQLStandardScaler
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.sql.schema.experiment_name import ExperimentName
-from exasol_data_science_utils_python.preprocessing.sql.schema.schema_name import SchemaName
-from exasol_data_science_utils_python.preprocessing.sql.schema.table_name import TableName
+from exasol_data_science_utils_python.schema import ColumnName
+from exasol_data_science_utils_python.schema import ExperimentName
+from exasol_data_science_utils_python.schema import SchemaName
+from exasol_data_science_utils_python.schema import TableName
 from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import \
     SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.sql_table_preprocessor import SQLTablePreprocessor

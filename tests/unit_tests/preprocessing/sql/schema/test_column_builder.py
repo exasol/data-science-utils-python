@@ -1,8 +1,8 @@
 import pytest
 
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_builder import ColumnBuilder
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_name import ColumnName
-from exasol_data_science_utils_python.preprocessing.sql.schema.column_type import ColumnType
+from exasol_data_science_utils_python.schema import ColumnBuilder
+from exasol_data_science_utils_python.schema import ColumnName
+from exasol_data_science_utils_python.schema import ColumnType
 
 
 def test_create_column_with_name_only():

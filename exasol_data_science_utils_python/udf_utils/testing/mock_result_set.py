@@ -1,6 +1,7 @@
 import itertools
-from typing import Tuple, Any, List, Dict, Optional
+from typing import Tuple, List, Optional
 
+from exasol_data_science_utils_python.schema.column import Column
 from exasol_data_science_utils_python.udf_utils.sql_executor import ResultSet
 
 
@@ -8,11 +9,15 @@ class MockResultSet(ResultSet):
 
     def __init__(self,
                  rows: Optional[List[Tuple]] = None,
-                 columns: Optional[Dict[str, Dict[str, Any]]] = None
+                 columns: Optional[List[Column]] = None
                  ):
         self._columns = columns
         self._rows = rows
         if rows is not None:
+            if self._columns is not None:
+                for row in rows:
+                    if len(row) != len(self._columns):
+                        raise AssertionError(f"Row {row} doesn't fit columns {self._columns}")
             self._iter = self._rows.__iter__()
 
     def __iter__(self):
@@ -52,17 +57,11 @@ class MockResultSet(ResultSet):
         else:
             return len(self._rows)
 
-    def columns(self) -> Dict[str, Dict[str, Any]]:
+    def columns(self) -> List[Column]:
         if self._columns is None:
             raise NotImplementedError()
         else:
             return self._columns
-
-    def column_names(self) -> List[str]:
-        if self._columns is None:
-            raise NotImplementedError()
-        else:
-            return [column_name for column_name in self._columns.keys()]
 
     def close(self):
         if self._rows is None:
