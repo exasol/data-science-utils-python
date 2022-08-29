@@ -2,10 +2,10 @@ import textwrap
 from typing import List, Tuple
 
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
-from exasol_data_science_utils_python.schema import ColumnName
-from exasol_data_science_utils_python.schema import ExperimentName
-from exasol_data_science_utils_python.schema import SchemaName
-from exasol_data_science_utils_python.schema import TableName
+from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import \
     SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.tranformation_table import TransformationTable

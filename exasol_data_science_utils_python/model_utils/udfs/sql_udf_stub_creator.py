@@ -1,6 +1,6 @@
 import textwrap
 
-from exasol_data_science_utils_python.schema import SchemaName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 

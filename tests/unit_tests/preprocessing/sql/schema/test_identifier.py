@@ -1,6 +1,6 @@
 import pytest
 
-from exasol_data_science_utils_python.schema import ExasolIdentifier
+from exasol_data_science_utils_python.schema.identifier import ExasolIdentifier
 
 
 class TestSchemaElement(ExasolIdentifier):

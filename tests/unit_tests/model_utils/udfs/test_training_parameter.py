@@ -1,7 +1,7 @@
 import pytest
 
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
-from exasol_data_science_utils_python.schema import ColumnName
+from exasol_data_science_utils_python.schema.column_name import ColumnName
 
 
 @pytest.mark.parametrize(

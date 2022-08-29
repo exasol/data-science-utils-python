@@ -1,6 +1,6 @@
-from exasol_data_science_utils_python.schema import ColumnName
-from exasol_data_science_utils_python.schema import ColumnNameBuilder
-from exasol_data_science_utils_python.schema import TableName
+from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
+from exasol_data_science_utils_python.schema.table_name import TableName
 
 
 def test_create_column_with_name_only():

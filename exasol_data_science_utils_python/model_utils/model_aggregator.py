@@ -1,7 +1,6 @@
-from typing import List, Any, Union
+from typing import List, Any
 
-from sklearn.ensemble import VotingClassifier, RandomForestClassifier, VotingRegressor
-from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier, VotingRegressor
 
 
 def combine_random_forrest_classifier(estimators: List[RandomForestClassifier]):

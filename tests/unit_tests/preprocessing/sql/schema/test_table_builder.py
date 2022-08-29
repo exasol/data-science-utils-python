@@ -1,10 +1,10 @@
 import pytest
 
-from exasol_data_science_utils_python.schema import Column
-from exasol_data_science_utils_python.schema import ColumnName
-from exasol_data_science_utils_python.schema import ColumnType
-from exasol_data_science_utils_python.schema import TableBuilder
-from exasol_data_science_utils_python.schema import TableName
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.column import ColumnType
+from exasol_data_science_utils_python.schema.table_builder import TableBuilder
+from exasol_data_science_utils_python.schema.table_name import TableName
 
 
 def test_create_table_with_name_only_fail():

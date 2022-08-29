@@ -6,12 +6,12 @@ import pandas as pd
 
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_one_hot_transformer import \
     SKLearnPrefittedOneHotTransformer
-from exasol_data_science_utils_python.schema import Column
-from exasol_data_science_utils_python.schema import ColumnName
-from exasol_data_science_utils_python.schema import ColumnType
-from exasol_data_science_utils_python.schema import ExperimentName
-from exasol_data_science_utils_python.schema import SchemaName
-from exasol_data_science_utils_python.schema import TableName
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.column import ColumnType
+from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.encoding.one_hot_encoder_factory import \
     OneHotEncoderFactory
 from exasol_data_science_utils_python.udf_utils.testing.mock_result_set import MockResultSet

@@ -2,13 +2,13 @@ import textwrap
 
 from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_min_max_scaler import SQLMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
-from exasol_data_science_utils_python.schema import Column
-from exasol_data_science_utils_python.schema import ColumnName
-from exasol_data_science_utils_python.schema import ColumnType
-from exasol_data_science_utils_python.schema import ExperimentName
-from exasol_data_science_utils_python.schema import SchemaName
-from exasol_data_science_utils_python.schema import Table
-from exasol_data_science_utils_python.schema import TableName
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.column import ColumnType
+from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table import Table
+from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.udf_utils.testing.mock_sql_executor import MockSQLExecutor
 

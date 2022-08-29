@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 
-from exasol_data_science_utils_python.schema import Column
+from exasol_data_science_utils_python.schema.column import Column
 
 
 class ResultSet(ABC):

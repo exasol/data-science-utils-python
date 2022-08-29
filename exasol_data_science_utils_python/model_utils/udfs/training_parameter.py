@@ -2,7 +2,7 @@ from typing import List, Union
 
 from typeguard import typechecked
 
-from exasol_data_science_utils_python.schema import ColumnName
+from exasol_data_science_utils_python.schema.column import ColumnName
 
 
 class TrainingParameter:

@@ -5,7 +5,6 @@ import pandas as pd
 from sklearn.base import ClassifierMixin, RegressorMixin
 from sklearn.compose import ColumnTransformer
 
-from exasol_data_science_utils_python.model_utils.model_aggregator import combine_to_voting_regressor
 from exasol_data_science_utils_python.model_utils.reservoir_shuffle import ReservoirShuffle
 from exasol_data_science_utils_python.model_utils.score_iterator import ScoreIterator
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor

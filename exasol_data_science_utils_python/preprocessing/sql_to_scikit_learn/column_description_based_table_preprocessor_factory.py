@@ -2,12 +2,6 @@ from typing import List, Tuple, Dict
 
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
     SKLearnPrefittedColumnTransformer
-from exasol_data_science_utils_python.schema import Column
-from exasol_data_science_utils_python.schema import ColumnName
-from exasol_data_science_utils_python.schema import ColumnType
-from exasol_data_science_utils_python.schema import ExperimentName
-from exasol_data_science_utils_python.schema import SchemaName
-from exasol_data_science_utils_python.schema import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor import ColumnPreprocessor
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor_description import \
     ColumnPreprocessorDescription
@@ -18,6 +12,12 @@ from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_s
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor import TablePreprocessor
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor_factory import \
     TablePreprocessorFactory
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.column_name import ColumnName
+from exasol_data_science_utils_python.schema.column_type import ColumnType
+from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 
 

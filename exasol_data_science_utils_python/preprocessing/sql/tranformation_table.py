@@ -2,7 +2,7 @@ from typing import List
 
 from typeguard import typechecked
 
-from exasol_data_science_utils_python.schema import TableName
+from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
