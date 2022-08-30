@@ -18,3 +18,21 @@ def test_set_new_schema_fail():
     table = TableName("abc")
     with pytest.raises(AttributeError) as c:
         table.schema_name = "edf"
+
+
+def test_equality_true():
+    t1 = TableName("table", schema=SchemaName("schema"))
+    t2 = TableName("table", schema=SchemaName("schema"))
+    assert t1 == t2
+
+
+def test_equality_name_not_equal():
+    t1 = TableName("table1", schema=SchemaName("schema"))
+    t2 = TableName("table2", schema=SchemaName("schema"))
+    assert t1 != t2
+
+
+def test_equality_schema_not_equal():
+    t1 = TableName("table", schema=SchemaName("schema1"))
+    t2 = TableName("table", schema=SchemaName("schema2"))
+    assert t1 != t2

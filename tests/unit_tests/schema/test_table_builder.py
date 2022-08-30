@@ -17,18 +17,7 @@ def test_create_table_with_columns_only_fail():
         column = TableBuilder().with_columns([Column(ColumnName("abc"), ColumnType("INTEGER"))]).build()
 
 
-def test_create_table_with_is_view_only_fail():
-    with pytest.raises(TypeError):
-        column = TableBuilder().with_is_view(True).build()
-
-
 def test_create_table_with_name_and_columns():
     table = TableBuilder().with_name(TableName("table")).with_columns(
         [Column(ColumnName("column"), ColumnType("INTEGER"))]).build()
-    assert table.name.name == "table" and table.columns[0].name.name == "column" and table.is_view == False
-
-
-def test_create_table_with_all():
-    table = TableBuilder().with_name(TableName("table")).with_columns(
-        [Column(ColumnName("column"), ColumnType("INTEGER"))]).with_is_view(True).build()
-    assert table.name.name == "table" and table.columns[0].name.name == "column" and table.is_view == True
+    assert table.name.name == "table" and table.columns[0].name.name == "column"

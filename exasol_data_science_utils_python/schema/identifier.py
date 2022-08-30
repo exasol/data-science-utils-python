@@ -75,3 +75,7 @@ class ExasolIdentifier(ABC):
             unicode_category == UnicodeCategories.CONNECTOR_PUNCTUATION or \
             unicode_category == UnicodeCategories.FORMAT or \
             chararcter == '\u00B7'
+
+    @abstractmethod
+    def __eq__(self, other):
+        pass

@@ -4,10 +4,14 @@ from exasol_data_science_utils_python.schema.identifier import ExasolIdentifier
 
 
 class TestSchemaElement(ExasolIdentifier):
+
     def __init__(self, name: str):
         super().__init__(name)
 
     def fully_qualified(self) -> str:
+        raise NotImplemented()
+
+    def __eq__(self, other):
         raise NotImplemented()
 
 
@@ -56,9 +60,11 @@ def test_quote(name, expected_quoted_name):
     quoted_name = TestSchemaElement(name).quoted_name()
     assert quoted_name == expected_quoted_name
 
+
 def test_get_name():
     element = TestSchemaElement("abc")
     assert element.name == "abc"
+
 
 def test_set_new_name_fail():
     element = TestSchemaElement("abc")
