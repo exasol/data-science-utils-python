@@ -1,7 +1,8 @@
 import unicodedata
-from abc import ABC, abstractmethod
 
 from typeguard import typechecked
+
+from exasol_data_science_utils_python.schema.exasol_identifier import ExasolIdentifier
 
 
 class UnicodeCategories:
@@ -18,7 +19,8 @@ class UnicodeCategories:
     FORMAT = 'Cf'
 
 
-class ExasolIdentifier(ABC):
+class ExasolIdentifierImpl(ExasolIdentifier):
+
     @typechecked
     def __init__(self, name: str):
         if not self.validate_name(name):
@@ -31,10 +33,6 @@ class ExasolIdentifier(ABC):
 
     def quoted_name(self) -> str:
         return f'"{self._name}"'
-
-    @abstractmethod
-    def fully_qualified(self) -> str:
-        pass
 
     @classmethod
     def validate_name(self, name: str) -> bool:
@@ -75,7 +73,3 @@ class ExasolIdentifier(ABC):
             unicode_category == UnicodeCategories.CONNECTOR_PUNCTUATION or \
             unicode_category == UnicodeCategories.FORMAT or \
             chararcter == '\u00B7'
-
-    @abstractmethod
-    def __eq__(self, other):
-        pass

@@ -1,9 +1,10 @@
 import pytest
 
-from exasol_data_science_utils_python.schema.identifier import ExasolIdentifier
+from exasol_data_science_utils_python.schema.exasol_identifier import ExasolIdentifier
+from exasol_data_science_utils_python.schema.exasol_identifier_impl import ExasolIdentifierImpl
 
 
-class TestSchemaElement(ExasolIdentifier):
+class TestSchemaElement(ExasolIdentifierImpl):
 
     def __init__(self, name: str):
         super().__init__(name)
@@ -12,6 +13,9 @@ class TestSchemaElement(ExasolIdentifier):
         raise NotImplemented()
 
     def __eq__(self, other):
+        raise NotImplemented()
+
+    def __repr__(self):
         raise NotImplemented()
 
 

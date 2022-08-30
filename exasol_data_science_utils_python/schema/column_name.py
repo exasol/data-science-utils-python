@@ -1,11 +1,12 @@
 from typeguard import typechecked
 
-from exasol_data_science_utils_python.schema.identifier import ExasolIdentifier
+from exasol_data_science_utils_python.schema.exasol_identifier import ExasolIdentifier
+from exasol_data_science_utils_python.schema.exasol_identifier_impl import ExasolIdentifierImpl
 from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 
-class ColumnName(ExasolIdentifier):
+class ColumnName(ExasolIdentifierImpl):
     @typechecked
     def __init__(self, name: str, table_name: TableName = None):
         super().__init__(name)

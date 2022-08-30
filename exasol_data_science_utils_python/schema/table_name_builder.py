@@ -2,6 +2,7 @@ from typing import Union
 
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.schema.table_name import TableName
+from exasol_data_science_utils_python.schema.table_name_impl import TableNameImpl
 
 
 class TableNameBuilder:
@@ -22,4 +23,4 @@ class TableNameBuilder:
         return self
 
     def build(self) -> TableName:
-        return TableName(self._name, self._schema_name)
+        return TableNameImpl(self._name, self._schema_name)
