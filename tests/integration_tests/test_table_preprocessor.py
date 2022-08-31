@@ -32,8 +32,8 @@ def test_table_preprocessor_create_fit_queries():
     source_schema = SchemaName("SOURCE_SCHEMA")
     source_table = TableNameBuilder.create("SOURCE_TABLE", source_schema)
     target_schema = SchemaName("TARGET_SCHEMA")
-    source_column1 = ColumnName("CATEGORY", source_table)
-    source_column2 = ColumnName("NUMERICAL", source_table)
+    source_column1 = ColumnNameBuilder.create("CATEGORY", source_table)
+    source_column2 = ColumnNameBuilder.create("NUMERICAL", source_table)
     experiment_name = ExperimentName("EXPERIMENT")
     column_preprocessor_defintions = [
         SQLColumnPreprocessorDefinition(source_column1.name, SQLOrdinalEncoder()),
@@ -102,8 +102,8 @@ def test_table_preprocessor_transform_queries():
     source_table = TableNameBuilder.create("SOURCE_TABLE", source_schema)
     input_table = TableNameBuilder.create("INPUT_TABLE", source_schema)
     target_schema = SchemaName("TARGET_SCHEMA")
-    source_column1 = ColumnName("CATEGORY", source_table)
-    source_column2 = ColumnName("NUMERICAL", source_table)
+    source_column1 = ColumnNameBuilder.create("CATEGORY", source_table)
+    source_column2 = ColumnNameBuilder.create("NUMERICAL", source_table)
     experiment_name = ExperimentName("EXPERIMENT")
     column_preprocessor_defintions = [
         SQLColumnPreprocessorDefinition(source_column1.name, SQLOrdinalEncoder()),

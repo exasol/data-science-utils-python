@@ -44,11 +44,11 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
             ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX)
 
     def _get_id_column(self, table: TableName = None):
-        min_column = ColumnName("ID", table)
+        min_column = ColumnNameBuilder.create("ID", table)
         return min_column
 
     def _get_value_column(self, table: TableName = None):
-        range_column = ColumnName("VALUE", table)
+        range_column = ColumnNameBuilder.create("VALUE", table)
         return range_column
 
     def requires_global_transformation_for_training_data(self) -> bool:
@@ -112,7 +112,7 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         """
         dictionary_table = self._get_dictionary_table_name(target_schema, source_column, experiment_name)
         alias = self._get_dictionary_table_alias(target_schema, source_column)
-        input_column = ColumnName(source_column.name, input_table)
+        input_column = ColumnNameBuilder.create(source_column.name, input_table)
         value_column = self._get_value_column(alias)
         from_clause_part = textwrap.dedent(f"""
             LEFT OUTER JOIN {dictionary_table.fully_qualified()}
@@ -139,7 +139,7 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         """
         alias = self._get_dictionary_table_alias(target_schema, source_column)
         id_column = self._get_id_column(alias)
-        transformation_column_name = ColumnName(f"{source_column.name}_ID")
+        transformation_column_name = ColumnNameBuilder.create(f"{source_column.name}_ID")
         select_clause_part_expression = \
             textwrap.dedent(f'{id_column.fully_qualified()} AS {transformation_column_name.quoted_name()}')
         select_clause_part = TransformSelectClausePart(

@@ -42,11 +42,11 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         return alias
 
     def _get_min_column(self, table: TableName = None):
-        min_column = ColumnName("MIN", table)
+        min_column = ColumnNameBuilder.create("MIN", table)
         return min_column
 
     def _get_range_column(self, table: TableName = None):
-        range_column = ColumnName("RANGE", table)
+        range_column = ColumnNameBuilder.create("RANGE", table)
         return range_column
 
     def requires_global_transformation_for_training_data(self) -> bool:
@@ -129,10 +129,10 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         :return: List of select-clause parts which can be concatenated with ","
         """
         alias = self._get_parameter_table_alias(target_schema, source_column)
-        input_column = ColumnName(source_column.name, input_table)
+        input_column = ColumnNameBuilder.create(source_column.name, input_table)
         min_column = self._get_min_column(alias)
         range_column = self._get_range_column(alias)
-        target_column_name = ColumnName(f"{source_column.name}_MIN_MAX_SCALED")
+        target_column_name = ColumnNameBuilder.create(f"{source_column.name}_MIN_MAX_SCALED")
         select_clause_part_str = textwrap.dedent(
             f'''({input_column.fully_qualified()}-{min_column.fully_qualified()})/{range_column.fully_qualified()} AS {target_column_name.quoted_name()}''')
         select_clause_part = TransformSelectClausePart(

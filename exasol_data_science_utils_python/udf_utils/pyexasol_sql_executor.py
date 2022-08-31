@@ -50,7 +50,7 @@ class PyExasolResultSet(ResultSet):
     def columns(self) -> List[Column]:
         columns = [
             Column(
-                ColumnName(column_name),
+                ColumnNameBuilder.create(column_name),
                 ColumnType(
                     name=column_type["type"],
                     precision=column_type[PRECISION] if PRECISION in column_type else None,

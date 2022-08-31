@@ -4,8 +4,8 @@ from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_min_ma
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
 from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.schema.column import Column
-from exasol_data_science_utils_python.schema.column import ColumnName
 from exasol_data_science_utils_python.schema.column import ColumnType
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
 from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.schema.table import Table
@@ -17,7 +17,7 @@ def test_min_max_scaler_create_fit_queries():
     source_schema = SchemaName("SRC_SCHEMA")
     source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
-    source_column = ColumnName("SRC_COLUMN1", source_table)
+    source_column = ColumnNameBuilder.create("SRC_COLUMN1", source_table)
     experiment_name = ExperimentName("EXPERIMENT")
     scaler = SQLMinMaxScaler()
     mock_sql_executor = MockSQLExecutor()
@@ -41,13 +41,13 @@ def get_expected_parameter_tables():
         "EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_MIN_MAX_SCALER_PARAMETERS",
         SchemaName("TGT_SCHEMA"))
     expected_parameter_table = ParameterTable(
-        source_column=ColumnName("SRC_COLUMN1", TableNameBuilder.create(
+        source_column=ColumnNameBuilder.create("SRC_COLUMN1", TableNameBuilder.create(
             "SRC_TABLE", SchemaName("SRC_SCHEMA"))),
         table=Table(target_table_name,
                     columns=
                     [
-                        Column(ColumnName("MIN", target_table_name), ColumnType("DOUBLE")),
-                        Column(ColumnName("RANGE", target_table_name), ColumnType("DOUBLE"))
+                        Column(ColumnNameBuilder.create("MIN", target_table_name), ColumnType("DOUBLE")),
+                        Column(ColumnNameBuilder.create("RANGE", target_table_name), ColumnType("DOUBLE"))
                     ]),
         purpose="MIN_AND_RANGE_TABLE"
     )
@@ -58,7 +58,7 @@ def test_min_max_scaler_create_from_clause_part():
     source_schema = SchemaName("SRC_SCHEMA")
     source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
-    source_column = ColumnName("SRC_COLUMN1", source_table)
+    source_column = ColumnNameBuilder.create("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
     input_table = TableNameBuilder.create("IN_TABLE", input_schema)
     experiment_name = ExperimentName("EXPERIMENT")
@@ -74,7 +74,7 @@ def test_min_max_scaler_create_select_clause_part():
     source_schema = SchemaName("SRC_SCHEMA")
     source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
-    source_column = ColumnName("SRC_COLUMN1", source_table)
+    source_column = ColumnNameBuilder.create("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
     input_table = TableNameBuilder.create("IN_TABLE", input_schema)
     experiment_name = ExperimentName("EXPERIMENT")
@@ -86,10 +86,10 @@ def test_min_max_scaler_create_select_clause_part():
         '''("IN_SCHEMA"."IN_TABLE"."SRC_COLUMN1"-"TGT_SCHEMA_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_MIN_MAX_SCALER_PARAMETERS"."MIN")/"TGT_SCHEMA_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_MIN_MAX_SCALER_PARAMETERS"."RANGE" AS "SRC_COLUMN1_MIN_MAX_SCALED"''')
     expected_transformation_column = \
         TransformationColumn(
-            source_column=ColumnName("SRC_COLUMN1", source_table),
-            input_column=ColumnName("SRC_COLUMN1", input_table),
+            source_column=ColumnNameBuilder.create("SRC_COLUMN1", source_table),
+            input_column=ColumnNameBuilder.create("SRC_COLUMN1", input_table),
             purpose="MinMaxScaled",
-            column=Column(ColumnName("SRC_COLUMN1_MIN_MAX_SCALED"), ColumnType("DOUBLE"))
+            column=Column(ColumnNameBuilder.create("SRC_COLUMN1_MIN_MAX_SCALED"), ColumnType("DOUBLE"))
         )
     assert len(select_clause_parts) == 1
     assert select_clause_parts[0].select_clause_part_expression == expected

@@ -24,11 +24,11 @@ def pyexasol_result_set(pyexasol_sql_executor):
     row_count = 100000
     expected_result = [(1, "a", '1.1')] * row_count
     expected_columns = [
-        Column(ColumnName("c1"),
+        Column(ColumnNameBuilder.create("c1"),
                ColumnType(name="DECIMAL", precision=1, scale=0)),
-        Column(ColumnName("c2"),
+        Column(ColumnNameBuilder.create("c2"),
                ColumnType(name="CHAR", size=1, characterSet="ASCII")),
-        Column(ColumnName("c3"),
+        Column(ColumnNameBuilder.create("c3"),
                ColumnType(name="DECIMAL", precision=2, scale=1)),
     ]
     result_set = pyexasol_sql_executor.execute(

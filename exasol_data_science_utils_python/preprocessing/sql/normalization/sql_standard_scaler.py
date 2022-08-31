@@ -33,11 +33,11 @@ class SQLStandardScaler(SQLColumnPreprocessor):
         return alias
 
     def _get_avg_column(self, table: TableName = None):
-        avg_column = ColumnName("AVG", table)
+        avg_column = ColumnNameBuilder.create("AVG", table)
         return avg_column
 
     def _get_stddev_column(self, table: TableName = None):
-        stddev_column = ColumnName("STDDEV", table)
+        stddev_column = ColumnNameBuilder.create("STDDEV", table)
         return stddev_column
 
     def requires_global_transformation_for_training_data(self) -> bool:
@@ -90,10 +90,10 @@ class SQLStandardScaler(SQLColumnPreprocessor):
                                             target_schema: SchemaName,
                                             experiment_name: ExperimentName) -> List[TransformSelectClausePart]:
         alias = self._get_parameter_table_alias(target_schema, source_column)
-        input_column = ColumnName(source_column.name, input_table)
+        input_column = ColumnNameBuilder.create(source_column.name, input_table)
         avg_column = self._get_avg_column(alias)
         stddev_column = self._get_stddev_column(alias)
-        target_column_name = ColumnName(f"{source_column.name}_STANDARD_SCALED")
+        target_column_name = ColumnNameBuilder.create(f"{source_column.name}_STANDARD_SCALED")
         select_clause_part_str = textwrap.dedent(
             f'''({input_column.fully_qualified()}-{avg_column.fully_qualified()})/
         (CASE 

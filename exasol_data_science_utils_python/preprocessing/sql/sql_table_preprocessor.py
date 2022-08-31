@@ -6,7 +6,7 @@ from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_
     SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.tranformation_table import TransformationTable
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
-from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
 from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.schema.table_name import TableName
@@ -39,7 +39,7 @@ class SQLTablePreprocessor:
         """
         result = []
         for column_preprocessor_definition in self.column_preprocessor_definitions:
-            source_column = ColumnName(column_preprocessor_definition.column_name, self.source_table)
+            source_column = ColumnNameBuilder.create(column_preprocessor_definition.column_name, self.source_table)
             preprocessor = column_preprocessor_definition.column_preprocessor
             parameter_tables = preprocessor.fit(sql_executor, source_column, self.target_schema, self.experiment_name)
             result.extend(parameter_tables)
@@ -76,7 +76,7 @@ FROM {input_table.fully_qualified()}
     def _create_transform_from_clause_parts(self, sql_executor: SQLExecutor, input_table: TableName) -> str:
         from_clause_parts = []
         for column_preprocessor_definition in self.column_preprocessor_definitions:
-            source_column = ColumnName(column_preprocessor_definition.column_name, self.source_table)
+            source_column = ColumnNameBuilder.create(column_preprocessor_definition.column_name, self.source_table)
             column_preprocessor = column_preprocessor_definition.column_preprocessor
             parts = column_preprocessor.create_transform_from_clause_part(
                 sql_executor,
@@ -92,7 +92,7 @@ FROM {input_table.fully_qualified()}
             -> Tuple[str, List[TransformSelectClausePart]]:
         select_clause_parts = []
         for column_preprocessor_definition in self.column_preprocessor_definitions:
-            source_column = ColumnName(column_preprocessor_definition.column_name, self.source_table)
+            source_column = ColumnNameBuilder.create(column_preprocessor_definition.column_name, self.source_table)
             preprocessor = column_preprocessor_definition.column_preprocessor
             parts = preprocessor.create_transform_select_clause_part(
                 sql_executor,

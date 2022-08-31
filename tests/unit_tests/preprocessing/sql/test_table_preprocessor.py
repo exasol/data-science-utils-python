@@ -39,7 +39,7 @@ class MyColumnPreprocessor(SQLColumnPreprocessor):
                    SELECT 1 AS "VALUE"
                    ''')
         sqlexecutor.execute(query)
-        column = Column(ColumnName("VALUE", target_table_name), ColumnType("INTEGER"))
+        column = Column(ColumnNameBuilder.create("VALUE", target_table_name), ColumnType("INTEGER"))
         target_table = Table(target_table_name, [column])
         parameter_table = ParameterTable(source_column, target_table, "purpose")
         return [parameter_table]
@@ -60,7 +60,7 @@ class MyColumnPreprocessor(SQLColumnPreprocessor):
                                             target_schema: SchemaName,
                                             experiment_name: ExperimentName) \
             -> List[TransformSelectClausePart]:
-        transformation_column_name = ColumnName(f"{source_column.name}_VALUE")
+        transformation_column_name = ColumnNameBuilder.create(f"{source_column.name}_VALUE")
         transformation_column = Column(transformation_column_name, ColumnType("INTEGER"))
         input_column_name = ColumnNameBuilder(column_name=source_column).with_table_name(input_table).build()
         transformation_column = TransformationColumn(source_column=source_column,
@@ -76,8 +76,8 @@ def test_table_preprocessor_create_fit_queries():
     source_schema = SchemaName("SRC_SCHEMA")
     source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
-    source_column1 = ColumnName("SRC_COLUMN1", source_table)
-    source_column2 = ColumnName("SRC_COLUMN2", source_table)
+    source_column1 = ColumnNameBuilder.create("SRC_COLUMN1", source_table)
+    source_column2 = ColumnNameBuilder.create("SRC_COLUMN2", source_table)
     column_preprocessor_definitions = [
         SQLColumnPreprocessorDefinition(source_column1.name, MyColumnPreprocessor()),
         SQLColumnPreprocessorDefinition(source_column2.name, MyColumnPreprocessor()),
@@ -110,15 +110,19 @@ def get_expected_parameter_table():
                                                  SchemaName("TGT_SCHEMA"))
     expected_parameter_tables = [
         ParameterTable(
-            source_column=ColumnName("SRC_COLUMN1", TableNameBuilder.create("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
+            source_column=ColumnNameBuilder.create("SRC_COLUMN1",
+                                                   TableNameBuilder.create("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
             table=Table(target_table1_name,
-                        columns=[Column(ColumnName("VALUE", target_table1_name), ColumnType("INTEGER"))], ),
+                        columns=[
+                            Column(ColumnNameBuilder.create("VALUE", target_table1_name), ColumnType("INTEGER"))], ),
             purpose="purpose"
         ),
         ParameterTable(
-            source_column=ColumnName("SRC_COLUMN2", TableNameBuilder.create("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
+            source_column=ColumnNameBuilder.create("SRC_COLUMN2",
+                                                   TableNameBuilder.create("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
             table=Table(target_table2_name,
-                        columns=[Column(ColumnName("VALUE", target_table2_name), ColumnType("INTEGER"))], ),
+                        columns=[
+                            Column(ColumnNameBuilder.create("VALUE", target_table2_name), ColumnType("INTEGER"))], ),
             purpose="purpose"
         )
     ]
@@ -129,8 +133,8 @@ def test_table_preprocessor_create_transform_query():
     source_schema = SchemaName("SRC_SCHEMA")
     source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
-    source_column1 = ColumnName("SRC_COLUMN1", source_table)
-    source_column2 = ColumnName("SRC_COLUMN2", source_table)
+    source_column1 = ColumnNameBuilder.create("SRC_COLUMN1", source_table)
+    source_column2 = ColumnNameBuilder.create("SRC_COLUMN2", source_table)
     input_schema = SchemaName("IN_SCHEMA")
     input_table = TableNameBuilder.create("IN_TABLE", input_schema)
     experiment = ExperimentName("EXPERIMENT")
