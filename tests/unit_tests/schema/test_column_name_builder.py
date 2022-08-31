@@ -16,13 +16,13 @@ def test_using_constructor_name_only():
 
 
 def test_using_constructor_table():
-    column_name = ColumnNameBuilder(name="table", table_name=TableNameImpl("table")).build()
-    assert column_name.name == "table" and column_name.table_name.name is "table"
+    column_name = ColumnNameBuilder(name="column", table_name=TableNameImpl("table")).build()
+    assert column_name.name == "column" and column_name.table_name.name is "table"
 
 
 def test_using_with_name_only():
-    column_name = ColumnNameBuilder().with_name("table").build()
-    assert column_name.name == "table" and column_name.table_name is None
+    column_name = ColumnNameBuilder().with_name("column").build()
+    assert column_name.name == "column" and column_name.table_name is None
 
 
 def test_using_with_table():
@@ -31,11 +31,11 @@ def test_using_with_table():
 
 
 def test_from_existing_using_with_table():
-    source_column_name = ColumnName("table")
+    source_column_name = ColumnName("column")
     column_name = ColumnNameBuilder(column_name=source_column_name).with_table_name(TableNameImpl("table")).build()
-    assert source_column_name.name == "table" \
+    assert source_column_name.name == "column" \
            and source_column_name.table_name is None \
-           and column_name.name == "table" \
+           and column_name.name == "column" \
            and column_name.table_name.name == "table"
 
 
