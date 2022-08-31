@@ -13,8 +13,9 @@ class TableNameBuilder:
                  table_name: Optional[TableName] = None):
         """
         Creates a builder for TableName objects,
-        either by copying a TableName object or
+        either by copying a TableName object (parameter "table_name") or
         using the newly provided values.
+        Note that parameters schema/name have priority over parameter "table_name".
         """
         self._name = None
         self._schema_name = None

@@ -17,8 +17,9 @@ class UDFNameBuilder:
                  udf_name: Optional[UDFName] = None):
         """
         Creates a builder for UDFName objects,
-        either by copying a UDFName object or
+        either by copying a UDFName object (parameter "udf_name") or
         using the newly provided values.
+        Note that parameters schema/name have priority over parameter udf_name.
         """
         self._name = None
         self._schema_name = None

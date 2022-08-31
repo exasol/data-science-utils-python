@@ -35,7 +35,7 @@ class ExasolIdentifierImpl(ExasolIdentifier):
         return f'"{self._name}"'
 
     @classmethod
-    def _validate_name(self, name: str) -> bool:
+    def _validate_name(cls, name: str) -> bool:
         if name is None or name == "":
             return False
         if not self._validate_first_character(name[0]):

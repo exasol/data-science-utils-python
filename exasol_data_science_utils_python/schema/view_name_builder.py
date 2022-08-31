@@ -14,8 +14,9 @@ class ViewNameBuilder:
                  view_name: Optional[ViewName] = None):
         """
         Creates a builder for ViewName objects,
-        either by copying a ViewName object or
+        either by copying a ViewName (parameter view_name) object or
         using the newly provided values.
+        Note that parameters schema/name have priority over parameter view_name.
         """
         self._name = None
         self._schema_name = None

@@ -40,29 +40,29 @@ def test_from_existing_using_with_table():
 
 
 def test_from_existing_using_with_name():
-    source_column_name = ColumnName("table", TableNameImpl("table"))
-    column_name = ColumnNameBuilder(column_name=source_column_name).with_name("table1").build()
-    assert source_column_name.name == "table" \
+    source_column_name = ColumnName("column", TableNameImpl("table"))
+    column_name = ColumnNameBuilder(column_name=source_column_name).with_name("column1").build()
+    assert source_column_name.name == "column" \
            and source_column_name.table_name.name == "table" \
            and column_name.table_name.name == "table" \
-           and column_name.name == "table1"
+           and column_name.name == "column1"
 
 
 def test_from_existing_and_new_table_in_constructor():
-    source_column_name = ColumnName("table")
+    source_column_name = ColumnName("column")
     column_name = ColumnNameBuilder(table_name=TableNameImpl("table"),
                                     column_name=source_column_name).build()
-    assert source_column_name.name == "table" \
+    assert source_column_name.name == "column" \
            and source_column_name.table_name is None \
-           and column_name.name == "table" \
+           and column_name.name == "column" \
            and column_name.table_name.name == "table"
 
 
 def test_from_existing_and_new_name_in_constructor():
-    source_column_name = ColumnName("table", TableNameImpl("table"))
-    column_name = ColumnNameBuilder(name="table1",
+    source_column_name = ColumnName("column", TableNameImpl("table"))
+    column_name = ColumnNameBuilder(name="column1",
                                     column_name=source_column_name).build()
-    assert source_column_name.name == "table" \
+    assert source_column_name.name == "column" \
            and source_column_name.table_name.name == "table" \
            and column_name.table_name.name == "table" \
-           and column_name.name == "table1"
+           and column_name.name == "column1"
