@@ -9,20 +9,20 @@ class ExasolIdentifier(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
-        raise NotImplementedError()
+        pass
 
     @abstractmethod
     def quoted_name(self) -> str:
-        raise NotImplementedError()
+        pass
 
     @abstractmethod
     def fully_qualified(self) -> str:
-        raise NotImplementedError()
+        pass
 
     @abstractmethod
     def __eq__(self, other):
-        raise NotImplementedError()
+        pass
 
     @abstractmethod
     def __repr__(self):
-        raise NotImplementedError()
+        pass

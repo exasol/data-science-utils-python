@@ -9,4 +9,4 @@ class DBObjectNameWithSchema(DBObjectName):
     @property
     @abstractmethod
     def schema_name(self) -> SchemaName:
-        raise NotImplementedError()
+        pass
