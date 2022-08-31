@@ -34,4 +34,4 @@ tenacity = "^8.0.1"
 pytest = "^7.1.2"
 pytest-cov = "^3.0.0"
 coverage = "^6.4.4"
-exasol-udf-mock-python = { git = "https://github.com/exasol/udf-mock-python.git", branch = "master" }
+exasol-udf-mock-python = { git = "https://github.com/exasol/udf-mock-python.git", branch = "main" }
