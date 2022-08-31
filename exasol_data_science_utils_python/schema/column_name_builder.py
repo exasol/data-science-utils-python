@@ -10,8 +10,8 @@ class ColumnNameBuilder:
                  table_name: Optional[TableName] = None,
                  column_name: Optional[ColumnName] = None):
         """
-        Creates a builder for ViewName objects,
-        either by copying a ViewName object or
+        Creates a builder for ColumnName objects,
+        either by copying a ColumnName object or
         using the newly provided values.
         """
         self._name = None
