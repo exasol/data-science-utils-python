@@ -25,7 +25,7 @@ class MinMaxScalerFactory(ColumnPreprocessorFactory):
              if parameter_table.purpose == SQLMinMaxScaler.MIN_AND_RANGE_TABLE]
         min_range_parameter_table = min_range_parameter_tables[0]
         result_set = sql_executor.execute(
-            f"""SELECT "MIN", "RANGE"  FROM {min_range_parameter_table.table.name.fully_qualified()}""")
+            f"""SELECT "MIN", "RANGE"  FROM {min_range_parameter_table.table.name.fully_qualified}""")
         rows = result_set.fetchall()
         min_value = rows[0][0]
         range_value = rows[0][1]

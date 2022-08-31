@@ -9,6 +9,7 @@ class TestSchemaElement(ExasolIdentifierImpl):
     def __init__(self, name: str):
         super().__init__(name)
 
+    @property
     def fully_qualified(self) -> str:
         raise NotImplemented()
 
@@ -61,7 +62,7 @@ def test_name_invalid(test_name):
                              ('abc', '"abc"')
                          ])
 def test_quote(name, expected_quoted_name):
-    quoted_name = TestSchemaElement(name).quoted_name()
+    quoted_name = TestSchemaElement(name).quoted_name
     assert quoted_name == expected_quoted_name
 
 

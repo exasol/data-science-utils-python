@@ -65,10 +65,10 @@ class SQLTablePreprocessor:
         transformation_columns = [select_clause_part.tranformation_column for select_clause_part in select_clause_parts]
         transformation_table = TransformationTable(transformation_table_name, transformation_columns)
         query = textwrap.dedent(
-            f"""CREATE OR REPLACE VIEW {transformation_table_name.fully_qualified()} AS
+            f"""CREATE OR REPLACE VIEW {transformation_table_name.fully_qualified} AS
 SELECT
 {select_clause_parts_str}
-FROM {input_table.fully_qualified()}
+FROM {input_table.fully_qualified}
 {from_clause_parts_str}""")
         sql_executor.execute(query)
         return transformation_table

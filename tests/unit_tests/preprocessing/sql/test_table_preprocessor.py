@@ -35,7 +35,7 @@ class MyColumnPreprocessor(SQLColumnPreprocessor):
             -> List[ParameterTable]:
         target_table_name = self._get_target_table(target_schema, source_column, experiment_name, "PREFIX")
         query = textwrap.dedent(f'''
-                   CREATE OR REPLACE TABLE {target_table_name.fully_qualified()} AS 
+                   CREATE OR REPLACE TABLE {target_table_name.fully_qualified} AS 
                    SELECT 1 AS "VALUE"
                    ''')
         sqlexecutor.execute(query)
@@ -51,7 +51,7 @@ class MyColumnPreprocessor(SQLColumnPreprocessor):
                                           target_schema: SchemaName,
                                           experiment_name: ExperimentName) -> List[str]:
         target_table = self._get_target_table(target_schema, source_column, experiment_name, "PREFIX")
-        return [f"CROSS JOIN {target_table.fully_qualified()}"]
+        return [f"CROSS JOIN {target_table.fully_qualified}"]
 
     def create_transform_select_clause_part(self,
                                             sql_executor: SQLExecutor,
@@ -68,7 +68,7 @@ class MyColumnPreprocessor(SQLColumnPreprocessor):
                                                      column=transformation_column,
                                                      purpose="purpose")
         transform_select_clause_part = TransformSelectClausePart(transformation_column,
-                                                                 f'1 AS {transformation_column_name.quoted_name()}')
+                                                                 f'1 AS {transformation_column_name.quoted_name}')
         return [transform_select_clause_part]
 
 

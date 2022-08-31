@@ -9,5 +9,6 @@ class SchemaName(DBObjectNameImpl):
     def __init__(self, schema_name: str):
         super().__init__(schema_name)
 
+    @property
     def fully_qualified(self) -> str:
-        return self.quoted_name()
+        return self.quoted_name

@@ -12,17 +12,17 @@ def test_constructor():
 
 def test_quoted_name():
     connection_object_name = ConnectionObjectNameImpl(name=CONNECTION)
-    assert connection_object_name.quoted_name() == f'"{CONNECTION}"'
+    assert connection_object_name.quoted_name == f'"{CONNECTION}"'
 
 
 def test_fully_qualified():
     connection_object_name = ConnectionObjectNameImpl(name=CONNECTION)
-    assert connection_object_name.fully_qualified() == f'"{CONNECTION}"'
+    assert connection_object_name.fully_qualified == f'"{CONNECTION}"'
 
 
 def test_normalized_name_for_udfs():
     connection_object_name = ConnectionObjectNameImpl(name=CONNECTION)
-    assert connection_object_name.normalized_name_for_udfs() == CONNECTION_UPPER
+    assert connection_object_name.normalized_name_for_udfs == CONNECTION_UPPER
 
 
 def test_equality_case_insensitive():

@@ -10,11 +10,13 @@ class ConnectionObjectNameImpl(DBObjectNameImpl, ConnectionObjectName):
     def __init__(self, name: str):
         super().__init__(name)
 
+    @property
     def normalized_name_for_udfs(self) -> str:
         return self.name.upper()
 
+    @property
     def fully_qualified(self) -> str:
-        return self.quoted_name()
+        return self.quoted_name
 
     def __repr__(self):
         return generate_repr_for_object(self)

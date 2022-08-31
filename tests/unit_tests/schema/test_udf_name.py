@@ -6,12 +6,12 @@ from exasol_data_science_utils_python.schema.udf_name_impl import UDFNameImpl
 
 def test_fully_qualified():
     udf = UDFNameImpl("udf")
-    assert udf.fully_qualified() == '"udf"'
+    assert udf.fully_qualified == '"udf"'
 
 
 def test_fully_qualified_with_schema():
     udf = UDFNameImpl("udf", schema=SchemaName("schema"))
-    assert udf.fully_qualified() == '"schema"."udf"'
+    assert udf.fully_qualified == '"schema"."udf"'
 
 
 def test_set_new_schema_fail():

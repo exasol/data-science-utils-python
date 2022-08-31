@@ -16,11 +16,12 @@ class ColumnName(ExasolIdentifierImpl):
     def table_name(self):
         return self._table_name
 
+    @property
     def fully_qualified(self) -> str:
         if self.table_name is not None:
-            return f'{self._table_name.fully_qualified()}.{self.quoted_name()}'
+            return f'{self._table_name.fully_qualified}.{self.quoted_name}'
         else:
-            return self.quoted_name()
+            return self.quoted_name
 
     def __eq__(self, other):
         return isinstance(other, ColumnName) and \

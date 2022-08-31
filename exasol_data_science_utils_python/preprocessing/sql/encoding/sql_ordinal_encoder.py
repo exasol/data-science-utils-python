@@ -72,14 +72,14 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         id_column_name = self._get_id_column()
         value_column_name = self._get_value_column()
         query = textwrap.dedent(f"""
-                CREATE OR REPLACE TABLE {dictionary_table_name.fully_qualified()} AS
+                CREATE OR REPLACE TABLE {dictionary_table_name.fully_qualified} AS
                 SELECT
-                    CAST(rownum - 1 AS INTEGER) as {id_column_name.fully_qualified()},
-                    {value_column_name.quoted_name()}
+                    CAST(rownum - 1 AS INTEGER) as {id_column_name.fully_qualified},
+                    {value_column_name.quoted_name}
                 FROM (
-                    SELECT DISTINCT {source_column.fully_qualified()} as {value_column_name.quoted_name()}
-                    FROM {source_column.table_name.fully_qualified()}
-                    ORDER BY {source_column.fully_qualified()}
+                    SELECT DISTINCT {source_column.fully_qualified} as {value_column_name.quoted_name}
+                    FROM {source_column.table_name.fully_qualified}
+                    ORDER BY {source_column.fully_qualified}
                 );
                 """)
         sqlexecutor.execute(query)
@@ -115,11 +115,11 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         input_column = ColumnNameBuilder.create(source_column.name, input_table)
         value_column = self._get_value_column(alias)
         from_clause_part = textwrap.dedent(f"""
-            LEFT OUTER JOIN {dictionary_table.fully_qualified()}
-            AS {alias.fully_qualified()}
+            LEFT OUTER JOIN {dictionary_table.fully_qualified}
+            AS {alias.fully_qualified}
             ON
-                {value_column.fully_qualified()} = 
-                {input_column.fully_qualified()}
+                {value_column.fully_qualified} = 
+                {input_column.fully_qualified}
             """)
         return [from_clause_part]
 
@@ -141,7 +141,7 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         id_column = self._get_id_column(alias)
         transformation_column_name = ColumnNameBuilder.create(f"{source_column.name}_ID")
         select_clause_part_expression = \
-            textwrap.dedent(f'{id_column.fully_qualified()} AS {transformation_column_name.quoted_name()}')
+            textwrap.dedent(f'{id_column.fully_qualified} AS {transformation_column_name.quoted_name}')
         select_clause_part = TransformSelectClausePart(
             select_clause_part_expression=select_clause_part_expression,
             tranformation_column=TransformationColumn(

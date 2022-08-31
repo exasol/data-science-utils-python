@@ -10,8 +10,9 @@ class ExperimentName(ExasolIdentifierImpl):
     def __init__(self, name: str):
         super().__init__(name)
 
+    @property
     def fully_qualified(self) -> str:
-        return self.quoted_name()
+        return self.quoted_name
 
     def __eq__(self, other):
         return isinstance(other, ExperimentName) and \

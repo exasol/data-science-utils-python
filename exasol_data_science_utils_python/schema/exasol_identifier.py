@@ -1,7 +1,4 @@
-import unicodedata
 from abc import ABC, abstractmethod
-
-from typeguard import typechecked
 
 
 class ExasolIdentifier(ABC):
@@ -9,14 +6,24 @@ class ExasolIdentifier(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
+        """
+        The name of the ExasolIdentifier
+        """
         pass
 
+    @property
     @abstractmethod
     def quoted_name(self) -> str:
-        pass
+        """
+        The quoted name of the ExasolIdentifier, e.g. "table_name"
+        """
 
+    @property
     @abstractmethod
     def fully_qualified(self) -> str:
+        """
+        The full qualified name of the ExasolIdentifier, e.g. "schema_name"."table_name"
+        """
         pass
 
     @abstractmethod

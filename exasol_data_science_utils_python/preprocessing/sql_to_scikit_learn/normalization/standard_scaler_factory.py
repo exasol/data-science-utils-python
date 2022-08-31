@@ -25,7 +25,7 @@ class StandardScalerFactory(ColumnPreprocessorFactory):
              if parameter_table.purpose == SQLStandardScaler.MEAN_AND_STDDEV_TABLE]
         avg_stddev_parameter_table = avg_stddev_parameter_tables[0]
         result_set = sql_executor.execute(
-            f"""SELECT "AVG", "STDDEV"  FROM {avg_stddev_parameter_table.table.name.fully_qualified()}""")
+            f"""SELECT "AVG", "STDDEV"  FROM {avg_stddev_parameter_table.table.name.fully_qualified}""")
         rows = result_set.fetchall()
         avg_value = rows[0][0]
         stddev_value = rows[0][1]

@@ -8,12 +8,12 @@ from exasol_data_science_utils_python.schema.view_name_impl import ViewNameImpl
 
 def test_fully_qualified():
     view = ViewNameImpl("view")
-    assert view.fully_qualified() == '"view"'
+    assert view.fully_qualified == '"view"'
 
 
 def test_fully_qualified_with_schema():
     view = ViewNameImpl("view", schema=SchemaName("schema"))
-    assert view.fully_qualified() == '"schema"."view"'
+    assert view.fully_qualified == '"schema"."view"'
 
 
 def test_set_new_schema_fail():

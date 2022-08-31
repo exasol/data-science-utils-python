@@ -52,7 +52,7 @@ class PartialFitRegressionTrainingRunner:
         self.download_retry_seconds = download_retry_seconds
         if any(column.table_name != self.columns[0].table_name for column in self.columns):
             raise ValueError(
-                f"Not all columns in {[column.fully_qualified() for column in self.columns]} are from the same table.")
+                f"Not all columns in {[column.fully_qualified for column in self.columns]} are from the same table.")
 
     def run(self) -> Dict[str, Any]:
         bucket_fs_factory = BucketFSFactory()
@@ -102,7 +102,7 @@ class PartialFitRegressionTrainingRunner:
                 model_connection_name,
                 path_under_model_connection,
                 model_path
-            FROM {self.target_schema.fully_qualified()}."FITTED_COMBINED_MODEL"
+            FROM {self.target_schema.fully_qualified}."FITTED_COMBINED_MODEL"
             WHERE job_id = '{self.job_id}' 
             AND model_id = '{self.model_id}'
             AND model_connection_name = '{self.model_connection_object.name}'
@@ -130,7 +130,7 @@ class PartialFitRegressionTrainingRunner:
 
     def insert_combined_model(self, sql_executor):
         query = f"""
-            INSERT INTO {self.target_schema.fully_qualified()}."FITTED_COMBINED_MODEL"
+            INSERT INTO {self.target_schema.fully_qualified}."FITTED_COMBINED_MODEL"
             SELECT  
                 '{self.job_id}',
                 '{self.model_id}',
@@ -138,12 +138,12 @@ class PartialFitRegressionTrainingRunner:
                 path_under_model_connection, 
                 combined_model_path
             FROM (
-                SELECT {self.target_schema.fully_qualified()}."COMBINE_TO_VOTING_REGRESSOR_UDF"(
+                SELECT {self.target_schema.fully_qualified}."COMBINE_TO_VOTING_REGRESSOR_UDF"(
                     model_connection_name,
                     path_under_model_connection,
                     model_path,
                     {self.download_retry_seconds}) 
-                FROM {self.target_schema.fully_qualified()}."FITTED_BASE_MODELS"
+                FROM {self.target_schema.fully_qualified}."FITTED_BASE_MODELS"
                 WHERE job_id = '{self.job_id}'
                 AND model_id = '{self.model_id}'
                 AND model_connection_name = '{self.model_connection_object.name}'
@@ -160,7 +160,7 @@ class PartialFitRegressionTrainingRunner:
 
     def create_fitted_combined_model_table(self, sql_executor):
         create_table = f"""
-        CREATE TABLE IF NOT EXISTS {self.target_schema.fully_qualified()}."FITTED_COMBINED_MODEL" (
+        CREATE TABLE IF NOT EXISTS {self.target_schema.fully_qualified}."FITTED_COMBINED_MODEL" (
             job_id VARCHAR(2000000),
             model_id VARCHAR(2000000),
             model_connection_name VARCHAR(2000000),
@@ -180,7 +180,7 @@ class PartialFitRegressionTrainingRunner:
         column_name_list = ",".join(self.get_column_name_list(self.columns))
         select_list_for_columns = self.get_select_list_for_columns(self.columns)
         create_table = f"""
-        CREATE TABLE IF NOT EXISTS {self.target_schema.fully_qualified()}."FITTED_BASE_MODELS" (
+        CREATE TABLE IF NOT EXISTS {self.target_schema.fully_qualified}."FITTED_BASE_MODELS" (
             job_id VARCHAR(2000000),
             model_id VARCHAR(2000000),
             model_connection_name VARCHAR(2000000),
@@ -193,7 +193,7 @@ class PartialFitRegressionTrainingRunner:
         group_by_clause = self.generate_group_by_clause()
         sql_executor.execute(create_table)
         query = f"""
-            INSERT INTO {self.target_schema.fully_qualified()}."FITTED_BASE_MODELS" 
+            INSERT INTO {self.target_schema.fully_qualified}."FITTED_BASE_MODELS" 
             SELECT 
                 '{self.job_id}',
                 '{self.model_id}',
@@ -203,7 +203,7 @@ class PartialFitRegressionTrainingRunner:
                 training_score_sum,
                 training_score_count
             FROM (
-                SELECT {self.target_schema.fully_qualified()}."PARTIAL_FIT_REGRESSOR_UDF"(
+                SELECT {self.target_schema.fully_qualified}."PARTIAL_FIT_REGRESSOR_UDF"(
                     '{self.model_connection_object.name}',
                     {self._get_path_under_model_connection_as_sql_value()},
                     {self.download_retry_seconds},
@@ -212,7 +212,7 @@ class PartialFitRegressionTrainingRunner:
                     {self.training_parameter.batch_size},
                     {self.training_parameter.shuffle_buffer_size},
                     {select_list_for_columns}) 
-                FROM {self.source_table.fully_qualified()}
+                FROM {self.source_table.fully_qualified}
                 {group_by_clause}
             )
             """
@@ -233,7 +233,7 @@ class PartialFitRegressionTrainingRunner:
                 partitions_expression = f"{partitions}"
             group_by_clause_parts.append(f"least(floor(rand(0,{partitions_expression})),{partitions_expression}-1)")
         if len(self.training_parameter.split_by_columns) != 0:
-            group_by_clause_parts += [column.quoted_name() for column in self.training_parameter.split_by_columns]
+            group_by_clause_parts += [column.quoted_name for column in self.training_parameter.split_by_columns]
         if len(group_by_clause_parts) > 0:
             group_by_clause = "GROUP BY " + ",".join(group_by_clause_parts)
         else:

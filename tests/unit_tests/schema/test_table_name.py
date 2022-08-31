@@ -6,12 +6,12 @@ from exasol_data_science_utils_python.schema.table_name_impl import TableNameImp
 
 def test_fully_qualified():
     table = TableNameImpl("table")
-    assert table.fully_qualified() == '"table"'
+    assert table.fully_qualified == '"table"'
 
 
 def test_fully_qualified_with_schema():
     table = TableNameImpl("table", schema=SchemaName("schema"))
-    assert table.fully_qualified() == '"schema"."table"'
+    assert table.fully_qualified == '"schema"."table"'
 
 
 def test_set_new_schema_fail():

@@ -70,11 +70,11 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         min_column = self._get_min_column()
         range_column = self._get_range_column()
         query = textwrap.dedent(f"""
-            CREATE OR REPLACE TABLE {parameter_table_name.fully_qualified()} AS
+            CREATE OR REPLACE TABLE {parameter_table_name.fully_qualified} AS
             SELECT
-                CAST(MIN({source_column.fully_qualified()}) as DOUBLE) as {min_column.fully_qualified()},
-                CAST(MAX({source_column.fully_qualified()})-MIN({source_column.fully_qualified()}) as DOUBLE) as {range_column.fully_qualified()}
-            FROM {source_column.table_name.fully_qualified()}
+                CAST(MIN({source_column.fully_qualified}) as DOUBLE) as {min_column.fully_qualified},
+                CAST(MAX({source_column.fully_qualified})-MIN({source_column.fully_qualified}) as DOUBLE) as {range_column.fully_qualified}
+            FROM {source_column.table_name.fully_qualified}
             """)
         sqlexecutor.execute(query)
         min_column = ColumnNameBuilder(column_name=min_column).with_table_name(parameter_table_name).build()
@@ -111,7 +111,7 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         parameter_table = self._get_parameter_table_name(target_schema, source_column, experiment_name)
         alias = self._get_parameter_table_alias(target_schema, source_column)
         from_caluse_part = textwrap.dedent(
-            f'''CROSS JOIN {parameter_table.fully_qualified()} AS {alias.fully_qualified()}''')
+            f'''CROSS JOIN {parameter_table.fully_qualified} AS {alias.fully_qualified}''')
         return [from_caluse_part]
 
     def create_transform_select_clause_part(self,
@@ -134,7 +134,7 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         range_column = self._get_range_column(alias)
         target_column_name = ColumnNameBuilder.create(f"{source_column.name}_MIN_MAX_SCALED")
         select_clause_part_str = textwrap.dedent(
-            f'''({input_column.fully_qualified()}-{min_column.fully_qualified()})/{range_column.fully_qualified()} AS {target_column_name.quoted_name()}''')
+            f'''({input_column.fully_qualified}-{min_column.fully_qualified})/{range_column.fully_qualified} AS {target_column_name.quoted_name}''')
         select_clause_part = TransformSelectClausePart(
             tranformation_column=TransformationColumn(
                 column=Column(target_column_name, ColumnType("DOUBLE")),

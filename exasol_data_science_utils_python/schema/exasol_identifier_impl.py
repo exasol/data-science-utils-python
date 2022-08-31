@@ -31,6 +31,7 @@ class ExasolIdentifierImpl(ExasolIdentifier):
     def name(self) -> str:
         return self._name
 
+    @property
     def quoted_name(self) -> str:
         return f'"{self._name}"'
 
@@ -38,15 +39,15 @@ class ExasolIdentifierImpl(ExasolIdentifier):
     def _validate_name(cls, name: str) -> bool:
         if name is None or name == "":
             return False
-        if not self._validate_first_character(name[0]):
+        if not cls._validate_first_character(name[0]):
             return False
         for c in name[1:]:
-            if not self._validate_follow_up_character(c):
+            if not cls._validate_follow_up_character(c):
                 return False
         return True
 
     @classmethod
-    def _validate_first_character(self, chararcter: str) -> bool:
+    def _validate_first_character(cls, chararcter: str) -> bool:
         unicode_category = unicodedata.category(chararcter)
         return \
             unicode_category == UnicodeCategories.UPPERCASE_LETTER or \
@@ -58,7 +59,7 @@ class ExasolIdentifierImpl(ExasolIdentifier):
             unicode_category == UnicodeCategories.DECIMAL_DIGIT_NUMBER
 
     @classmethod
-    def _validate_follow_up_character(self, chararcter: str) -> bool:
+    def _validate_follow_up_character(cls, chararcter: str) -> bool:
         unicode_category = unicodedata.category(chararcter)
         return \
             unicode_category == UnicodeCategories.UPPERCASE_LETTER or \

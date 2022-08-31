@@ -49,11 +49,11 @@ class SQLStandardScaler(SQLColumnPreprocessor):
         avg_column = self._get_avg_column()
         stddev_column = self._get_stddev_column()
         query = textwrap.dedent(f"""
-    CREATE OR REPLACE TABLE {parameter_table_name.fully_qualified()} AS
+    CREATE OR REPLACE TABLE {parameter_table_name.fully_qualified} AS
     SELECT
-        CAST(AVG({source_column.fully_qualified()}) as DOUBLE) as {avg_column.fully_qualified()},
-        CAST(STDDEV_POP({source_column.fully_qualified()}) as DOUBLE) as {stddev_column.fully_qualified()}
-    FROM {source_column.table_name.fully_qualified()}
+        CAST(AVG({source_column.fully_qualified}) as DOUBLE) as {avg_column.fully_qualified},
+        CAST(STDDEV_POP({source_column.fully_qualified}) as DOUBLE) as {stddev_column.fully_qualified}
+    FROM {source_column.table_name.fully_qualified}
     """)
         sqlexecutor.execute(query)
         avg_column = ColumnNameBuilder(column_name=avg_column).with_table_name(parameter_table_name).build()
@@ -80,7 +80,7 @@ class SQLStandardScaler(SQLColumnPreprocessor):
         parameter_table = self._get_parameter_table_name(target_schema, source_column, experiment_name)
         alias = self._get_parameter_table_alias(target_schema, source_column)
         from_caluse_part = textwrap.dedent(
-            f'''CROSS JOIN {parameter_table.fully_qualified()} AS {alias.fully_qualified()}''')
+            f'''CROSS JOIN {parameter_table.fully_qualified} AS {alias.fully_qualified}''')
         return [from_caluse_part]
 
     def create_transform_select_clause_part(self,
@@ -95,12 +95,12 @@ class SQLStandardScaler(SQLColumnPreprocessor):
         stddev_column = self._get_stddev_column(alias)
         target_column_name = ColumnNameBuilder.create(f"{source_column.name}_STANDARD_SCALED")
         select_clause_part_str = textwrap.dedent(
-            f'''({input_column.fully_qualified()}-{avg_column.fully_qualified()})/
+            f'''({input_column.fully_qualified}-{avg_column.fully_qualified})/
         (CASE 
-        WHEN {stddev_column.fully_qualified()} = 0 THEN 1
-        ELSE {stddev_column.fully_qualified()}
+        WHEN {stddev_column.fully_qualified} = 0 THEN 1
+        ELSE {stddev_column.fully_qualified}
         END)
-        AS {target_column_name.quoted_name()}''')
+        AS {target_column_name.quoted_name}''')
         select_clause_part = TransformSelectClausePart(
             tranformation_column=TransformationColumn(
                 column=Column(target_column_name, ColumnType("DOUBLE")),

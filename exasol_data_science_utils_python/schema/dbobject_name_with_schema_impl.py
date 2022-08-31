@@ -19,11 +19,12 @@ class DBObjectNameWithSchemaImpl(DBObjectNameImpl, DBObjectNameWithSchema):
     def schema_name(self) -> SchemaName:
         return self._schema_name
 
+    @property
     def fully_qualified(self) -> str:
         if self.schema_name is not None:
-            return f'{self._schema_name.fully_qualified()}.{self.quoted_name()}'
+            return f'{self._schema_name.fully_qualified}.{self.quoted_name}'
         else:
-            return self.quoted_name()
+            return self.quoted_name
 
     def __repr__(self) -> str:
         return generate_repr_for_object(self)
