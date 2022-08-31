@@ -4,6 +4,7 @@
   - #49: Updated the Python version 3.8
   - #53: Updated Pillow version to 9.1.1
   - #55: Update dependencies
+  - #61: Updated poetry version 1.2.0 and exasol-udf-mock import
   
 
 ### Bug Fixes
