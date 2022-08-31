@@ -2,4 +2,4 @@ from exasol_data_science_utils_python.schema.exasol_identifier import ExasolIden
 
 
 class DBObjectName(ExasolIdentifier):
-    pass
+    """Abstract calls which represents the name of a DBObject"""

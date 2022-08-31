@@ -8,4 +8,7 @@ class ConnectionObjectName(DBObjectName):
     @property
     @abstractmethod
     def normalized_name_for_udfs(self) -> str:
-        pass
+        """
+        The normalized name of the ConnectionObject
+        which can be used in UDFs to retrieve the ConnectionObject
+        """

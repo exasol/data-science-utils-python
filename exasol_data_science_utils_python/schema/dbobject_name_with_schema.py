@@ -9,4 +9,6 @@ class DBObjectNameWithSchema(DBObjectName):
     @property
     @abstractmethod
     def schema_name(self) -> SchemaName:
-        pass
+        """
+        Schema name for the DBObject name
+        """

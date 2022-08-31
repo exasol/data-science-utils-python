@@ -9,7 +9,6 @@ class ExasolIdentifier(ABC):
         """
         The name of the ExasolIdentifier
         """
-        pass
 
     @property
     @abstractmethod
@@ -24,7 +23,6 @@ class ExasolIdentifier(ABC):
         """
         The full qualified name of the ExasolIdentifier, e.g. "schema_name"."table_name"
         """
-        pass
 
     @abstractmethod
     def __eq__(self, other):
