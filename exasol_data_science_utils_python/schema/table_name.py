@@ -2,4 +2,5 @@ from exasol_data_science_utils_python.schema.table_like_name import TableLikeNam
 
 
 class TableName(TableLikeName):
+    """A DBObjectName class which represents the name of Table"""
     pass
