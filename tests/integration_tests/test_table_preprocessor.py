@@ -7,6 +7,7 @@ from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_
     SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.sql_table_preprocessor import SQLTablePreprocessor
 from exasol_data_science_utils_python.schema.column import ColumnName
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
 from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.schema.table_name_builder import TableNameBuilder
