@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typeguard import typechecked
 
 from exasol_data_science_utils_python.schema.dbobject_name_impl import DBObjectNameImpl
@@ -9,7 +11,7 @@ from exasol_data_science_utils_python.utils.repr_generation_for_object import ge
 class DBObjectNameWithSchemaImpl(DBObjectNameImpl, DBObjectNameWithSchema):
 
     @typechecked
-    def __init__(self, db_object_name: str, schema: SchemaName = None):
+    def __init__(self, db_object_name: str, schema: Optional[SchemaName] = None):
         super().__init__(db_object_name)
         self._schema_name = schema
 
