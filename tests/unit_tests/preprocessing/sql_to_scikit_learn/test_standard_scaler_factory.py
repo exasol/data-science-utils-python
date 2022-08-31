@@ -13,6 +13,7 @@ from exasol_data_science_utils_python.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.normalization.standard_scaler_factory import \
     StandardScalerFactory
+from exasol_data_science_utils_python.schema.table_name_builder import TableNameBuilder
 from exasol_data_science_utils_python.udf_utils.testing.mock_result_set import MockResultSet
 from exasol_data_science_utils_python.udf_utils.testing.mock_sql_executor import MockSQLExecutor
 
@@ -24,7 +25,8 @@ def test_happy_path():
             MockResultSet(rows=[(1.5, 0.5)]),
         ]
     )
-    source_column = Column(ColumnName("SRC_COLUMN1", TableName("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
+    source_column = Column(ColumnName("SRC_COLUMN1",
+                                      TableNameBuilder.create("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
                            ColumnType(name="INTEGER"))
     target_schema = SchemaName("TGT_SCHEMA")
     experiment_name = ExperimentName("EXPERIMENT")

@@ -77,8 +77,8 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
             FROM {source_column.table_name.fully_qualified()}
             """)
         sqlexecutor.execute(query)
-        min_column = ColumnNameBuilder(min_column).with_table_name(parameter_table_name).build()
-        range_column = ColumnNameBuilder(range_column).with_table_name(parameter_table_name).build()
+        min_column = ColumnNameBuilder(column_name=min_column).with_table_name(parameter_table_name).build()
+        range_column = ColumnNameBuilder(column_name=range_column).with_table_name(parameter_table_name).build()
         parameter_table = ParameterTable(
             source_column=source_column,
             purpose=self.MIN_AND_RANGE_TABLE,

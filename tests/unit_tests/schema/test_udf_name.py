@@ -5,19 +5,19 @@ from exasol_data_science_utils_python.schema.udf_name_impl import UDFNameImpl
 
 
 def test_fully_qualified():
-    table = UDFNameImpl("udf")
-    assert table.fully_qualified() == '"udf"'
+    udf = UDFNameImpl("udf")
+    assert udf.fully_qualified() == '"udf"'
 
 
 def test_fully_qualified_with_schema():
-    table = UDFNameImpl("udf", schema=SchemaName("schema"))
-    assert table.fully_qualified() == '"schema"."udf"'
+    udf = UDFNameImpl("udf", schema=SchemaName("schema"))
+    assert udf.fully_qualified() == '"schema"."udf"'
 
 
 def test_set_new_schema_fail():
-    table = UDFNameImpl("abc")
+    udf = UDFNameImpl("abc")
     with pytest.raises(AttributeError) as c:
-        table.schema_name = "edf"
+        udf.schema_name = "edf"
 
 
 def test_equality_true():
@@ -27,8 +27,8 @@ def test_equality_true():
 
 
 def test_equality_name_not_equal():
-    t1 = UDFNameImpl("table1", schema=SchemaName("schema"))
-    t2 = UDFNameImpl("table2", schema=SchemaName("schema"))
+    t1 = UDFNameImpl("udf1", schema=SchemaName("schema"))
+    t2 = UDFNameImpl("udf2", schema=SchemaName("schema"))
     assert t1 != t2
 
 

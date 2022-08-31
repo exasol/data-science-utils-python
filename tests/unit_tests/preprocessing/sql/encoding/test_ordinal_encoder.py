@@ -2,20 +2,20 @@ import textwrap
 
 from exasol_data_science_utils_python.preprocessing.sql.encoding.sql_ordinal_encoder import SQLOrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
+from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.schema.column import Column
 from exasol_data_science_utils_python.schema.column import ColumnName
 from exasol_data_science_utils_python.schema.column import ColumnType
 from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.schema.table import Table
-from exasol_data_science_utils_python.schema.table_name import TableName
-from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
+from exasol_data_science_utils_python.schema.table_name_builder import TableNameBuilder
 from exasol_data_science_utils_python.udf_utils.testing.mock_sql_executor import MockSQLExecutor
 
 
 def test_ordinal_encoder_create_fit_queries():
     source_schema = SchemaName("SRC_SCHEMA")
-    source_table = TableName("SRC_TABLE", source_schema)
+    source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
     source_column = ColumnName("SRC_COLUMN1", source_table)
     experiment_name = ExperimentName("EXPERIMENT")
@@ -40,9 +40,9 @@ def test_ordinal_encoder_create_fit_queries():
 
 def get_expected_parameter_Table():
     expected_parameter_table = ParameterTable(
-        source_column=ColumnName("SRC_COLUMN1", TableName("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
+        source_column=ColumnName("SRC_COLUMN1", TableNameBuilder.create("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
         table=Table(
-            name=TableName("EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY", SchemaName("TGT_SCHEMA")),
+            name=TableNameBuilder.create("EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY", SchemaName("TGT_SCHEMA")),
             columns=[
                 Column(name=ColumnName("ID"), type=ColumnType("INTEGER")),
                 Column(name=ColumnName("VALUE"), type=ColumnType("ANY")),
@@ -55,11 +55,11 @@ def get_expected_parameter_Table():
 
 def test_ordinal_encoder_create_from_clause_part():
     source_schema = SchemaName("SRC_SCHEMA")
-    source_table = TableName("SRC_TABLE", source_schema)
+    source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
     source_column = ColumnName("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
-    input_table = TableName("IN_TABLE", input_schema)
+    input_table = TableNameBuilder.create("IN_TABLE", input_schema)
     experiment_name = ExperimentName("EXPERIMENT")
     encoder = SQLOrdinalEncoder()
     mock_sql_executor = MockSQLExecutor()
@@ -77,11 +77,11 @@ def test_ordinal_encoder_create_from_clause_part():
 
 def test_ordinal_encoder_create_select_clause_part():
     source_schema = SchemaName("SRC_SCHEMA")
-    source_table = TableName("SRC_TABLE", source_schema)
+    source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
     source_column = ColumnName("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
-    input_table = TableName("IN_TABLE", input_schema)
+    input_table = TableNameBuilder.create("IN_TABLE", input_schema)
     experiment_name = ExperimentName("EXPERIMENT")
     encoder = SQLOrdinalEncoder()
     mock_sql_executor = MockSQLExecutor()
@@ -90,8 +90,8 @@ def test_ordinal_encoder_create_select_clause_part():
     expected = textwrap.dedent(
         '"TGT_SCHEMA_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_ORDINAL_ENCODER_DICTIONARY"."ID" AS "SRC_COLUMN1_ID"')
     expected_tranformation_column = TransformationColumn(
-        source_column=ColumnName("SRC_COLUMN1", TableName("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
-        input_column=ColumnName("SRC_COLUMN1", TableName("IN_TABLE", SchemaName("IN_SCHEMA"))),
+        source_column=ColumnName("SRC_COLUMN1", TableNameBuilder.create("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
+        input_column=ColumnName("SRC_COLUMN1", TableNameBuilder.create("IN_TABLE", SchemaName("IN_SCHEMA"))),
         column=Column(ColumnName("SRC_COLUMN1_ID"),ColumnType("INTEGER")),
         purpose="ReplaceValueByID"
     )

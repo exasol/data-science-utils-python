@@ -2,20 +2,20 @@ import textwrap
 
 from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_standard_scaler import SQLStandardScaler
 from exasol_data_science_utils_python.preprocessing.sql.parameter_table import ParameterTable
+from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
 from exasol_data_science_utils_python.schema.column import Column
 from exasol_data_science_utils_python.schema.column import ColumnName
 from exasol_data_science_utils_python.schema.column import ColumnType
 from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.schema.table import Table
-from exasol_data_science_utils_python.schema.table_name import TableName
-from exasol_data_science_utils_python.preprocessing.sql.transformation_column import TransformationColumn
+from exasol_data_science_utils_python.schema.table_name_builder import TableNameBuilder
 from exasol_data_science_utils_python.udf_utils.testing.mock_sql_executor import MockSQLExecutor
 
 
 def test_standard_scaler_create_fit_queries():
     source_schema = SchemaName("SRC_SCHEMA")
-    source_table = TableName("SRC_TABLE", source_schema)
+    source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
     source_column = ColumnName("SRC_COLUMN1", source_table)
     experiment_name = ExperimentName("EXPERIMENT")
@@ -37,13 +37,13 @@ def test_standard_scaler_create_fit_queries():
 
 
 def get_expected_parameter_tables():
-    target_table_name = TableName("EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_STANDARD_SCALER_PARAMETERS",
-                                  SchemaName("TGT_SCHEMA"))
+    target_table_name = TableNameBuilder.create(
+        "EXPERIMENT_SRC_SCHEMA_SRC_TABLE_SRC_COLUMN1_STANDARD_SCALER_PARAMETERS",
+        SchemaName("TGT_SCHEMA"))
     expected_parameter_table = ParameterTable(
-        source_column=ColumnName("SRC_COLUMN1", TableName("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
+        source_column=ColumnName("SRC_COLUMN1", TableNameBuilder.create("SRC_TABLE", SchemaName("SRC_SCHEMA"))),
         table=Table(target_table_name,
-                    columns=
-                    [
+                    columns=[
                         Column(ColumnName("AVG", target_table_name), ColumnType("DOUBLE")),
                         Column(ColumnName("STDDEV", target_table_name), ColumnType("DOUBLE"))
                     ]),
@@ -54,11 +54,11 @@ def get_expected_parameter_tables():
 
 def test_standard_scaler_create_from_clause_part():
     source_schema = SchemaName("SRC_SCHEMA")
-    source_table = TableName("SRC_TABLE", source_schema)
+    source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
     source_column = ColumnName("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
-    input_table = TableName("IN_TABLE", input_schema)
+    input_table = TableNameBuilder.create("IN_TABLE", input_schema)
     experiment_name = ExperimentName("EXPERIMENT")
     scaler = SQLStandardScaler()
     mock_sql_executor = MockSQLExecutor()
@@ -70,11 +70,11 @@ def test_standard_scaler_create_from_clause_part():
 
 def test_standard_scaler_create_select_clause_part():
     source_schema = SchemaName("SRC_SCHEMA")
-    source_table = TableName("SRC_TABLE", source_schema)
+    source_table = TableNameBuilder.create("SRC_TABLE", source_schema)
     target_schema = SchemaName("TGT_SCHEMA")
     source_column = ColumnName("SRC_COLUMN1", source_table)
     input_schema = SchemaName("IN_SCHEMA")
-    input_table = TableName("IN_TABLE", input_schema)
+    input_table = TableNameBuilder.create("IN_TABLE", input_schema)
     experiment_name = ExperimentName("EXPERIMENT")
     scaler = SQLStandardScaler()
     mock_sql_executor = MockSQLExecutor()

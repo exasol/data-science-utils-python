@@ -58,8 +58,8 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
             sqlexecutor: SQLExecutor,
             source_column: ColumnName,
             target_schema: SchemaName,
-            experiment_name: ExperimentName) -> List[
-        ParameterTable]:
+            experiment_name: ExperimentName) \
+            -> List[ParameterTable]:
         """
         This method creates a dictionary table from the source column where every distinct value of the source column
         is mapped to an id between 0 and number of distinct values - 1
@@ -146,7 +146,7 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
             select_clause_part_expression=select_clause_part_expression,
             tranformation_column=TransformationColumn(
                 source_column=source_column,
-                input_column=ColumnNameBuilder(source_column).with_table_name(input_table).build(),
+                input_column=ColumnNameBuilder(column_name=source_column).with_table_name(input_table).build(),
                 column=Column(name=transformation_column_name, type=ColumnType("INTEGER")),
                 purpose="ReplaceValueByID"
             )

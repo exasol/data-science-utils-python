@@ -19,7 +19,6 @@ MEAN_AND_STDDEV_PARAMETER_TABLE_PREFIX = "STANDARD_SCALER_PARAMETERS"
 
 
 class SQLStandardScaler(SQLColumnPreprocessor):
-
     MEAN_AND_STDDEV_TABLE = "AVG_AND_STDDEV_TABLE"
 
     def _get_parameter_table_name(self, target_schema: SchemaName, source_column: ColumnName,
@@ -57,8 +56,8 @@ class SQLStandardScaler(SQLColumnPreprocessor):
     FROM {source_column.table_name.fully_qualified()}
     """)
         sqlexecutor.execute(query)
-        avg_column = ColumnNameBuilder(avg_column).with_table_name(parameter_table_name).build()
-        stddev_column = ColumnNameBuilder(stddev_column).with_table_name(parameter_table_name).build()
+        avg_column = ColumnNameBuilder(column_name=avg_column).with_table_name(parameter_table_name).build()
+        stddev_column = ColumnNameBuilder(column_name=stddev_column).with_table_name(parameter_table_name).build()
         parameter_table = ParameterTable(
             source_column=source_column,
             purpose=self.MEAN_AND_STDDEV_TABLE,
