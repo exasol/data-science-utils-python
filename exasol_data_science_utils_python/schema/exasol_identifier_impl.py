@@ -23,7 +23,7 @@ class ExasolIdentifierImpl(ExasolIdentifier):
 
     @typechecked
     def __init__(self, name: str):
-        if not self.validate_name(name):
+        if not self._validate_name(name):
             raise ValueError(f"Name '{name}' is not valid")
         self._name = name
 
@@ -35,7 +35,7 @@ class ExasolIdentifierImpl(ExasolIdentifier):
         return f'"{self._name}"'
 
     @classmethod
-    def validate_name(self, name: str) -> bool:
+    def _validate_name(self, name: str) -> bool:
         if name is None or name == "":
             return False
         if not self._validate_first_character(name[0]):

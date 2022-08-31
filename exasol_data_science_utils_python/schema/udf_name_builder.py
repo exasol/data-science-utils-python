@@ -39,4 +39,9 @@ class UDFNameBuilder:
         return self
 
     def build(self) -> UDFName:
-        return UDFNameImpl(self._name, self._schema_name)
+        return self.create(self._name, self._schema_name)
+
+    @staticmethod
+    def create(name: str, schema: Optional[SchemaName] = None) -> UDFName:
+        return UDFNameImpl(name, schema)
+

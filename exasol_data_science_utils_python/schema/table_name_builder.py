@@ -35,4 +35,8 @@ class TableNameBuilder:
         return self
 
     def build(self) -> TableName:
-        return TableNameImpl(self._name, self._schema_name)
+        return self.create(self._name, self._schema_name)
+
+    @staticmethod
+    def create(name: str, schema: Optional[SchemaName] = None) -> TableName:
+        return TableNameImpl(name, schema)

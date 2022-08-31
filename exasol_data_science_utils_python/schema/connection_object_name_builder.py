@@ -15,4 +15,8 @@ class ConnectionObjectNameBuilder:
         self._name = name
 
     def build(self) -> ConnectionObjectName:
-        return ConnectionObjectNameImpl(self._name)
+        return self.create(self._name)
+
+    @classmethod
+    def create(cls, name: str):
+        return ConnectionObjectNameImpl(name)
