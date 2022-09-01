@@ -1,7 +1,7 @@
 import pytest
 
 from exasol_data_science_utils_python.schema.column import Column
-from exasol_data_science_utils_python.schema.column_name import ColumnName
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
 from exasol_data_science_utils_python.schema.column_type import ColumnType
 from exasol_data_science_utils_python.udf_utils.testing.mock_result_set import MockResultSet
 
@@ -73,14 +73,14 @@ def test_fetchmany():
 
 def test_columns():
     input = [("a", 1), ("b", 2), ("c", 4)]
-    columns = [Column(ColumnName("t1"), ColumnType(name="VARCHAR(200000)")),
-               Column(ColumnName("t2"), ColumnType(name="INTEGER"))]
+    columns = [Column(ColumnNameBuilder.create("t1"), ColumnType(name="VARCHAR(200000)")),
+               Column(ColumnNameBuilder.create("t2"), ColumnType(name="INTEGER"))]
     result_set = MockResultSet(rows=input, columns=columns)
     assert columns == result_set.columns()
 
 
 def test_rows_and_columns_different_length():
     input = [("a", 1), ("b", 2), ("c", 4)]
-    columns = [Column(ColumnName("t1"), ColumnType(name="VARCHAR(200000)"))]
+    columns = [Column(ColumnNameBuilder.create("t1"), ColumnType(name="VARCHAR(200000)"))]
     with pytest.raises(AssertionError):
         result_set = MockResultSet(rows=input, columns=columns)

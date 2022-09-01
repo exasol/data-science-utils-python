@@ -1,7 +1,8 @@
 import unicodedata
-from abc import ABC, abstractmethod
 
 from typeguard import typechecked
+
+from exasol_data_science_utils_python.schema.exasol_identifier import ExasolIdentifier
 
 
 class UnicodeCategories:
@@ -18,10 +19,11 @@ class UnicodeCategories:
     FORMAT = 'Cf'
 
 
-class ExasolIdentifier(ABC):
+class ExasolIdentifierImpl(ExasolIdentifier):
+
     @typechecked
     def __init__(self, name: str):
-        if not self.validate_name(name):
+        if not self._validate_name(name):
             raise ValueError(f"Name '{name}' is not valid")
         self._name = name
 
@@ -29,26 +31,23 @@ class ExasolIdentifier(ABC):
     def name(self) -> str:
         return self._name
 
+    @property
     def quoted_name(self) -> str:
         return f'"{self._name}"'
 
-    @abstractmethod
-    def fully_qualified(self) -> str:
-        pass
-
     @classmethod
-    def validate_name(self, name: str) -> bool:
+    def _validate_name(cls, name: str) -> bool:
         if name is None or name == "":
             return False
-        if not self._validate_first_character(name[0]):
+        if not cls._validate_first_character(name[0]):
             return False
         for c in name[1:]:
-            if not self._validate_follow_up_character(c):
+            if not cls._validate_follow_up_character(c):
                 return False
         return True
 
     @classmethod
-    def _validate_first_character(self, chararcter: str) -> bool:
+    def _validate_first_character(cls, chararcter: str) -> bool:
         unicode_category = unicodedata.category(chararcter)
         return \
             unicode_category == UnicodeCategories.UPPERCASE_LETTER or \
@@ -60,7 +59,7 @@ class ExasolIdentifier(ABC):
             unicode_category == UnicodeCategories.DECIMAL_DIGIT_NUMBER
 
     @classmethod
-    def _validate_follow_up_character(self, chararcter: str) -> bool:
+    def _validate_follow_up_character(cls, chararcter: str) -> bool:
         unicode_category = unicodedata.category(chararcter)
         return \
             unicode_category == UnicodeCategories.UPPERCASE_LETTER or \

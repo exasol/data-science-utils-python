@@ -42,11 +42,11 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         return alias
 
     def _get_min_column(self, table: TableName = None):
-        min_column = ColumnName("MIN", table)
+        min_column = ColumnNameBuilder.create("MIN", table)
         return min_column
 
     def _get_range_column(self, table: TableName = None):
-        range_column = ColumnName("RANGE", table)
+        range_column = ColumnNameBuilder.create("RANGE", table)
         return range_column
 
     def requires_global_transformation_for_training_data(self) -> bool:
@@ -70,15 +70,15 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         min_column = self._get_min_column()
         range_column = self._get_range_column()
         query = textwrap.dedent(f"""
-            CREATE OR REPLACE TABLE {parameter_table_name.fully_qualified()} AS
+            CREATE OR REPLACE TABLE {parameter_table_name.fully_qualified} AS
             SELECT
-                CAST(MIN({source_column.fully_qualified()}) as DOUBLE) as {min_column.fully_qualified()},
-                CAST(MAX({source_column.fully_qualified()})-MIN({source_column.fully_qualified()}) as DOUBLE) as {range_column.fully_qualified()}
-            FROM {source_column.table_name.fully_qualified()}
+                CAST(MIN({source_column.fully_qualified}) as DOUBLE) as {min_column.fully_qualified},
+                CAST(MAX({source_column.fully_qualified})-MIN({source_column.fully_qualified}) as DOUBLE) as {range_column.fully_qualified}
+            FROM {source_column.table_name.fully_qualified}
             """)
         sqlexecutor.execute(query)
-        min_column = ColumnNameBuilder(min_column).with_table_name(parameter_table_name).build()
-        range_column = ColumnNameBuilder(range_column).with_table_name(parameter_table_name).build()
+        min_column = ColumnNameBuilder(column_name=min_column).with_table_name(parameter_table_name).build()
+        range_column = ColumnNameBuilder(column_name=range_column).with_table_name(parameter_table_name).build()
         parameter_table = ParameterTable(
             source_column=source_column,
             purpose=self.MIN_AND_RANGE_TABLE,
@@ -111,7 +111,7 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         parameter_table = self._get_parameter_table_name(target_schema, source_column, experiment_name)
         alias = self._get_parameter_table_alias(target_schema, source_column)
         from_caluse_part = textwrap.dedent(
-            f'''CROSS JOIN {parameter_table.fully_qualified()} AS {alias.fully_qualified()}''')
+            f'''CROSS JOIN {parameter_table.fully_qualified} AS {alias.fully_qualified}''')
         return [from_caluse_part]
 
     def create_transform_select_clause_part(self,
@@ -129,12 +129,12 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
         :return: List of select-clause parts which can be concatenated with ","
         """
         alias = self._get_parameter_table_alias(target_schema, source_column)
-        input_column = ColumnName(source_column.name, input_table)
+        input_column = ColumnNameBuilder.create(source_column.name, input_table)
         min_column = self._get_min_column(alias)
         range_column = self._get_range_column(alias)
-        target_column_name = ColumnName(f"{source_column.name}_MIN_MAX_SCALED")
+        target_column_name = ColumnNameBuilder.create(f"{source_column.name}_MIN_MAX_SCALED")
         select_clause_part_str = textwrap.dedent(
-            f'''({input_column.fully_qualified()}-{min_column.fully_qualified()})/{range_column.fully_qualified()} AS {target_column_name.quoted_name()}''')
+            f'''({input_column.fully_qualified}-{min_column.fully_qualified})/{range_column.fully_qualified} AS {target_column_name.quoted_name}''')
         select_clause_part = TransformSelectClausePart(
             tranformation_column=TransformationColumn(
                 column=Column(target_column_name, ColumnType("DOUBLE")),

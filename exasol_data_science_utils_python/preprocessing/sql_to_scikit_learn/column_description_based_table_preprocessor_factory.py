@@ -13,7 +13,7 @@ from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_pr
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor_factory import \
     TablePreprocessorFactory
 from exasol_data_science_utils_python.schema.column import Column
-from exasol_data_science_utils_python.schema.column_name import ColumnName
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
 from exasol_data_science_utils_python.schema.column_type import ColumnType
 from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
@@ -41,7 +41,7 @@ class ColumnDescriptionBasedTablePreprocessorFactory(TablePreprocessorFactory):
             """
         result_set = sql_executor.execute(query)
         rows = result_set.fetchall()
-        columns = [Column(ColumnName(row[0], source_table), ColumnType(row[1])) for row in rows]
+        columns = [Column(ColumnNameBuilder.create(row[0], source_table), ColumnType(row[1])) for row in rows]
         input_column_preprocessor_factory_mapping = \
             self._create_column_preprocessor_factory_mapping(
                 columns, self._input_column_preprocessor_descriptions)

@@ -44,11 +44,11 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
             ORDINAL_ENCODER_DICTIONARY_TABLE_PREFIX)
 
     def _get_id_column(self, table: TableName = None):
-        min_column = ColumnName("ID", table)
+        min_column = ColumnNameBuilder.create("ID", table)
         return min_column
 
     def _get_value_column(self, table: TableName = None):
-        range_column = ColumnName("VALUE", table)
+        range_column = ColumnNameBuilder.create("VALUE", table)
         return range_column
 
     def requires_global_transformation_for_training_data(self) -> bool:
@@ -58,8 +58,8 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
             sqlexecutor: SQLExecutor,
             source_column: ColumnName,
             target_schema: SchemaName,
-            experiment_name: ExperimentName) -> List[
-        ParameterTable]:
+            experiment_name: ExperimentName) \
+            -> List[ParameterTable]:
         """
         This method creates a dictionary table from the source column where every distinct value of the source column
         is mapped to an id between 0 and number of distinct values - 1
@@ -72,14 +72,14 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         id_column_name = self._get_id_column()
         value_column_name = self._get_value_column()
         query = textwrap.dedent(f"""
-                CREATE OR REPLACE TABLE {dictionary_table_name.fully_qualified()} AS
+                CREATE OR REPLACE TABLE {dictionary_table_name.fully_qualified} AS
                 SELECT
-                    CAST(rownum - 1 AS INTEGER) as {id_column_name.fully_qualified()},
-                    {value_column_name.quoted_name()}
+                    CAST(rownum - 1 AS INTEGER) as {id_column_name.fully_qualified},
+                    {value_column_name.quoted_name}
                 FROM (
-                    SELECT DISTINCT {source_column.fully_qualified()} as {value_column_name.quoted_name()}
-                    FROM {source_column.table_name.fully_qualified()}
-                    ORDER BY {source_column.fully_qualified()}
+                    SELECT DISTINCT {source_column.fully_qualified} as {value_column_name.quoted_name}
+                    FROM {source_column.table_name.fully_qualified}
+                    ORDER BY {source_column.fully_qualified}
                 );
                 """)
         sqlexecutor.execute(query)
@@ -112,14 +112,14 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         """
         dictionary_table = self._get_dictionary_table_name(target_schema, source_column, experiment_name)
         alias = self._get_dictionary_table_alias(target_schema, source_column)
-        input_column = ColumnName(source_column.name, input_table)
+        input_column = ColumnNameBuilder.create(source_column.name, input_table)
         value_column = self._get_value_column(alias)
         from_clause_part = textwrap.dedent(f"""
-            LEFT OUTER JOIN {dictionary_table.fully_qualified()}
-            AS {alias.fully_qualified()}
+            LEFT OUTER JOIN {dictionary_table.fully_qualified}
+            AS {alias.fully_qualified}
             ON
-                {value_column.fully_qualified()} = 
-                {input_column.fully_qualified()}
+                {value_column.fully_qualified} = 
+                {input_column.fully_qualified}
             """)
         return [from_clause_part]
 
@@ -139,14 +139,14 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
         """
         alias = self._get_dictionary_table_alias(target_schema, source_column)
         id_column = self._get_id_column(alias)
-        transformation_column_name = ColumnName(f"{source_column.name}_ID")
+        transformation_column_name = ColumnNameBuilder.create(f"{source_column.name}_ID")
         select_clause_part_expression = \
-            textwrap.dedent(f'{id_column.fully_qualified()} AS {transformation_column_name.quoted_name()}')
+            textwrap.dedent(f'{id_column.fully_qualified} AS {transformation_column_name.quoted_name}')
         select_clause_part = TransformSelectClausePart(
             select_clause_part_expression=select_clause_part_expression,
             tranformation_column=TransformationColumn(
                 source_column=source_column,
-                input_column=ColumnNameBuilder(source_column).with_table_name(input_table).build(),
+                input_column=ColumnNameBuilder(column_name=source_column).with_table_name(input_table).build(),
                 column=Column(name=transformation_column_name, type=ColumnType("INTEGER")),
                 purpose="ReplaceValueByID"
             )

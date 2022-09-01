@@ -3,13 +3,13 @@ import pyexasol
 from exasol_data_science_utils_python.preprocessing.sql.encoding.sql_ordinal_encoder import SQLOrdinalEncoder
 from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_min_max_scaler import SQLMinMaxScaler
 from exasol_data_science_utils_python.preprocessing.sql.normalization.sql_standard_scaler import SQLStandardScaler
-from exasol_data_science_utils_python.schema.column import ColumnName
-from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
-from exasol_data_science_utils_python.schema.schema_name import SchemaName
-from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql.sql_column_preprocessor_definition import \
     SQLColumnPreprocessorDefinition
 from exasol_data_science_utils_python.preprocessing.sql.sql_table_preprocessor import SQLTablePreprocessor
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
+from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table_name_builder import TableNameBuilder
 from exasol_data_science_utils_python.udf_utils.pyexasol_sql_executor import PyexasolSQLExecutor
 
 
@@ -30,10 +30,10 @@ def test_table_preprocessor_create_fit_queries():
     """)
     c.execute("""INSERT INTO "SOURCE_SCHEMA"."SOURCE_TABLE" VALUES ('A',1),('B',2);""")
     source_schema = SchemaName("SOURCE_SCHEMA")
-    source_table = TableName("SOURCE_TABLE", source_schema)
+    source_table = TableNameBuilder.create("SOURCE_TABLE", source_schema)
     target_schema = SchemaName("TARGET_SCHEMA")
-    source_column1 = ColumnName("CATEGORY", source_table)
-    source_column2 = ColumnName("NUMERICAL", source_table)
+    source_column1 = ColumnNameBuilder.create("CATEGORY", source_table)
+    source_column2 = ColumnNameBuilder.create("NUMERICAL", source_table)
     experiment_name = ExperimentName("EXPERIMENT")
     column_preprocessor_defintions = [
         SQLColumnPreprocessorDefinition(source_column1.name, SQLOrdinalEncoder()),
@@ -99,11 +99,11 @@ def test_table_preprocessor_transform_queries():
     c.execute("""INSERT INTO "SOURCE_SCHEMA"."INPUT_TABLE" VALUES ('A',1),('B',3),('A',2),('C',4);""")
 
     source_schema = SchemaName("SOURCE_SCHEMA")
-    source_table = TableName("SOURCE_TABLE", source_schema)
-    input_table = TableName("INPUT_TABLE", source_schema)
+    source_table = TableNameBuilder.create("SOURCE_TABLE", source_schema)
+    input_table = TableNameBuilder.create("INPUT_TABLE", source_schema)
     target_schema = SchemaName("TARGET_SCHEMA")
-    source_column1 = ColumnName("CATEGORY", source_table)
-    source_column2 = ColumnName("NUMERICAL", source_table)
+    source_column1 = ColumnNameBuilder.create("CATEGORY", source_table)
+    source_column2 = ColumnNameBuilder.create("NUMERICAL", source_table)
     experiment_name = ExperimentName("EXPERIMENT")
     column_preprocessor_defintions = [
         SQLColumnPreprocessorDefinition(source_column1.name, SQLOrdinalEncoder()),

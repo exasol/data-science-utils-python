@@ -27,7 +27,7 @@ class OneHotEncoderFactory(ColumnPreprocessorFactory):
              if parameter_table.purpose == SQLOrdinalEncoder.PURPOSE_DICTIONARY_TABLE]
         dictionary_parameter_table = dictionary_parameter_tables[0]
         result_set = sql_executor.execute(
-            f"""SELECT "VALUE" FROM {dictionary_parameter_table.table.name.fully_qualified()}""")
+            f"""SELECT "VALUE" FROM {dictionary_parameter_table.table.name.fully_qualified}""")
         dictionary = pd.DataFrame(data=result_set.fetchall(),
                                   columns=[column.name.name for column in result_set.columns()])
         dictionary = dictionary.set_index("VALUE", drop=False)

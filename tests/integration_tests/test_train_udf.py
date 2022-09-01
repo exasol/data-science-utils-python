@@ -379,7 +379,7 @@ def test_train_udf(
     target_schema = SchemaName("TARGET_SCHEMA")
     drop_and_create_target_schema(pyexasol_connection)
     udf_sql = textwrap.dedent(f"""
-    CREATE OR REPLACE PYTHON3_DSUP SET SCRIPT {target_schema.fully_qualified()}."TRAIN_UDF"(
+    CREATE OR REPLACE PYTHON3_DSUP SET SCRIPT {target_schema.fully_qualified}."TRAIN_UDF"(
         model_connection VARCHAR(2000000),
         path_under_model_connection VARCHAR(2000000),
         download_retry_seconds INTEGER,
@@ -443,7 +443,7 @@ def test_train_udf(
     """)
     pyexasol_connection.execute(udf_sql)
     query_udf = f"""
-    select {target_schema.fully_qualified()}."TRAIN_UDF"(
+    select {target_schema.fully_qualified}."TRAIN_UDF"(
         '{model_connection_name}',
         'my_path_under_model_connection',
         60,

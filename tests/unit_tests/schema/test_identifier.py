@@ -1,13 +1,22 @@
 import pytest
 
-from exasol_data_science_utils_python.schema.identifier import ExasolIdentifier
+from exasol_data_science_utils_python.schema.exasol_identifier import ExasolIdentifier
+from exasol_data_science_utils_python.schema.exasol_identifier_impl import ExasolIdentifierImpl
 
 
-class TestSchemaElement(ExasolIdentifier):
+class TestSchemaElement(ExasolIdentifierImpl):
+
     def __init__(self, name: str):
         super().__init__(name)
 
+    @property
     def fully_qualified(self) -> str:
+        raise NotImplemented()
+
+    def __eq__(self, other):
+        raise NotImplemented()
+
+    def __repr__(self):
         raise NotImplemented()
 
 
@@ -53,12 +62,14 @@ def test_name_invalid(test_name):
                              ('abc', '"abc"')
                          ])
 def test_quote(name, expected_quoted_name):
-    quoted_name = TestSchemaElement(name).quoted_name()
+    quoted_name = TestSchemaElement(name).quoted_name
     assert quoted_name == expected_quoted_name
+
 
 def test_get_name():
     element = TestSchemaElement("abc")
     assert element.name == "abc"
+
 
 def test_set_new_name_fail():
     element = TestSchemaElement("abc")

@@ -2,12 +2,6 @@ from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_identit
     SKLearnIdentityTransformer
 from exasol_data_science_utils_python.preprocessing.scikit_learn.sklearn_prefitted_column_transformer import \
     SKLearnPrefittedColumnTransformer
-from exasol_data_science_utils_python.schema.column import Column
-from exasol_data_science_utils_python.schema.column import ColumnName
-from exasol_data_science_utils_python.schema.column import ColumnType
-from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
-from exasol_data_science_utils_python.schema.schema_name import SchemaName
-from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_description_based_table_preprocessor_factory import \
     ColumnDescriptionBasedTablePreprocessorFactory
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_preprocessor import ColumnPreprocessor
@@ -17,6 +11,12 @@ from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.column_p
     ColumnPreprocessorFactory
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.exact_column_name_selector import \
     ExactColumnNameSelector
+from exasol_data_science_utils_python.schema.column import Column
+from exasol_data_science_utils_python.schema.column import ColumnType
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
+from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
+from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.schema.table_name_builder import TableNameBuilder
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 from exasol_data_science_utils_python.udf_utils.testing.mock_result_set import MockResultSet
 from exasol_data_science_utils_python.udf_utils.testing.mock_sql_executor import MockSQLExecutor
@@ -71,7 +71,7 @@ def test_happy_path():
             )
         ]
     )
-    source_table = TableName("SRC_TABLE", SchemaName("SRC_SCHEMA"))
+    source_table = TableNameBuilder.create("SRC_TABLE", SchemaName("SRC_SCHEMA"))
     target_schema = SchemaName("TGT_SCHEMA")
     experiment_name = ExperimentName("EXPERIMENT")
     table_preproccesor = factory.create_table_processor(sqlexecutor,
@@ -91,13 +91,13 @@ def test_happy_path():
     assert len(table_preproccesor.input_column_set_preprocessors.column_preprocessors) == 2
     assert len(table_preproccesor.target_column_set_preprocessors.column_preprocessors) == 2
     assert table_preproccesor.input_column_set_preprocessors.column_preprocessors[0].source_column == \
-           Column(ColumnName("a", source_table), ColumnType("INTEGER"))
+           Column(ColumnNameBuilder.create("a", source_table), ColumnType("INTEGER"))
     assert table_preproccesor.input_column_set_preprocessors.column_preprocessors[1].source_column == \
-           Column(ColumnName("b", source_table), ColumnType("VARCHAR(20000)"))
+           Column(ColumnNameBuilder.create("b", source_table), ColumnType("VARCHAR(20000)"))
     assert table_preproccesor.target_column_set_preprocessors.column_preprocessors[0].source_column == \
-           Column(ColumnName("c", source_table), ColumnType("DOUBLE"))
+           Column(ColumnNameBuilder.create("c", source_table), ColumnType("DOUBLE"))
     assert table_preproccesor.target_column_set_preprocessors.column_preprocessors[1].source_column == \
-           Column(ColumnName("d", source_table), ColumnType("DOUBLE"))
+           Column(ColumnNameBuilder.create("d", source_table), ColumnType("DOUBLE"))
     assert isinstance(table_preproccesor.target_column_set_preprocessors.column_transformer,
                       SKLearnPrefittedColumnTransformer)
     assert isinstance(table_preproccesor.input_column_set_preprocessors

@@ -7,6 +7,7 @@ from exasol_data_science_utils_python.schema.experiment_name import ExperimentNa
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
 from exasol_data_science_utils_python.schema.table_name import TableName
 from exasol_data_science_utils_python.preprocessing.sql.transform_select_clause_part import TransformSelectClausePart
+from exasol_data_science_utils_python.schema.table_name_builder import TableNameBuilder
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
@@ -20,7 +21,7 @@ class SQLColumnPreprocessor(ABC):
         target_schema_name = target_schema.name
         source_schema_name = source_column.table_name.schema_name.name
         source_table_name = source_column.table_name.name
-        alias = TableName(
+        alias = TableNameBuilder.create(
             f"{target_schema_name}_{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}")
         return alias
 
@@ -30,7 +31,7 @@ class SQLColumnPreprocessor(ABC):
                           experiment_name: ExperimentName, prefix: str):
         source_schema_name = source_column.table_name.schema_name.name
         source_table_name = source_column.table_name.name
-        target_table = TableName(
+        target_table = TableNameBuilder.create(
             f"{experiment_name.name}_{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}",
             target_schema)
         return target_table

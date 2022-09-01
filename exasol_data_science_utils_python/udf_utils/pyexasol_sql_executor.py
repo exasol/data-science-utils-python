@@ -6,6 +6,7 @@ from pyexasol import ExaStatement
 from exasol_data_science_utils_python.schema.column import Column
 from exasol_data_science_utils_python.schema.column import ColumnName
 from exasol_data_science_utils_python.schema.column import ColumnType
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
 from exasol_data_science_utils_python.udf_utils.sql_executor import SQLExecutor, ResultSet
 
 SRID = "srid"
@@ -50,7 +51,7 @@ class PyExasolResultSet(ResultSet):
     def columns(self) -> List[Column]:
         columns = [
             Column(
-                ColumnName(column_name),
+                ColumnNameBuilder.create(column_name),
                 ColumnType(
                     name=column_type["type"],
                     precision=column_type[PRECISION] if PRECISION in column_type else None,

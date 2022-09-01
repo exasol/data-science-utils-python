@@ -1,14 +1,15 @@
 from pathlib import PurePosixPath
 
 from exasol_data_science_utils_python.model_utils.udfs.connection_object import ConnectionObject
+from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regression_training_runner import \
+    PartialFitRegressionTrainingRunner
 from exasol_data_science_utils_python.model_utils.udfs.training_parameter import TrainingParameter
-from exasol_data_science_utils_python.model_utils.udfs.partial_fit_regression_training_runner import PartialFitRegressionTrainingRunner
 from exasol_data_science_utils_python.preprocessing.sql_to_scikit_learn.table_preprocessor_factory import \
     TablePreprocessorFactory
-from exasol_data_science_utils_python.schema.column_name import ColumnName
+from exasol_data_science_utils_python.schema.column_name_builder import ColumnNameBuilder
 from exasol_data_science_utils_python.schema.experiment_name import ExperimentName
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
-from exasol_data_science_utils_python.schema.table_name import TableName
+from exasol_data_science_utils_python.schema.table_name_builder import TableNameBuilder
 
 
 class PartialFitRegressionTrainUDF:
@@ -24,12 +25,12 @@ class PartialFitRegressionTrainUDF:
         source_schema = SchemaName(ctx.source_schema_name)
         target_schema = SchemaName(ctx.target_schema_name)
         experiment_name = ExperimentName(ctx.experiment_name)
-        source_table = TableName(ctx.source_table_name, schema=source_schema)
-        columns = [ColumnName(column_name, table_name=source_table)
+        source_table = TableNameBuilder.create(ctx.source_table_name, schema=source_schema)
+        columns = [ColumnNameBuilder.create(column_name, table_name=source_table)
                          for column_name in ctx.columns.split(",")]
         split_by_columns = []
         if ctx.split_by_columns is not None and ctx.split_by_columns != "":
-            split_by_columns = [ColumnName(column_name, source_table)
+            split_by_columns = [ColumnNameBuilder.create(column_name, source_table)
                                 for column_name in ctx.split_by_columns.split(",")]
         training_parameter = TrainingParameter(batch_size=ctx.batch_size,
                                                epochs=ctx.epochs,
