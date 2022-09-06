@@ -44,7 +44,7 @@ def test_wrong_types_in_constructor():
         column = View("abc", "INTEGER")
 
 
-def test_columns_list_is_immuview():
+def test_columns_list_is_immutable():
     view = View(ViewNameImpl("view"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
     columns = view.columns
     columns.append(Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER")))
