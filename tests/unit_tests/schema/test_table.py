@@ -29,3 +29,47 @@ def test_columns_list_is_immutable():
     columns = table.columns
     columns.append(Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER")))
     assert len(columns) == 2 and len(table.columns) == 1
+
+
+def test_equality():
+    table1 = Table(TableNameImpl("table"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    table2 = Table(TableNameImpl("table"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    assert table1 == table2
+
+
+def test_inequality_name():
+    table1 = Table(TableNameImpl("table1"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    table2 = Table(TableNameImpl("table2"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    assert table1 != table2
+
+
+def test_inequality_columns():
+    table1 = Table(TableNameImpl("table1"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    table2 = Table(TableNameImpl("table2"),
+                   [
+                       Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER")),
+                       Column(ColumnNameBuilder.create("column2"), ColumnType("INTEGER"))
+                   ])
+    assert table1 != table2
+
+
+def test_hash_equality():
+    table1 = Table(TableNameImpl("table"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    table2 = Table(TableNameImpl("table"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    assert hash(table1) == hash(table2)
+
+
+def test_hash_inequality_name():
+    table1 = Table(TableNameImpl("table1"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    table2 = Table(TableNameImpl("table2"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    assert hash(table1) != hash(table2)
+
+
+def test_hash_inequality_columns():
+    table1 = Table(TableNameImpl("table1"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
+    table2 = Table(TableNameImpl("table2"),
+                   [
+                       Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER")),
+                       Column(ColumnNameBuilder.create("column2"), ColumnType("INTEGER"))
+                   ])
+    assert hash(table1) != hash(table2)

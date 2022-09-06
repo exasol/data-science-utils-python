@@ -33,3 +33,6 @@ class DBObjectNameWithSchemaImpl(DBObjectNameImpl, DBObjectNameWithSchema):
         return type(other) == type(self) and \
                self._name == other.name and \
                self._schema_name == other.schema_name
+
+    def __hash__(self):
+        return hash((self.name, self._schema_name))

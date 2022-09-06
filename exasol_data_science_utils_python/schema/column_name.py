@@ -30,3 +30,6 @@ class ColumnName(ExasolIdentifierImpl):
 
     def __repr__(self):
         return generate_repr_for_object(self)
+
+    def __hash__(self):
+        return hash((self.name, self._table_name))

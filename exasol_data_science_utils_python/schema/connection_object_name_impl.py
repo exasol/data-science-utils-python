@@ -25,3 +25,7 @@ class ConnectionObjectNameImpl(DBObjectNameImpl, ConnectionObjectName):
         # Connection names are case-insensitive https://docs.exasol.com/db/latest/sql/create_connection.htm
         return type(other) == type(self) and \
                self._name.upper() == cast(ConnectionObjectName, other).name.upper()
+
+    def __hash__(self):
+        # Connection names are case-insensitive https://docs.exasol.com/db/latest/sql/create_connection.htm
+        return hash(self._name.upper())

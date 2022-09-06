@@ -31,3 +31,7 @@ class ExasolIdentifier(ABC):
     @abstractmethod
     def __repr__(self):
         pass
+
+    @abstractmethod
+    def __hash__(self):
+        pass

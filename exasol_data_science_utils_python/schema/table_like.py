@@ -25,3 +25,6 @@ class TableLike(DBObject[NameType], ABC):
     def __eq__(self, other):
         return super().__eq__(other) and \
                self._columns == other.columns
+
+    def __hash__(self):
+        return hash((self._name, tuple(self._columns)))

@@ -1,74 +1,42 @@
-from typing import Union
+import dataclasses
+from typing import Optional
 
-from typeguard import typechecked
-
-from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
+import typeguard
 
 
+@dataclasses.dataclass(frozen=True, repr=True, eq=True)
 class ColumnType:
-    @typechecked
-    def __init__(
-            self,
-            name: str,
-            precision: Union[int, None] = None,
-            scale: Union[int, None] = None,
-            size: Union[int, None] = None,
-            characterSet: Union[str, None] = None,
-            withLocalTimeZone: Union[bool, None] = None,
-            fraction: Union[int, None] = None,
-            srid: Union[int, None] = None
-    ):
-        self._srid = srid
-        self._fraction = fraction
-        self._withLocalTimeZone = withLocalTimeZone
-        self._characterSet = characterSet
-        self._size = size
-        self._scale = scale
-        self._precision = precision
-        self._name = name
+    name: str
+    precision: Optional[int] = None
+    scale: Optional[int] = None
+    size: Optional[int] = None
+    characterSet: Optional[str] = None
+    withLocalTimeZone: Optional[bool] = None
+    fraction: Optional[int] = None
+    srid: Optional[int] = None
 
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def srid(self) -> Union[int, None]:
-        return self._srid
-
-    @property
-    def fraction(self) -> Union[int, None]:
-        return self._fraction
-
-    @property
-    def withLocalTimeZone(self) -> Union[bool, None]:
-        return self._withLocalTimeZone
-
-    @property
-    def characterSet(self) -> Union[str, None]:
-        return self._characterSet
-
-    @property
-    def size(self) -> Union[int, None]:
-        return self._size
-
-    @property
-    def scale(self) -> Union[int, None]:
-        return self._scale
-
-    @property
-    def precision(self) -> Union[int, None]:
-        return self._precision
-
-    def __repr__(self):
-        return generate_repr_for_object(self)
-
-    def __eq__(self, other):
-        return isinstance(other, ColumnType) and \
-               self._name == other.name and \
-               self._scale == other.scale and \
-               self._precision == other.precision and \
-               self._size == other.size and \
-               self._characterSet == other.characterSet and \
-               self._fraction == other.fraction and \
-               self._withLocalTimeZone == other.withLocalTimeZone and \
-               self._srid == other._srid
+    def __post_init__(self):
+        typeguard.check_type(value=self.name,
+                             expected_type=str,
+                             argname="name")
+        typeguard.check_type(value=self.precision,
+                             expected_type=Optional[int],
+                             argname="precision")
+        typeguard.check_type(value=self.scale,
+                             expected_type=Optional[int],
+                             argname="scale")
+        typeguard.check_type(value=self.size,
+                             expected_type=Optional[int],
+                             argname="size")
+        typeguard.check_type(value=self.characterSet,
+                             expected_type=Optional[str],
+                             argname="characterSet")
+        typeguard.check_type(value=self.withLocalTimeZone,
+                             expected_type=Optional[bool],
+                             argname="withLocalTimeZone")
+        typeguard.check_type(value=self.fraction,
+                             expected_type=Optional[int],
+                             argname="fraction")
+        typeguard.check_type(value=self.srid,
+                             expected_type=Optional[int],
+                             argname="srid")

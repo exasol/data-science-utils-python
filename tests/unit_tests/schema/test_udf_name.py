@@ -36,3 +36,21 @@ def test_equality_schema_not_equal():
     t1 = UDFNameImpl("udf", schema=SchemaName("schema1"))
     t2 = UDFNameImpl("udf", schema=SchemaName("schema2"))
     assert t1 != t2
+
+
+def test_hash_equality_true():
+    t1 = UDFNameImpl("udf", schema=SchemaName("schema"))
+    t2 = UDFNameImpl("udf", schema=SchemaName("schema"))
+    assert hash(t1) == hash(t2)
+
+
+def test_hash_equality_name_not_equal():
+    t1 = UDFNameImpl("udf1", schema=SchemaName("schema"))
+    t2 = UDFNameImpl("udf2", schema=SchemaName("schema"))
+    assert hash(t1) != hash(t2)
+
+
+def test_hash_equality_schema_not_equal():
+    t1 = UDFNameImpl("udf", schema=SchemaName("schema1"))
+    t2 = UDFNameImpl("udf", schema=SchemaName("schema2"))
+    assert hash(t1) != hash(t2)

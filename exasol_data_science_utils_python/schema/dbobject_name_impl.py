@@ -17,3 +17,6 @@ class DBObjectNameImpl(ExasolIdentifierImpl, DBObjectName):
     def __eq__(self, other) -> bool:
         return type(other) == type(self) and \
                self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
