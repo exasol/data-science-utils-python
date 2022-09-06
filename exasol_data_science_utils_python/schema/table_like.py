@@ -17,6 +17,11 @@ class TableLike(DBObject[NameType], ABC):
     def __init__(self, name: NameType, columns: List[Column]):
         super().__init__(name)
         self._columns = columns
+        if len(self._columns)==0:
+            raise ValueError("At least on column needed.")
+        unique_column_names = {column.name for column in self.columns}
+        if len(unique_column_names) != len(columns):
+            raise ValueError("Column names are not unique.")
 
     @property
     def columns(self) -> List[Column]:

@@ -7,6 +7,26 @@ from exasol_data_science_utils_python.schema.view import View
 from exasol_data_science_utils_python.schema.view_name_impl import ViewNameImpl
 
 
+def test_valid():
+    table = View(ViewNameImpl("view_name"), [
+        Column(ColumnNameBuilder.create("column1"), ColumnType("INTEGER")),
+        Column(ColumnNameBuilder.create("column2"), ColumnType("VACHAR")),
+    ])
+
+
+def test_no_columns_fail():
+    with pytest.raises(ValueError, match="At least on column needed.") as c:
+        table = View(ViewNameImpl("table"), [])
+
+
+def test_duplicate_column_names_fail():
+    with pytest.raises(ValueError, match="Column names are not unique.") as c:
+        table = View(ViewNameImpl("view_name"), [
+            Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER")),
+            Column(ColumnNameBuilder.create("column"), ColumnType("VACHAR")),
+        ])
+
+
 def test_set_new_name_fail():
     view = View(ViewNameImpl("view"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
     with pytest.raises(AttributeError) as c:
