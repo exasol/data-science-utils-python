@@ -135,13 +135,7 @@ def test_inequality_srid():
     assert column1 != column2
 
 
-def test_inequality_table():
-    column1 = ColumnName("column", TableNameBuilder.create("table1"))
-    column2 = ColumnName("column", TableNameBuilder.create("table2"))
-    assert column1 != column2
-
-
-def test_equality():
+def test_hash_equality():
     column1 = ColumnType(name="COLUMN",
                          precision=0,
                          scale=0,
@@ -158,7 +152,7 @@ def test_equality():
                          withLocalTimeZone=True,
                          fraction=0,
                          srid=0)
-    assert column1 == column2
+    assert hash(column1) == hash(column2)
 
 
 def test_hash_inequality_name():

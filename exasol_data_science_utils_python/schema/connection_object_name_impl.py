@@ -28,4 +28,6 @@ class ConnectionObjectNameImpl(DBObjectNameImpl, ConnectionObjectName):
 
     def __hash__(self):
         # Connection names are case-insensitive https://docs.exasol.com/db/latest/sql/create_connection.htm
+        assert len(self.__dict__) == 1, f"The attributes of {self.__class__} changed, " \
+                                        f"you need to update the __hash__ method"
         return hash(self._name.upper())

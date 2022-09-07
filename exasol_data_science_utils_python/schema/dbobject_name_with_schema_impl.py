@@ -5,6 +5,7 @@ from typeguard import typechecked
 from exasol_data_science_utils_python.schema.dbobject_name_impl import DBObjectNameImpl
 from exasol_data_science_utils_python.schema.dbobject_name_with_schema import DBObjectNameWithSchema
 from exasol_data_science_utils_python.schema.schema_name import SchemaName
+from exasol_data_science_utils_python.utils.hash_generation_for_object import generate_hash_for_object
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 
@@ -35,4 +36,4 @@ class DBObjectNameWithSchemaImpl(DBObjectNameImpl, DBObjectNameWithSchema):
                self._schema_name == other.schema_name
 
     def __hash__(self):
-        return hash((self.name, self._schema_name))
+        return generate_hash_for_object(self)

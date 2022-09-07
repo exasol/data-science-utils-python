@@ -15,7 +15,7 @@ def test_valid():
 
 
 def test_no_columns_fail():
-    with pytest.raises(ValueError, match="At least on column needed.") as c:
+    with pytest.raises(ValueError, match="At least one column needed.") as c:
         table = View(ViewNameImpl("table"), [])
 
 

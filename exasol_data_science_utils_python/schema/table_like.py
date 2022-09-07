@@ -6,6 +6,7 @@ from typeguard import typechecked
 from exasol_data_science_utils_python.schema.column import Column
 from exasol_data_science_utils_python.schema.dbobject import DBObject
 from exasol_data_science_utils_python.schema.table_like_name import TableLikeName
+from exasol_data_science_utils_python.utils.hash_generation_for_object import generate_hash_for_object
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 NameType = TypeVar('NameType', bound=TableLikeName)
@@ -32,4 +33,4 @@ class TableLike(DBObject[NameType], ABC):
                self._columns == other.columns
 
     def __hash__(self):
-        return hash((self._name, tuple(self._columns)))
+        return generate_hash_for_object(self)

@@ -56,7 +56,7 @@ def test_hash_inequality_name():
     assert hash(column1) != hash(column2)
 
 
-def test_hash_inequality_type():
+def test_hash_inequality_table_name():
     column1 = ColumnName("column", TableNameBuilder.create("table1"))
     column2 = ColumnName("column", TableNameBuilder.create("table2"))
     assert hash(column1) != hash(column2)
