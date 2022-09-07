@@ -9,7 +9,7 @@ def generate_hash_for_object(obj: Any) -> int:
 def _hash_object(obj: Any, already_seen: Set[int]) -> int:
     """
     This function generates a hash value for the object using either the objects __hash__ method,
-    or by inspecting it, if it is a list or list. For non-hashable objects it returns 0.
+    or by inspecting it, if it is a list or dict. For non-hashable objects it returns 0.
     It uses the already_seen set to detect potential cycles. However, as a side effect
     it only counts an object once, also if it finds it a second time in another branch.
     This should be not a problem, here, because for computing the hash of an object
