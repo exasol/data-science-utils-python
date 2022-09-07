@@ -3,6 +3,8 @@ from typing import Optional
 
 import typeguard
 
+from exasol_data_science_utils_python.utils.data_classes_runtime_type_check import check_dataclass_types
+
 
 @dataclasses.dataclass(frozen=True, repr=True, eq=True)
 class ColumnType:
@@ -16,27 +18,4 @@ class ColumnType:
     srid: Optional[int] = None
 
     def __post_init__(self):
-        typeguard.check_type(value=self.name,
-                             expected_type=str,
-                             argname="name")
-        typeguard.check_type(value=self.precision,
-                             expected_type=Optional[int],
-                             argname="precision")
-        typeguard.check_type(value=self.scale,
-                             expected_type=Optional[int],
-                             argname="scale")
-        typeguard.check_type(value=self.size,
-                             expected_type=Optional[int],
-                             argname="size")
-        typeguard.check_type(value=self.characterSet,
-                             expected_type=Optional[str],
-                             argname="characterSet")
-        typeguard.check_type(value=self.withLocalTimeZone,
-                             expected_type=Optional[bool],
-                             argname="withLocalTimeZone")
-        typeguard.check_type(value=self.fraction,
-                             expected_type=Optional[int],
-                             argname="fraction")
-        typeguard.check_type(value=self.srid,
-                             expected_type=Optional[int],
-                             argname="srid")
+        check_dataclass_types(self)
