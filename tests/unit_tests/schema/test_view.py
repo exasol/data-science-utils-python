@@ -65,7 +65,7 @@ def test_inequality_name():
 
 def test_inequality_columns():
     view1 = View(ViewNameImpl("view1"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
-    view2 = View(ViewNameImpl("view2"),
+    view2 = View(ViewNameImpl("view1"),
                  [
                      Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER")),
                      Column(ColumnNameBuilder.create("column2"), ColumnType("INTEGER"))

@@ -65,7 +65,7 @@ def test_inequality_name():
 
 def test_inequality_columns():
     table1 = Table(TableNameImpl("table1"), [Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER"))])
-    table2 = Table(TableNameImpl("table2"),
+    table2 = Table(TableNameImpl("table1"),
                    [
                        Column(ColumnNameBuilder.create("column"), ColumnType("INTEGER")),
                        Column(ColumnNameBuilder.create("column2"), ColumnType("INTEGER"))

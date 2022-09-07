@@ -51,6 +51,6 @@ def test_hash_inequality_name():
 
 def test_hash_inequality_type():
     column1 = Column(ColumnNameBuilder.create("abc"), ColumnType("INTEGER"))
-    column2 = Column(ColumnNameBuilder.create("def"), ColumnType("VARCHAR"))
+    column2 = Column(ColumnNameBuilder.create("abc"), ColumnType("VARCHAR"))
     assert hash(column1) != hash(column2)
 
