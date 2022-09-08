@@ -10,4 +10,5 @@
 ### Bug Fixes
 
   - #43: Corrected the git hooks path
+  - #64: Fix `__hash__` implementation for schema classes and add some validations
   

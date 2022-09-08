@@ -4,6 +4,7 @@ from typing import TypeVar, Generic
 from typeguard import typechecked
 
 from exasol_data_science_utils_python.schema.dbobject_name import DBObjectName
+from exasol_data_science_utils_python.utils.hash_generation_for_object import generate_hash_for_object
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 NameType = TypeVar('NameType', bound=DBObjectName)
@@ -25,3 +26,6 @@ class DBObject(Generic[NameType], ABC):
 
     def __repr__(self):
         return generate_repr_for_object(self)
+
+    def __hash__(self):
+        return generate_hash_for_object(self)

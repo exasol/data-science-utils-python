@@ -3,6 +3,7 @@ from typeguard import typechecked
 from exasol_data_science_utils_python.schema.exasol_identifier import ExasolIdentifier
 from exasol_data_science_utils_python.schema.exasol_identifier_impl import ExasolIdentifierImpl
 from exasol_data_science_utils_python.schema.table_name import TableName
+from exasol_data_science_utils_python.utils.hash_generation_for_object import generate_hash_for_object
 from exasol_data_science_utils_python.utils.repr_generation_for_object import generate_repr_for_object
 
 
@@ -30,3 +31,6 @@ class ColumnName(ExasolIdentifierImpl):
 
     def __repr__(self):
         return generate_repr_for_object(self)
+
+    def __hash__(self):
+        return generate_hash_for_object(self)
