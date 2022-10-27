@@ -47,6 +47,7 @@ def upload_language_container(pyexasol_connection, language_container):
 
 @pytest.fixture(scope="session")
 def create_input_table(pyexasol_connection):
+    pyexasol_connection.execute("""CREATE SCHEMA IF NOT EXISTS TEST""")
     pyexasol_connection.execute("""
         CREATE OR REPLACE TABLE TEST.ABC(
             P1 INTEGER,
