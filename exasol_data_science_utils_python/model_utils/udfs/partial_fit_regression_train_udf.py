@@ -26,7 +26,7 @@ class PartialFitRegressionTrainUDF:
         target_schema = SchemaName(ctx.target_schema_name)
         experiment_name = ExperimentName(ctx.experiment_name)
         source_table = TableNameBuilder.create(ctx.source_table_name, schema=source_schema)
-        columns = [ColumnNameBuilder.create(column_name, table_name=source_table)
+        columns = [ColumnNameBuilder.create(column_name, table_like_name=source_table)
                          for column_name in ctx.columns.split(",")]
         split_by_columns = []
         if ctx.split_by_columns is not None and ctx.split_by_columns != "":

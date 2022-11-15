@@ -19,8 +19,8 @@ class SQLColumnPreprocessor(ABC):
 
     def _get_table_alias(self, target_schema: SchemaName, source_column: ColumnName, prefix: str):
         target_schema_name = target_schema.name
-        source_schema_name = source_column.table_name.schema_name.name
-        source_table_name = source_column.table_name.name
+        source_schema_name = source_column.table_like_name.schema_name.name
+        source_table_name = source_column.table_like_name.name
         alias = TableNameBuilder.create(
             f"{target_schema_name}_{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}")
         return alias
@@ -29,8 +29,8 @@ class SQLColumnPreprocessor(ABC):
                           target_schema: SchemaName,
                           source_column: ColumnName,
                           experiment_name: ExperimentName, prefix: str):
-        source_schema_name = source_column.table_name.schema_name.name
-        source_table_name = source_column.table_name.name
+        source_schema_name = source_column.table_like_name.schema_name.name
+        source_table_name = source_column.table_like_name.name
         target_table = TableNameBuilder.create(
             f"{experiment_name.name}_{source_schema_name}_{source_table_name}_{source_column.name}_{prefix}",
             target_schema)

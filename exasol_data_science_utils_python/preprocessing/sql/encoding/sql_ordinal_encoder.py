@@ -78,7 +78,7 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
                     {value_column_name.quoted_name}
                 FROM (
                     SELECT DISTINCT {source_column.fully_qualified} as {value_column_name.quoted_name}
-                    FROM {source_column.table_name.fully_qualified}
+                    FROM {source_column.table_like_name.fully_qualified}
                     ORDER BY {source_column.fully_qualified}
                 );
                 """)
@@ -146,7 +146,7 @@ class SQLOrdinalEncoder(SQLColumnPreprocessor):
             select_clause_part_expression=select_clause_part_expression,
             tranformation_column=TransformationColumn(
                 source_column=source_column,
-                input_column=ColumnNameBuilder(column_name=source_column).with_table_name(input_table).build(),
+                input_column=ColumnNameBuilder(column_name=source_column).with_table_like_name(input_table).build(),
                 column=Column(name=transformation_column_name, type=ColumnType("INTEGER")),
                 purpose="ReplaceValueByID"
             )
