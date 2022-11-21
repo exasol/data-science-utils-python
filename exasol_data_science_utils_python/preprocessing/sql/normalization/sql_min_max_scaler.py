@@ -74,11 +74,11 @@ class SQLMinMaxScaler(SQLColumnPreprocessor):
             SELECT
                 CAST(MIN({source_column.fully_qualified}) as DOUBLE) as {min_column.fully_qualified},
                 CAST(MAX({source_column.fully_qualified})-MIN({source_column.fully_qualified}) as DOUBLE) as {range_column.fully_qualified}
-            FROM {source_column.table_name.fully_qualified}
+            FROM {source_column.table_like_name.fully_qualified}
             """)
         sqlexecutor.execute(query)
-        min_column = ColumnNameBuilder(column_name=min_column).with_table_name(parameter_table_name).build()
-        range_column = ColumnNameBuilder(column_name=range_column).with_table_name(parameter_table_name).build()
+        min_column = ColumnNameBuilder(column_name=min_column).with_table_like_name(parameter_table_name).build()
+        range_column = ColumnNameBuilder(column_name=range_column).with_table_like_name(parameter_table_name).build()
         parameter_table = ParameterTable(
             source_column=source_column,
             purpose=self.MIN_AND_RANGE_TABLE,

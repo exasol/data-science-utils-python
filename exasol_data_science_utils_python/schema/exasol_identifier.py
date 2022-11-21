@@ -14,14 +14,14 @@ class ExasolIdentifier(ABC):
     @abstractmethod
     def quoted_name(self) -> str:
         """
-        The quoted name of the ExasolIdentifier, e.g. "table_name"
+        The quoted name of the ExasolIdentifier, e.g. "table_like_name"
         """
 
     @property
     @abstractmethod
     def fully_qualified(self) -> str:
         """
-        The full qualified name of the ExasolIdentifier, e.g. "schema_name"."table_name"
+        The full qualified name of the ExasolIdentifier, e.g. "schema_name"."table_like_name"
         """
 
     @abstractmethod

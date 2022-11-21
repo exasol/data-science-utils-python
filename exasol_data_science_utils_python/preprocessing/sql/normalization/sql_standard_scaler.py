@@ -53,11 +53,11 @@ class SQLStandardScaler(SQLColumnPreprocessor):
     SELECT
         CAST(AVG({source_column.fully_qualified}) as DOUBLE) as {avg_column.fully_qualified},
         CAST(STDDEV_POP({source_column.fully_qualified}) as DOUBLE) as {stddev_column.fully_qualified}
-    FROM {source_column.table_name.fully_qualified}
+    FROM {source_column.table_like_name.fully_qualified}
     """)
         sqlexecutor.execute(query)
-        avg_column = ColumnNameBuilder(column_name=avg_column).with_table_name(parameter_table_name).build()
-        stddev_column = ColumnNameBuilder(column_name=stddev_column).with_table_name(parameter_table_name).build()
+        avg_column = ColumnNameBuilder(column_name=avg_column).with_table_like_name(parameter_table_name).build()
+        stddev_column = ColumnNameBuilder(column_name=stddev_column).with_table_like_name(parameter_table_name).build()
         parameter_table = ParameterTable(
             source_column=source_column,
             purpose=self.MEAN_AND_STDDEV_TABLE,

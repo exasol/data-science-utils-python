@@ -23,7 +23,7 @@ def test_fully_qualified_with_table_and_schema():
 def test_set_new_table_fail():
     column = ColumnName("abc")
     with pytest.raises(AttributeError) as c:
-        column.table_name = "edf"
+        column.table_like_name = "edf"
 
 
 def test_equality():

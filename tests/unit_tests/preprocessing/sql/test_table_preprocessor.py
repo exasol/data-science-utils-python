@@ -62,7 +62,7 @@ class MyColumnPreprocessor(SQLColumnPreprocessor):
             -> List[TransformSelectClausePart]:
         transformation_column_name = ColumnNameBuilder.create(f"{source_column.name}_VALUE")
         transformation_column = Column(transformation_column_name, ColumnType("INTEGER"))
-        input_column_name = ColumnNameBuilder(column_name=source_column).with_table_name(input_table).build()
+        input_column_name = ColumnNameBuilder(column_name=source_column).with_table_like_name(input_table).build()
         transformation_column = TransformationColumn(source_column=source_column,
                                                      input_column=input_column_name,
                                                      column=transformation_column,
