@@ -22,8 +22,7 @@ package_data = \
 {'': ['*']}
 
 install_requires = \
-['exasol-bucketfs-utils-python @ '
- 'git+https://github.com/exasol/bucketfs-utils-python.git@main',
+['exasol-bucketfs>=0.6.0,<0.7.0',
  'joblib>=1.0.1,<2.0.0',
  'jsonpickle>=2.0.0,<3.0.0',
  'mlxtend>=0.20.0,<0.21.0',
