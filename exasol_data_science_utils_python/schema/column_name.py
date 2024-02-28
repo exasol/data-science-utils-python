@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typeguard import typechecked
 
 from exasol_data_science_utils_python.schema.exasol_identifier import ExasolIdentifier
@@ -9,7 +11,7 @@ from exasol_data_science_utils_python.utils.repr_generation_for_object import ge
 
 class ColumnName(ExasolIdentifierImpl):
     @typechecked
-    def __init__(self, name: str, table_name: TableName = None):
+    def __init__(self, name: str, table_name: Optional[TableName] = None):
         super().__init__(name)
         self._table_name = table_name
 
