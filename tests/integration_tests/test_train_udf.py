@@ -93,7 +93,7 @@ def udf_wrapper():
     train_udf = PartialFitRegressionTrainUDF()
 
     def run(ctx: UDFContext):
-        model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
+        model = SGDRegressor(random_state=RandomState(0), loss="squared_error", verbose=False,
                              fit_intercept=True, eta0=0.9, power_t=0.1, learning_rate='invscaling')
         table_preprocessor_factory = ColumnDescriptionBasedTablePreprocessorFactory(
             input_column_preprocessor_descriptions=[
@@ -420,7 +420,7 @@ def test_train_udf(
     train_udf = PartialFitRegressionTrainUDF()
 
     def run(ctx):
-        model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False,
+        model = SGDRegressor(random_state=RandomState(0), loss="squared_error", verbose=False,
                              fit_intercept=True, eta0=0.9, power_t=0.1, learning_rate='invscaling')
         table_preprocessor_factory = ColumnDescriptionBasedTablePreprocessorFactory(
             input_column_preprocessor_descriptions=[

@@ -39,7 +39,7 @@ def udf_wrapper():
             ),
         )
 
-        model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False)
+        model = SGDRegressor(random_state=RandomState(0), loss="squared_error", verbose=False)
         df = ctx.get_dataframe(101)
         iterator = RegressorPartialFitIterator(
             table_preprocessor=table_preprocessor,
