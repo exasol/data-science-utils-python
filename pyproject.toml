@@ -18,14 +18,14 @@ homepage = "https://github.com/exasol/data-science-utils-python"
 keywords = ['exasol', 'data-science']
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
+python = ">=3.8,<3.12"
 pyexasol = "^0.25.0"
 numpy = "1.24.4"
 pandas = "1.4.0"
-joblib = "1.0.1"
+joblib = "1.2.0"
 exasol-bucketfs = "^0.6.0"
 scikit-learn = "1.1.2"
-scipy = "1.9.3"
+scipy = "1.10.0"
 mlxtend = "0.20.0"
 jsonpickle = "^2.0.0"
 simplejson = "^3.17.2"
