@@ -23,7 +23,7 @@ def udf_wrapper():
         input_preprocessor = SKLearnPrefittedColumnTransformer(
             transformer_mapping=[("t2", SKLearnIdentityTransformer())]
         )
-        model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False, max_iter=100000,
+        model = SGDRegressor(random_state=RandomState(0), loss="squared_error", verbose=False, max_iter=100000,
                              tol=1e-10)
         pipeline = Pipeline([("p", input_preprocessor), ("m", model)])
         df = ctx.get_dataframe(101)

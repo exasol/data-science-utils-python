@@ -226,7 +226,7 @@ def create_regressor_partial_fit_iterator():
             column_transformer=output_preprocessor,
         ),
     )
-    model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False)
+    model = SGDRegressor(random_state=RandomState(0), loss="squared_error", verbose=False)
     X = pd.DataFrame.from_dict({"a": [(1.0 * i) / 100 for i in range(100)]})
     y = pd.DataFrame.from_dict({"b": [(1.0 * i) / 100 for i in range(100)]})
     model.fit(X, y)

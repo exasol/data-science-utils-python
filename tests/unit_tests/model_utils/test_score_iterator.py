@@ -35,7 +35,7 @@ def udf_wrapper():
             ),
         )
 
-        model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False, max_iter=100000,
+        model = SGDRegressor(random_state=RandomState(0), loss="squared_error", verbose=False, max_iter=100000,
                              tol=1e-10)
         df = ctx.get_dataframe(101)
         input_preprocessor.fit(df[["t2"]])

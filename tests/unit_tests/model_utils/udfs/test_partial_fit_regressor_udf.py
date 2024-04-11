@@ -131,7 +131,7 @@ def create_regressor_partial_fit_iterator():
             column_transformer=output_preprocessor,
         ),
     )
-    model = SGDRegressor(random_state=RandomState(0), loss="squared_loss", verbose=False)
+    model = SGDRegressor(random_state=RandomState(0), loss="squared_error", verbose=False)
     iterator = RegressorPartialFitIterator(
         table_preprocessor=table_preprocessor,
         model=model
